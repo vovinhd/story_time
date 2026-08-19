@@ -218,10 +218,21 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     Timer.periodic(Duration(seconds: 1), (timer) => _updateState(timer));
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+    
+      resizeToAvoidBottomInset: false,
+      // appBar: AppBar(
+      //   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      //   title: Text(widget.title),
+      // ),
+      appBar: YaruWindowTitleBar(
+        border: BorderSide.none,
+        leading: Navigator.of(context).canPop()
+            ? const YaruBackButton()
+            : null,
+        title: Text("Player"),
+        actions: [],
       ),
+
       body: Center(
         child: Row(
           mainAxisAlignment: .center,

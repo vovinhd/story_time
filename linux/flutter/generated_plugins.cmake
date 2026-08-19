@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   ffmpeg_kit_extended_flutter
   gtk
+  handy_window
   media_kit_libs_linux
   screen_retriever_linux
   system_tray

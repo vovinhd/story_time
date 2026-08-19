@@ -8,6 +8,7 @@
 
 #include <ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter_plugin.h>
 #include <gtk/gtk_plugin.h>
+#include <handy_window/handy_window_plugin.h>
 #include <media_kit_libs_linux/media_kit_libs_linux_plugin.h>
 #include <screen_retriever_linux/screen_retriever_linux_plugin.h>
 #include <system_tray/system_tray_plugin.h>
@@ -22,6 +23,9 @@ void fl_register_plugins(FlPluginRegistry* registry) {
   g_autoptr(FlPluginRegistrar) gtk_registrar =
       fl_plugin_registry_get_registrar_for_plugin(registry, "GtkPlugin");
   gtk_plugin_register_with_registrar(gtk_registrar);
+  g_autoptr(FlPluginRegistrar) handy_window_registrar =
+      fl_plugin_registry_get_registrar_for_plugin(registry, "HandyWindowPlugin");
+  handy_window_plugin_register_with_registrar(handy_window_registrar);
   g_autoptr(FlPluginRegistrar) media_kit_libs_linux_registrar =
       fl_plugin_registry_get_registrar_for_plugin(registry, "MediaKitLibsLinuxPlugin");
   media_kit_libs_linux_plugin_register_with_registrar(media_kit_libs_linux_registrar);

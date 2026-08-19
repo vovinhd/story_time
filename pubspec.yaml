@@ -42,6 +42,10 @@ dependencies:
   system_tray: ^2.0.3
   window_size: ^0.2.0
   yaru: ^10.2.0
+  safe_change_notifier: ^0.4.0+1
+  connectivity_plus: ^7.3.1
+  watch_it: ^2.4.2
+  handy_window: ^0.4.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
