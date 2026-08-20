@@ -31,4 +31,5 @@ Future<void> main() async {
 
   await di<Model>().init();
   runApp(const ExampleHome());
+
 }

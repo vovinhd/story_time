@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
+import 'package:fl_audiobook/book_select_page.dart';
+import 'package:fl_audiobook/config.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 
@@ -8,7 +11,10 @@ import 'package:media_kit/media_kit.dart';
 // ignore: constant_identifier_names
 const String APP_DIR = "fl_audiobookplayer"; 
 
+BookFile? playingFile;
+
 final player = Player();
+Image defaultCoverImage = Image.asset("images/cover_default.png", key: UniqueKey()); 
 Image coverImage = (Image.asset("images/cover_default.png", key: UniqueKey()));
 bool ready = false;
 Map<String, dynamic>? tags;
@@ -78,3 +84,17 @@ void seekChapter(ChapterInformation ch) {
 
   player.seek(micros);
 }
+
+
+Timer? timer;
+
+void initTimer() {
+  if (timer != null && timer!.isActive) return;
+
+  timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    //job
+    ConfigProvider().updatePlaybackState();
+  });
+}
+
+
