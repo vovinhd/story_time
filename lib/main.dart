@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:dbus/dbus.dart';
+import 'package:fl_audiobook/dbus_object.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/home.dart';
 import 'package:fl_audiobook/model.dart';
@@ -30,6 +32,11 @@ Future<void> main() async {
     );
 
   await di<Model>().init();
+
+  var client = DBusClient.session();
+  await client.requestName('org.mpris.MediaPlayer2.fl_audiobook');
+  await client.registerObject(DbusPlayerObject());
+
   runApp(const ExampleHome());
 
 }
