@@ -4,6 +4,10 @@ import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 
+
+// ignore: constant_identifier_names
+const String APP_DIR = "fl_audiobookplayer"; 
+
 final player = Player();
 Image coverImage = (Image.asset("images/cover_default.png", key: UniqueKey()));
 bool ready = false;

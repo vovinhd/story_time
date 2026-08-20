@@ -1,6 +1,4 @@
-import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
-import 'package:fl_audiobook/player_page.dart';
 import 'package:flutter/material.dart';
 
 // Source - https://stackoverflow.com/a/54775297
@@ -12,6 +10,10 @@ String printDuration(Duration duration) {
   String twoDigits(int n) => n.toString().padLeft(2, "0");
   String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60).abs());
   String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60).abs());
+  if (duration.inMinutes < 60) {
+      return "$negativeSign$twoDigitMinutes:$twoDigitSeconds";
+
+  } 
   return "$negativeSign${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
 }
 
@@ -23,62 +25,43 @@ Duration timeInChapter(Duration position) {
   return Duration(microseconds: (position.inMicroseconds - chapterStartTime));
 }
 
+
+Duration timeLeftInChapter(Duration position) {
+  var currentChapter = globals.getChapterFor(position);
+  final int chapterEndTime = globals.chapterInfoTimeToMicros(
+    currentChapter.endTime!,
+  );
+  return Duration(microseconds: (position.inMicroseconds - chapterEndTime));
+}
+
+
 class CurrentPositionLabel extends StatelessWidget {
-  const new({super.key, required this.postion});
-  final Duration postion;
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Text(printDuration(postion));
+    return Row (children: [StreamBuilder(
+      stream: globals.player.stream.position,
+      builder: (context, asyncSnapshot) {
+        if (asyncSnapshot.hasData) {
+          return Text(printDuration(asyncSnapshot.data!)); 
+        }
+        
+        return Text(printDuration(globals.player.state.position));
+      }
+    ),Text("/"), StreamBuilder(
+      stream: globals.player.stream.duration,
+      builder: (context, asyncSnapshot) {
+        if (asyncSnapshot.hasData) {
+          return Text(printDuration(asyncSnapshot.data!)); 
+        }
+        return Text(printDuration(globals.player.state.duration));
+      }
+    )]);
   }
 }
 
 class CurrentPositionInChapterLabel extends StatelessWidget {
-  const new({super.key, required this.postion});
-  final Duration postion;
-  @override
-  Widget build(BuildContext context) {
-    return Text(printDuration(timeInChapter(postion)));
-  }
-}
-
-class CurrentPositionLabelStack extends StatefulWidget {
-  const new({super.key});
-
-  @override
-  State<CurrentPositionLabelStack> createState() =>
-      CurrentPositionLabelStackState();
-}
-
-class CurrentPositionLabelStackState extends State<CurrentPositionLabelStack> {
-  bool positionInChapter = true;
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: globals.player.stream.position,
-      builder: (context, asyncSnapshot) {
-        Duration pos;
-        if (asyncSnapshot.hasData) {
-          pos = asyncSnapshot.data!;
-        } else {
-          pos = globals.player.state.position;
-        }
-        return TextButton(
-          onPressed: () {
-            positionInChapter = !positionInChapter;
-            setState(() {});
-          },
-          child: positionInChapter
-              ? CurrentPositionInChapterLabel(postion: pos)
-              : CurrentPositionLabel(postion: pos),
-        );
-      },
-    );
-  }
-}
-
-class ChapterStartLabel extends StatelessWidget {
   const new({super.key});
 
   @override
@@ -86,68 +69,29 @@ class ChapterStartLabel extends StatelessWidget {
     return StreamBuilder(
       stream: globals.player.stream.position,
       builder: (context, asyncSnapshot) {
-        Duration pos;
         if (asyncSnapshot.hasData) {
-          pos = asyncSnapshot.data!;
-        } else {
-          pos = globals.player.state.position;
+          return Text(printDuration(timeInChapter(asyncSnapshot.data!))); 
         }
-
-        ChapterInformation chapter = globals.getChapterFor(pos);
-
-        return Text(printDuration(Duration(microseconds: chapterInfoTimeToMicros(chapter.startTime!))));
-      },
+        return Text(printDuration(timeInChapter(globals.player.state.position)));
+      }
     );
   }
 }
 
 
-
-
-
-class EndLabelStack extends StatefulWidget {
-  const new({super.key});
-
-  @override
-  State<EndLabelStack> createState() =>
-      EndLabelStackState();
-}
-
-class EndLabelStackState extends State<EndLabelStack> {
-  int mode = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: globals.player.stream.position,
-      builder: (context, asyncSnapshot) {
-        Duration pos;
-        ChapterInformation ch; 
-        if (asyncSnapshot.hasData) {
-          pos = asyncSnapshot.data!;
-        } else {
-          pos = globals.player.state.position;
-        }
-        ch = globals.getChapterFor(pos); 
-
-        return TextButton(
-          onPressed: () {
-            mode = mode % 2;
-            setState(() {});
-          },
-          child: EndLabel(mode: mode, chapter: ch),
-        );
-      },
-    );
-  }
-}
 
 class EndLabel extends StatelessWidget {
-  const new({super.key, required this.mode, required this.chapter});
-  final int mode; 
-  final ChapterInformation chapter; 
+  const new({super.key});
+  @override
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
+    return StreamBuilder(
+      stream: globals.player.stream.position,
+      builder: (context, asyncSnapshot) {
+        if (asyncSnapshot.hasData) {
+          return Text(printDuration(timeLeftInChapter(asyncSnapshot.data!))); 
+        }
+        return Text(printDuration(timeLeftInChapter(globals.player.state.position)));
+      }
+    );
+  }}

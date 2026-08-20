@@ -113,6 +113,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  convert:
+    dependency: transitive
+    description:
+      name: convert
+      sha256: b30acd5944035672bc15c6b7a8b47d773e41e2f17de064350988c5d02adb1c68
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.2"
   cross_file:
     dependency: transitive
     description:
@@ -177,6 +185,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.13"
+  file_md5:
+    dependency: "direct main"
+    description:
+      name: file_md5
+      sha256: d107ec5ce5938ec32ba6a7b04759ff4d92e9376295994f01bde4fa468c192d70
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   file_picker:
     dependency: "direct main"
     description:
@@ -766,7 +782,7 @@ packages:
     source: hosted
     version: "1.0.1"
   xdg_directories:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: xdg_directories
       sha256: "7a3f37b05d989967cdddcbb571f1ea834867ae2faa29725fd085180e0883aa15"

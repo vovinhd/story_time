@@ -1,13 +1,19 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
+import 'package:file_md5/file_md5.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/mini_player.dart';
 import 'package:fl_audiobook/player_page.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:xdg_directories/xdg_directories.dart';
 import 'package:yaru/yaru.dart';
+
+
+
 
 class BookSelectPage extends StatefulWidget {
   const new({super.key});
@@ -23,6 +29,7 @@ class _BookSelectPageState extends State<BookSelectPage> {
     if (file != null) {
       // print(file.name);
       // print(await file.length());
+
       final media = Media(file.path!);
       // print(media.toString());
       globals.player.open(media, play: true);
@@ -34,7 +41,8 @@ class _BookSelectPageState extends State<BookSelectPage> {
       globals.chapters = info?.chapters;
       globals.tags = info?.tags;
 
-      final coverPath = "/tmp/${file.name}.jpg";
+      
+      final coverPath = "${dataHome.path}/${globals.APP_DIR}/${file.name}.jpg";
       final coverSess = FFmpegKit.execute(
         "-y -i $canonicalPath -an -vcodec copy \"$coverPath\"",
       );

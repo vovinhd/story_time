@@ -5,6 +5,7 @@ import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:fl_audiobook/playback_position_slider.dart';
 import 'package:fl_audiobook/time_display.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:yaru/yaru.dart';
 
@@ -100,17 +101,20 @@ class _PlayerPageState extends State<PlayerPage> {
                 StreamBuilder(
                   stream: globals.player.stream.position,
                   builder: (context, snapshotPosition) {
+                    Duration pos; 
                     if (snapshotPosition.hasData) {
-                      return ChapterListButton(
-                        chapters: widget.chapters,
-                        currentChapter: globals.getChapterFor(
-                          snapshotPosition.data!,
-                        ),
-                        player: widget.player,
-                      );
+                      pos = snapshotPosition.data!; 
                     } else {
-                      return const SizedBox.shrink();
+                      pos = globals.player.state.position; 
                     }
+                    return ChapterListButton(
+                      chapters: widget.chapters,
+                      currentChapter: globals.getChapterFor(
+                        pos,
+                      ),
+                      player: widget.player,
+                    );
+                    
                   },
                 ),
                 PlaybackControls(),
@@ -133,14 +137,24 @@ class PlaybackControls extends StatefulWidget {
 class _PlaybackControlsState extends State<PlaybackControls> {
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return 
+    CallbackShortcuts(
+    bindings: <ShortcutActivator, VoidCallback>{
+      const SingleActivator(LogicalKeyboardKey.space): () {
+        print("SPACE"); 
+        globals.player.playOrPause(); 
+      },
+
+    },
+    child:
+    Column(
       mainAxisAlignment: .center,
       children: [
         PlaybackPositionSlider(),
         Row(
           spacing: 8,
           mainAxisAlignment: .spaceBetween,
-          children: [ChapterStartLabel(), CurrentPositionLabelStack(), Text("abababa")],
+          children: [CurrentPositionInChapterLabel(), CurrentPositionLabel(), EndLabel()],
         ),
         Row(
           mainAxisAlignment: .center,
@@ -212,7 +226,7 @@ class _PlaybackControlsState extends State<PlaybackControls> {
           ],
         ),
       ],
-    );
+    ));
   }
 }
 
@@ -247,7 +261,18 @@ class _ChapterListButtonState extends State<ChapterListButton> {
       child: Row(
         children: [
           Icon(YaruIcons.unordered_list),
-          Text(widget.currentChapter.tags!["title"]),
+          StreamBuilder(
+            stream: globals.player.stream.position,
+            builder: (context, asyncSnapshot) {
+              Duration pos ;
+              if (asyncSnapshot.hasData) {
+                pos = asyncSnapshot.data!; 
+              } else { 
+                pos = globals.player.state.position;
+              }
+              return Text(globals.getChapterFor(pos).tags!["title"]);
+            }
+          ),
         ],
       ),
       onPressed: () {

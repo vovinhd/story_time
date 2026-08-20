@@ -1,5 +1,6 @@
 import 'package:fl_audiobook/playback_position_slider.dart';
 import 'package:fl_audiobook/player_page.dart';
+import 'package:fl_audiobook/time_display.dart';
 import 'package:flutter/material.dart';
 import 'package:yaru/yaru.dart';
 
@@ -50,11 +51,11 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                 ? Icon(YaruIcons.media_pause)
                                 : Icon(YaruIcons.media_play),
                           ),
-                          Text("00:00:00"),
+                          CurrentPositionInChapterLabel(),
                           Expanded(
                             child: PlaybackPositionSlider(),
                           ),
-                          Text("00:00:00"),
+                          EndLabel(),
                           IconButton(
                             padding: EdgeInsets.symmetric(horizontal: 0),
                             onPressed: () => {
