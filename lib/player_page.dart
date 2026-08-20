@@ -2,9 +2,13 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
+import 'package:fl_audiobook/playback_position_slider.dart';
+import 'package:fl_audiobook/time_display.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:yaru/yaru.dart';
+
+import "globals.dart" as globals;
 
 // Source - https://stackoverflow.com/a/54775297
 // Posted by diegoveloper, modified by community. See post 'Timeline' for change history
@@ -63,147 +67,64 @@ class PlayerPage extends StatefulWidget {
 class _PlayerPageState extends State<PlayerPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: .spaceAround,
-        spacing: 16.0,
-        children: [
-          Container(
-            key: UniqueKey(),
-            padding: EdgeInsets.all(16.0),
-            margin: EdgeInsets.all(16.0),
-            height: 300,
-            width: 300,
-            child: ClipRRect(
-              borderRadius: BorderRadiusGeometry.all(Radius.circular(8.0)),
-              child: widget.cover,
+    return Scaffold(
+      appBar: YaruWindowTitleBar(
+        onShowMenu: (p0) => {},
+        border: BorderSide.none,
+        leading: YaruBackButton(),
+        title: Text("Player"),
+        actions: [],
+      ),
+
+      body: Container(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: .spaceAround,
+          spacing: 16.0,
+          children: [
+            Container(
+              key: UniqueKey(),
+              padding: EdgeInsets.all(16.0),
+              margin: EdgeInsets.all(16.0),
+              height: 300,
+              width: 300,
+              child: ClipRRect(
+                borderRadius: BorderRadiusGeometry.all(Radius.circular(8.0)),
+                child: widget.cover,
+              ),
             ),
-          ),
-          StreamBuilder(
-            stream: widget.player.stream.playing,
-            builder: (context, snapshotPlayPause) {
-              return StreamBuilder(
-                stream: widget.player.stream.position,
-                builder: (context, snapshotPosition) {
-                  if (snapshotPosition.hasData) {
-                    var currentChapter = widget._getChapterFor(
-                      snapshotPosition.data!,
-                    );
-
-                    // Display the received data
-                    return Column(
-                      spacing: 8.0,
-                      crossAxisAlignment: .start,
-                      children: [
-                        ChapterListButton(
-                          chapters: widget.chapters,
-                          currentChapter: currentChapter,
-                          player: widget.player,
+            Column(
+              spacing: 8.0,
+              crossAxisAlignment: .start,
+              children: [
+                StreamBuilder(
+                  stream: globals.player.stream.position,
+                  builder: (context, snapshotPosition) {
+                    if (snapshotPosition.hasData) {
+                      return ChapterListButton(
+                        chapters: widget.chapters,
+                        currentChapter: globals.getChapterFor(
+                          snapshotPosition.data!,
                         ),
-
-                        PlaybackControls(
-                          player: widget.player,
-                          currentChapter: currentChapter,
-                          position: snapshotPosition.data!,
-                          isPlaying: snapshotPlayPause.data!,
-                        ),
-                      ],
-                    );
-                  } else {
-                    // This case might occur if the stream closes without sending data
-                    // or initialData wasn't provided and no data has arrived yet.
-                    return CircularProgressIndicator();
-                  }
-                },
-              );
-            },
-          ),
-        ],
+                        player: widget.player,
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                ),
+                PlaybackControls(),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class PlaybackControls extends StatefulWidget {
-  final Duration position;
-  final bool isPlaying;
-  final Player player;
-  final ChapterInformation currentChapter;
-
-  const PlaybackControls({
-    super.key,
-    required this.player,
-    required this.currentChapter,
-    required this.position,
-    required this.isPlaying,
-  });
-
-  void seekBack() {
-    seekOffset(-10);
-  }
-
-  void seekForward() {
-    seekOffset(10);
-  }
-
-  void seekOffset(int seconds) {
-    final currentPos = position;
-    final newPos = currentPos.inSeconds + seconds;
-
-    seek(Duration(seconds: max(0, newPos)));
-  }
-
-  void seek(Duration duration) {
-    player.seek(duration);
-  }
-
-  void seekChapter(ChapterInformation ch) {
-    final micros = (Duration(
-      microseconds: chapterInfoTimeToMicros(ch.startTime!),
-    ));
-
-    player.seek(micros);
-  }
-
-  void _seekPlayhead(double value) {
-    final double chapterStartTime = chapterInfoTimeToMicros(
-      currentChapter.startTime!,
-    ).toDouble();
-    final double chapterEndTime = chapterInfoTimeToMicros(
-      currentChapter.endTime!,
-    ).toDouble();
-
-    final micros = Duration(
-      microseconds:
-          ((chapterEndTime - chapterStartTime) * value + chapterStartTime)
-              .round(),
-    );
-    player.seek(micros);
-  }
-
-  double _getPlayheadPosition(Duration duration) {
-    if (!isPlaying) {
-      return lastPos;
-    }
-    final double chapterStartTime = chapterInfoTimeToMicros(
-      currentChapter.startTime!,
-    ).toDouble();
-    final double chapterEndTime = chapterInfoTimeToMicros(
-      currentChapter.endTime!,
-    ).toDouble();
-    final double positionMicros = duration.inMicroseconds.toDouble();
-
-    final res =
-        (positionMicros - chapterStartTime) /
-        (chapterEndTime - chapterStartTime);
-    if (res >= 0.0 || res <= 1.0) {
-      lastPos = res;
-      return res;
-    } else {
-      return lastPos;
-    }
-  }
+  const PlaybackControls({super.key});
 
   @override
   State<StatefulWidget> createState() => _PlaybackControlsState();
@@ -215,21 +136,11 @@ class _PlaybackControlsState extends State<PlaybackControls> {
     return Column(
       mainAxisAlignment: .center,
       children: [
-        Slider(
-
-              value: widget._getPlayheadPosition(widget.position),
-              min: 0,
-              max: 1.0,
-              onChanged: (value) => widget._seekPlayhead(value),
-            ), 
+        PlaybackPositionSlider(),
         Row(
           spacing: 8,
           mainAxisAlignment: .spaceBetween,
-          children: [
-            Text("00:00:00"),
-            Text("00:00:00"),
-            Text("00:00:00"),
-          ],
+          children: [ChapterStartLabel(), CurrentPositionLabelStack(), Text("abababa")],
         ),
         Row(
           mainAxisAlignment: .center,
@@ -246,23 +157,42 @@ class _PlaybackControlsState extends State<PlaybackControls> {
                   YaruIcons.fast_backward,
                   size: 30,
                 ), // Larger icon to fill the space
-                onPressed: widget.seekBack,
+                onPressed: globals.seekBack,
               ),
             ),
             SizedBox(
               width: 80, // Custom width
               height: 80, // Custom height
-              child: IconButton(
-                padding: EdgeInsets.all(
-                  12,
-                ), // Adjust padding to center the icon
-                icon: Icon(
-                  widget.isPlaying
-                      ? YaruIcons.media_pause
-                      : YaruIcons.media_play,
-                  size: 48,
-                ), // Larger icon to fill the space
-                onPressed: widget.player.playOrPause,
+              child: StreamBuilder(
+                stream: globals.player.stream.playing,
+                builder: (context, asyncSnapshot) {
+                  if (asyncSnapshot.hasData) {
+                    return IconButton(
+                      padding: EdgeInsets.all(
+                        12,
+                      ), // Adjust padding to center the icon
+                      icon: Icon(
+                        asyncSnapshot.data!
+                            ? YaruIcons.media_pause
+                            : YaruIcons.media_play,
+                        size: 48,
+                      ), // Larger icon to fill the space
+                      onPressed: globals.player.playOrPause,
+                    );
+                  }
+                  return IconButton(
+                    padding: EdgeInsets.all(
+                      12,
+                    ), // Adjust padding to center the icon
+                    icon: Icon(
+                      globals.player.state.playing
+                          ? YaruIcons.media_pause
+                          : YaruIcons.media_play,
+                      size: 48,
+                    ), // Larger icon to fill the space
+                    onPressed: globals.player.playOrPause,
+                  );
+                },
               ),
             ),
             SizedBox(
@@ -276,7 +206,7 @@ class _PlaybackControlsState extends State<PlaybackControls> {
                   YaruIcons.fast_forward,
                   size: 30,
                 ), // Larger icon to fill the space
-                onPressed: widget.seekForward,
+                onPressed: globals.seekForward,
               ),
             ),
           ],

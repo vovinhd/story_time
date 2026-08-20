@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:fl_audiobook/my_home_page.dart';
-import 'package:fl_audiobook/rounded_window.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
