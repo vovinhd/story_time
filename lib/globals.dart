@@ -7,14 +7,18 @@ import 'package:fl_audiobook/config.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 
-
 // ignore: constant_identifier_names
-const String APP_DIR = "fl_audiobookplayer"; 
+const String APP_DIR = "fl_audiobookplayer";
 
 BookFile? playingFile;
 
-final player = Player();
-Image defaultCoverImage = Image.asset("images/cover_default.png", key: UniqueKey()); 
+int resumedPosition = 0;
+
+final player = Player(configuration: PlayerConfiguration(async: false, osc:true, title: "fl_audiobook"));
+Image defaultCoverImage = Image.asset(
+  "images/cover_default.png",
+  key: UniqueKey(),
+);
 Image coverImage = (Image.asset("images/cover_default.png", key: UniqueKey()));
 bool ready = false;
 Map<String, dynamic>? tags;
@@ -24,15 +28,13 @@ List<ChapterInformation>? chapters;
 int chapterInfoTimeToMicros(String timestamp) {
   try {
     return (double.parse(timestamp) * 1_000_000).round();
-
   } catch (error) {
-    return 0; 
+    return 0;
   }
-
 }
 
 ChapterInformation getCurrentChapter() {
-  return getChapterFor(player.state.position); 
+  return getChapterFor(player.state.position);
 }
 
 ChapterInformation getChapterFor(Duration position) {
@@ -56,7 +58,9 @@ ChapterInformation getChapterFor(Duration position) {
   return nullChapterInfo;
 }
 
-
+void seekResume() async {
+  await player.seek(Duration(microseconds: resumedPosition));
+}
 
 void seekBack() {
   seekOffset(-10);
@@ -85,16 +89,13 @@ void seekChapter(ChapterInformation ch) {
   player.seek(micros);
 }
 
-
 Timer? timer;
 
 void initTimer() {
   if (timer != null && timer!.isActive) return;
 
-  timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+  timer = Timer.periodic(const Duration(seconds: 1), (timer) {
     //job
     ConfigProvider().updatePlaybackState();
   });
 }
-
-

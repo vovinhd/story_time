@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
@@ -10,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:xdg_directories/xdg_directories.dart';
 import 'package:yaru/yaru.dart';
+
+StreamSubscription? subs;  
 
 final class BookFile {
   final String name;
@@ -30,25 +33,31 @@ File? getCoverImageForFile(filename) {
 
 class BookSelectPage extends StatefulWidget {
   const new({super.key});
-
   @override
   State<BookSelectPage> createState() => _BookSelectPageState();
 }
 
 class _BookSelectPageState extends State<BookSelectPage> {
+  bool shouldTransition = false;
+
+  
+
+
   void _pickFile() async {
     PlatformFile? file = await FilePicker.pickFile();
 
     if (file != null) {
+      _openFile(BookFile(name: file.name, path: file.path!));
     } else {
       // User canceled the picker
       print("User canceled the picker");
     }
   }
 
-  void _openFile(BookFile file, {position = 0} ) async {
-    print(position);
-    final media = Media(file.path);
+  void _openFile(BookFile file, {int position = 0}) async {
+    print("opening ${file.name} at ${position}");
+    globals.resumedPosition = position;
+    final media = Media(file.path,start: Duration(microseconds: position));
     // print(media.toString());
     final canonicalPath = "\"${file.path}\"";
     globals.playingFile = file;
@@ -67,33 +76,37 @@ class _BookSelectPageState extends State<BookSelectPage> {
         "-y -i $canonicalPath -an -vcodec copy \"$coverPath\"",
       );
 
-      if (coverSess.getReturnCode() != 0) {
-      } else {
-        coverFile = File(coverPath);
-        globals.coverImage = Image.file(coverFile, key: UniqueKey());
-      }
+      coverFile = File(coverPath);
+      globals.coverImage = Image.file(coverFile, key: UniqueKey());
     } else {
       globals.coverImage = Image.file(coverFile, key: UniqueKey());
     }
-    await globals.player.open(media, play: true); 
-    await globals.player.seek(Duration(microseconds: position)); 
 
-    // print(coverSess.getReturnCode());
+
+    await globals.player.open(media, play: true);
+
+    _transition(); 
+
+  } 
+
+  
+
+  void _transition() async {
     globals.ready = true;
     globals.initTimer();
     ConfigProvider().updatePlaybackState();
-    // if (mounted) {
-    //   Navigator.of(context).push(
-    //     MaterialPageRoute<void>(
-    //       builder: (context) => PlayerPage(
-    //         player: globals.player,
-    //         chapters: globals.chapters!,
-    //         tags: globals.tags!,
-    //         cover: globals.coverImage,
-    //       ),
-    //     ),
-    //   );
-    // }
+    if (mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (context) => PlayerPage(
+            player: globals.player,
+            chapters: globals.chapters!,
+            tags: globals.tags!,
+            cover: globals.coverImage,
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -114,14 +127,16 @@ class _BookSelectPageState extends State<BookSelectPage> {
                 padding: EdgeInsets.symmetric(vertical: 16, horizontal: 4),
                 itemCount: books.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final state = books[index]; 
-                  final bookFile = BookFile(name: state.file, path: state.path); 
+                  final state = books[index];
+                  final bookFile = BookFile(name: state.file, path: state.path);
                   final coverfile = getCoverImageForFile(state.file);
                   return ListTile(
                     leading: coverfile == null
                         ? globals.defaultCoverImage
                         : Image.file(coverfile, key: UniqueKey()),
-                    title: Text("${state.title} - ${printDuration(Duration(microseconds:state.position))} "),
+                    title: Text(
+                      "${state.title} - ${printDuration(Duration(microseconds: state.position))} ",
+                    ),
                     trailing: SizedBox(
                       width: 105,
                       child: Row(
@@ -141,7 +156,9 @@ class _BookSelectPageState extends State<BookSelectPage> {
                         ],
                       ),
                     ),
-                    onTap: () => {_openFile(bookFile,position: state.position )},
+                    onTap: () => {
+                      _openFile(bookFile, position: state.position),
+                    },
                   );
                 },
               );
@@ -164,7 +181,7 @@ class _BookSelectPageState extends State<BookSelectPage> {
             ),
           ),
         ),
-        //MiniPlayer(),
+        MiniPlayer(),
       ],
     );
   }

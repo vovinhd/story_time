@@ -68,6 +68,7 @@ class PlayerPage extends StatefulWidget {
 class _PlayerPageState extends State<PlayerPage> {
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: YaruWindowTitleBar(
         onShowMenu: (p0) => {},
@@ -83,14 +84,12 @@ class _PlayerPageState extends State<PlayerPage> {
           mainAxisAlignment: .spaceAround,
           spacing: 16.0,
           children: [
-            Container(
-              key: UniqueKey(),
-              padding: EdgeInsets.all(16.0),
-              margin: EdgeInsets.all(16.0),
-              height: 300,
-              width: 300,
-              child: ClipRRect(
-                borderRadius: BorderRadiusGeometry.all(Radius.circular(8.0)),
+            Expanded(
+              child: Container(
+                key: UniqueKey(),
+                padding: EdgeInsets.all(16.0),
+                margin: EdgeInsets.all(16.0),
+                constraints: BoxConstraints.expand(),
                 child: widget.cover,
               ),
             ),
@@ -101,20 +100,17 @@ class _PlayerPageState extends State<PlayerPage> {
                 StreamBuilder(
                   stream: globals.player.stream.position,
                   builder: (context, snapshotPosition) {
-                    Duration pos; 
+                    Duration pos;
                     if (snapshotPosition.hasData) {
-                      pos = snapshotPosition.data!; 
+                      pos = snapshotPosition.data!;
                     } else {
-                      pos = globals.player.state.position; 
+                      pos = globals.player.state.position;
                     }
                     return ChapterListButton(
                       chapters: widget.chapters,
-                      currentChapter: globals.getChapterFor(
-                        pos,
-                      ),
+                      currentChapter: globals.getChapterFor(pos),
                       player: widget.player,
                     );
-                    
                   },
                 ),
                 PlaybackControls(),
@@ -137,96 +133,155 @@ class PlaybackControls extends StatefulWidget {
 class _PlaybackControlsState extends State<PlaybackControls> {
   @override
   Widget build(BuildContext context) {
-    return 
-    CallbackShortcuts(
-    bindings: <ShortcutActivator, VoidCallback>{
-      const SingleActivator(LogicalKeyboardKey.space): () {
-        print("SPACE"); 
-        globals.player.playOrPause(); 
+    return CallbackShortcuts(
+      bindings: <ShortcutActivator, VoidCallback>{
+        const SingleActivator(LogicalKeyboardKey.space): () {
+          print("SPACE");
+          globals.player.playOrPause();
+        },
       },
+      child: Column(
+        mainAxisAlignment: .center,
+        children: [
+          PlaybackPositionSlider(),
+          Row(
+            spacing: 8,
+            mainAxisAlignment: .spaceBetween,
+            children: [
+              CurrentPositionInChapterLabel(),
+              CurrentPositionLabel(),
+              EndLabel(),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: .spaceBetween,
 
-    },
-    child:
-    Column(
-      mainAxisAlignment: .center,
-      children: [
-        PlaybackPositionSlider(),
-        Row(
-          spacing: 8,
-          mainAxisAlignment: .spaceBetween,
-          children: [CurrentPositionInChapterLabel(), CurrentPositionLabel(), EndLabel()],
-        ),
-        Row(
-          mainAxisAlignment: .center,
-
-          children: [
-            SizedBox(
-              width: 60, // Custom width
-              height: 60, // Custom height
-              child: IconButton(
-                padding: EdgeInsets.all(
-                  12,
-                ), // Adjust padding to center the icon
-                icon: Icon(
-                  YaruIcons.fast_backward,
-                  size: 30,
-                ), // Larger icon to fill the space
-                onPressed: globals.seekBack,
+            children: [
+              Row(
+                children: [
+                  YaruOptionButton(
+                    onPressed: () => {},
+                    child: Icon(YaruIcons.speaker),
+                  ),
+                  YaruOptionButton(
+                    onPressed: () => {},
+                    child: Text("1x"),
+                  ),
+                ],
               ),
-            ),
-            SizedBox(
-              width: 80, // Custom width
-              height: 80, // Custom height
-              child: StreamBuilder(
-                stream: globals.player.stream.playing,
-                builder: (context, asyncSnapshot) {
-                  if (asyncSnapshot.hasData) {
-                    return IconButton(
+
+              Row(
+                mainAxisAlignment: .center,
+
+                children: [
+                  SizedBox(
+                    width: 60, // Custom width
+                    height: 60, // Custom height
+                    child: IconButton(
                       padding: EdgeInsets.all(
                         12,
                       ), // Adjust padding to center the icon
                       icon: Icon(
-                        asyncSnapshot.data!
-                            ? YaruIcons.media_pause
-                            : YaruIcons.media_play,
-                        size: 48,
+                        YaruIcons.skip_backward,
+                        size: 30,
                       ), // Larger icon to fill the space
-                      onPressed: globals.player.playOrPause,
-                    );
-                  }
-                  return IconButton(
-                    padding: EdgeInsets.all(
-                      12,
-                    ), // Adjust padding to center the icon
-                    icon: Icon(
-                      globals.player.state.playing
-                          ? YaruIcons.media_pause
-                          : YaruIcons.media_play,
-                      size: 48,
-                    ), // Larger icon to fill the space
-                    onPressed: globals.player.playOrPause,
-                  );
-                },
+                      onPressed: globals.seekBack,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 60, // Custom width
+                    height: 60, // Custom height
+                    child: IconButton(
+                      padding: EdgeInsets.all(
+                        12,
+                      ), // Adjust padding to center the icon
+                      icon: Icon(
+                        YaruIcons.fast_backward,
+                        size: 30,
+                      ), // Larger icon to fill the space
+                      onPressed: globals.seekBack,
+                    ),
+                  ),
+
+                  SizedBox(
+                    width: 80, // Custom width
+                    height: 80, // Custom height
+                    child: StreamBuilder(
+                      stream: globals.player.stream.playing,
+                      builder: (context, asyncSnapshot) {
+                        if (asyncSnapshot.hasData) {
+                          return IconButton(
+                            padding: EdgeInsets.all(
+                              12,
+                            ), // Adjust padding to center the icon
+                            icon: Icon(
+                              asyncSnapshot.data!
+                                  ? YaruIcons.media_pause
+                                  : YaruIcons.media_play,
+                              size: 48,
+                            ), // Larger icon to fill the space
+                            onPressed: globals.player.playOrPause,
+                          );
+                        }
+                        return IconButton(
+                          padding: EdgeInsets.all(
+                            12,
+                          ), // Adjust padding to center the icon
+                          icon: Icon(
+                            globals.player.state.playing
+                                ? YaruIcons.media_pause
+                                : YaruIcons.media_play,
+                            size: 48,
+                          ), // Larger icon to fill the space
+                          onPressed: globals.player.playOrPause,
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    width: 60, // Custom width
+                    height: 60, // Custom height
+                    child: IconButton(
+                      padding: EdgeInsets.all(
+                        12,
+                      ), // Adjust padding to center the icon
+                      icon: Icon(
+                        YaruIcons.fast_forward,
+                        size: 30,
+                      ), // Larger icon to fill the space
+                      onPressed: globals.seekForward,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 60, // Custom width
+                    height: 60, // Custom height
+                    child: IconButton(
+                      padding: EdgeInsets.all(
+                        12,
+                      ), // Adjust padding to center the icon
+                      icon: Icon(
+                        YaruIcons.skip_forward,
+                        size: 30,
+                      ), // Larger icon to fill the space
+                      onPressed: globals.seekForward,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            SizedBox(
-              width: 60, // Custom width
-              height: 60, // Custom height
-              child: IconButton(
-                padding: EdgeInsets.all(
-                  12,
-                ), // Adjust padding to center the icon
-                icon: Icon(
-                  YaruIcons.fast_forward,
-                  size: 30,
-                ), // Larger icon to fill the space
-                onPressed: globals.seekForward,
+              Row(
+                children: [
+                  SizedBox(width: 34,),
+                  YaruOptionButton(
+                    onPressed: () => {},
+                    child: Icon(YaruIcons.stopwatch),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-      ],
-    ));
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -264,14 +319,14 @@ class _ChapterListButtonState extends State<ChapterListButton> {
           StreamBuilder(
             stream: globals.player.stream.position,
             builder: (context, asyncSnapshot) {
-              Duration pos ;
+              Duration pos;
               if (asyncSnapshot.hasData) {
-                pos = asyncSnapshot.data!; 
-              } else { 
+                pos = asyncSnapshot.data!;
+              } else {
                 pos = globals.player.state.position;
               }
               return Text(globals.getChapterFor(pos).tags!["title"]);
-            }
+            },
           ),
         ],
       ),

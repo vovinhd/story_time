@@ -69,7 +69,7 @@ class _ExampleHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Yaru',
+      title: 'fl_audiobook',
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       themeMode: themeMode,

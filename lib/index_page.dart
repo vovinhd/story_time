@@ -1,9 +1,6 @@
-
-
 import 'package:fl_audiobook/book_select_page.dart';
 import 'package:flutter/material.dart';
 import 'package:yaru/yaru.dart';
-
 
 import 'globals.dart' as globals;
 
@@ -17,34 +14,78 @@ class IndexPage extends StatefulWidget {
 }
 
 class _IndexPageState extends State<IndexPage> {
-
-
-
-
   @override
   void dispose() {
     globals.player.dispose();
     super.dispose();
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       key: _scaffoldKey,
       appBar: YaruWindowTitleBar(
         onShowMenu: (p0) => {},
         border: BorderSide.none,
-        leading:  null,
+        leading: IconButton(
+          onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+          icon: Icon(YaruIcons.menu),
+        ),
         title: Text("Player"),
-    
       ),
-      drawer: Drawer(child: Text("Player")),
-      body: Container(
-        child: BookSelectPage()
+      drawer: Drawer(child: DrawerContents(), width: 200,),
+      body: Container(child: BookSelectPage()),
+    );
+  }
+}
+
+class DrawerContents extends StatelessWidget {
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        child: Column(
+          crossAxisAlignment: .center,
+          spacing: 32,
+          children: [
+            Container(
+              padding: EdgeInsets.all(32),
+              child: SizedBox(
+                height: 50,
+                width: 50,
+                child: Image.asset("images/app_icon.png"),
+              ),
+            ),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: .stretch,
+                children: [
+                  YaruNavigationRailItem(
+                    icon: Icon(YaruIcons.settings),
+                    style: YaruNavigationRailStyle.labelledExtended,
+                    label: Text("Preferences"),
+                    extendedSelectedIndicator: true,
+                    onTap: () => {print("navigate to preferences")},
+                  ),
+                  YaruNavigationRailItem(
+                    icon: Icon(YaruIcons.information),
+                    style: YaruNavigationRailStyle.labelledExtended,
+                    label: Text("About"),
+                    extendedSelectedIndicator: true,
+                    onTap: () => {showAboutDialog(context: context, applicationVersion: "0.1.0", applicationIcon: Image.asset("images/app_icon.png"), applicationLegalese: "This software is very cool.")},
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.only(bottom: 16),
+              child: Text("version 0.1.0", style: TextStyle(
+      color: const Color.fromARGB(255, 97, 97, 97),
+   ),),)
+          ],
+        ),
       ),
     );
   }
