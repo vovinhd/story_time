@@ -24,7 +24,12 @@ String printDuration(Duration duration) {
 }
 
 int chapterInfoTimeToMicros(String timestamp) {
-  return (double.parse(timestamp) * 1_000_000).round();
+  try {
+    return (double.parse(timestamp) * 1_000_000).round();
+  } catch (error) {
+    print(error); 
+    return 0; 
+  }
 }
 
 double lastPos = 0.0;

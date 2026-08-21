@@ -1,0 +1,110 @@
+{
+      'mpris:trackid': <objectpath '/org/videolan/vlc/playlist/167'>,
+      'xesam:url': <'file:///home/vovin/Music/Libation/Books/A%20Wizard%20of%20Earthsea%20%5BB004V4KA9C%5D/A%20Wizard%20of%20Earthsea%3A%20The%20Earthsea%20Cycle%2C%20Book%201%20%5BB004V4KA9C%5D.m4b'>,
+      'xesam:title': <'A Wizard of Earthsea'>,
+      'xesam:artist': <['Ursula K. Le Guin']>,
+      'xesam:album': <'A Wizard of Earthsea (Unabridged)'>,
+      'vlc:time': <uint32 26253>,
+      'mpris:length': <int64 26253408333>,
+      'xesam:genre': <['Science Fiction & Fantasy, Literatur & Belletristik']>,
+      'xesam:contentCreated': <'2009'>,
+      'mpris:artUrl': <'file:///home/vovin/.cache/vlc/art/artistalbum/Ursula%20K.%20Le%20Guin/A%20Wizard%20of%20Earthsea%20%28Unabridged%29/art.jpg'>,
+      'xesam:comment': <['When Sparrowhawk casts a spell that saves his village from destruction at the hands of the invading Kargs, Ogion, the Mage of Re Albi, encourages the boy to apprentice himself in the art of wizardry. So, at the age of 13, the boy receives his true name - Ged - and gives himself over to the gentle tutelage of the Master Ogion. But impatient with the slowness of his studies and infatuated with glory, Ged embarks for the Island of Roke, where the highest arts of wizardry are taught.']>,
+      'vlc:length': <int64 26253408>,
+      'vlc:publisher': <3>
+}
+
+
+   variant       array [
+         dict entry(
+            string "mpris:trackid"
+            variant                object path "/org/videolan/vlc/playlist/204"
+         )
+         dict entry(
+            string "xesam:url"
+            variant                string "file:///home/vovin/Music/Libation/Books/Against%20a%20Dark%20Background%20%5BB008K7TVFU%5D/Against%20a%20Dark%20Background%20%5BB008K7TVFU%5D.m4b"
+         )
+         dict entry(
+            string "xesam:title"
+            variant                string "Against a Dark Background"
+         )
+         dict entry(
+            string "xesam:artist"
+            variant                array [
+                  string "Iain M. Banks"
+               ]
+         )
+         dict entry(
+            string "xesam:album"
+            variant                string "Against a Dark Background (Unabridged)"
+         )
+         dict entry(
+            string "vlc:time"
+            variant                uint32 65972
+         )
+         dict entry(
+            string "mpris:length"
+            variant                int64 65972116666
+         )
+         dict entry(
+            string "xesam:genre"
+            variant                array [
+                  string "Science Fiction"
+               ]
+         )
+         dict entry(
+            string "xesam:contentCreated"
+            variant                string "2012"
+         )
+         dict entry(
+            string "mpris:artUrl"
+            variant                string "file:///home/vovin/.cache/vlc/art/artistalbum/Iain%20M.%20Banks/Against%20a%20Dark%20Background%20%28Unabridged%29/art.jpg"
+         )
+         dict entry(
+            string "xesam:comment"
+            variant                array [
+                  string "Sharrow was once the leader of a personality-attuned combat team in one of the sporadic little commercial wars in the civilisation based around the planet Golter. Now she is hunted by the Huhsz, a religious cult which believes that she is the last obstacle before the faith's apotheosis, and her only hope of escape is to find the last of the apocalyptically powerful Lazy Guns before the Huhsz find her."
+               ]
+         )
+         dict entry(
+            string "vlc:length"
+            variant                int64 65972116
+         )
+         dict entry(
+            string "vlc:publisher"
+            variant                int32 3
+         )
+
+
+   variant       array [
+         dict entry(
+            string "mpris:trackid"
+            variant                object path "/io/github/fl_audiobook/book/944611663"
+         )
+         dict entry(
+            string "xesam:title"
+            variant                string "Chapter 1"
+         )
+         dict entry(
+            string "xesam:artist"
+            variant                array [
+                  string "Andy Weir"
+               ]
+         )
+         dict entry(
+            string "xesam:album"
+            variant                string "Artemis (Unabridged)"
+         )
+         dict entry(
+            string "mpris:length"
+            variant                int64 2346422993
+         )
+         dict entry(
+            string "xesam:url"
+            variant                string "file:///home/vovin/Music/Libation/Books/Artemis [B076PLHRT1]/Artemis [B076PLHRT1].m4b"
+         )
+         dict entry(
+            string "mpris:artUrl"
+            variant                string "file:///home/vovin/.local/share/fl_audiobookplayer/Artemis [B076PLHRT1].m4b.jpg"
+         )
+      ]

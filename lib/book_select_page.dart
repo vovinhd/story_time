@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dbus/dbus.dart';
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fl_audiobook/config.dart';
@@ -12,24 +13,33 @@ import 'package:media_kit/media_kit.dart';
 import 'package:xdg_directories/xdg_directories.dart';
 import 'package:yaru/yaru.dart';
 
-StreamSubscription? subs;  
+StreamSubscription? subs;
 
 final class BookFile {
   final String name;
   final String path;
 
   new({required this.name, required this.path});
-}
+  File? get coverImage {
+    final coverPath = "${dataHome.path}/${globals.APP_DIR}/${name}.jpg";
+    var coverFile = File(coverPath);
+    if (coverFile.existsSync()) {
+      return coverFile;
+    }
 
-File? getCoverImageForFile(filename) {
-  final coverPath = "${dataHome.path}/${globals.APP_DIR}/${filename}.jpg";
-  var coverFile = File(coverPath);
-  if (coverFile.existsSync()) {
-    return coverFile;
+    return null;
   }
-
-  return null;
 }
+
+// File? getCoverImageForFile(filename) {
+//   final coverPath = "${dataHome.path}/${globals.APP_DIR}/${filename}.jpg";
+//   var coverFile = File(coverPath);
+//   if (coverFile.existsSync()) {
+//     return coverFile;
+//   }
+
+//   return null;
+// }
 
 class BookSelectPage extends StatefulWidget {
   const new({super.key});
@@ -39,9 +49,6 @@ class BookSelectPage extends StatefulWidget {
 
 class _BookSelectPageState extends State<BookSelectPage> {
   bool shouldTransition = false;
-
-  
-
 
   void _pickFile() async {
     PlatformFile? file = await FilePicker.pickFile();
@@ -57,7 +64,7 @@ class _BookSelectPageState extends State<BookSelectPage> {
   void _openFile(BookFile file, {int position = 0}) async {
     print("opening ${file.name} at ${position}");
     globals.resumedPosition = position;
-    final media = Media(file.path,start: Duration(microseconds: position));
+    final media = Media(file.path, start: Duration(microseconds: position));
     // print(media.toString());
     final canonicalPath = "\"${file.path}\"";
     globals.playingFile = file;
@@ -67,7 +74,7 @@ class _BookSelectPageState extends State<BookSelectPage> {
     globals.chapters = info?.chapters;
     globals.tags = info?.tags;
 
-    var coverFile = getCoverImageForFile(file.name);
+    var coverFile = file.coverImage;
 
     if (coverFile == null) {
       final coverPath = "${dataHome.path}/${globals.APP_DIR}/${file.name}.jpg";
@@ -82,14 +89,10 @@ class _BookSelectPageState extends State<BookSelectPage> {
       globals.coverImage = Image.file(coverFile, key: UniqueKey());
     }
 
-
     await globals.player.open(media, play: true);
 
-    _transition(); 
-
-  } 
-
-  
+    _transition();
+  }
 
   void _transition() async {
     globals.ready = true;
@@ -107,6 +110,22 @@ class _BookSelectPageState extends State<BookSelectPage> {
         ),
       );
     }
+
+    // emit the dbus state change
+
+    globals.mediaPlayer2.emitPropertiesChanged(
+      "org.mpris.MediaPlayer2.Player",
+      changedProperties: {
+        "Metadata": DBusDict(
+          DBusSignature.string,
+          DBusSignature.variant,
+          globals.mediaPlayer2.buildMetadata()!,
+        ),
+        "PlaybackStatus": DBusString("Playing"),
+        "Position": DBusInt64(globals.player.state.position.inMicroseconds) 
+      },
+      invalidatedProperties: ["PlaybackStatus", "MetaData", "Position"],
+    );
   }
 
   @override
@@ -129,7 +148,7 @@ class _BookSelectPageState extends State<BookSelectPage> {
                 itemBuilder: (BuildContext context, int index) {
                   final state = books[index];
                   final bookFile = BookFile(name: state.file, path: state.path);
-                  final coverfile = getCoverImageForFile(state.file);
+                  final coverfile = bookFile.coverImage;
                   return ListTile(
                     leading: coverfile == null
                         ? globals.defaultCoverImage

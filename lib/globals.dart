@@ -1,20 +1,30 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:dbus/dbus.dart';
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:fl_audiobook/book_select_page.dart';
 import 'package:fl_audiobook/config.dart';
+import 'package:fl_audiobook/media_player2.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 
 // ignore: constant_identifier_names
 const String APP_DIR = "fl_audiobookplayer";
 
+MediaPlayer2 mediaPlayer2 = MediaPlayer2();
+
 BookFile? playingFile;
 
 int resumedPosition = 0;
 
-final player = Player(configuration: PlayerConfiguration(async: false, osc:true, title: "fl_audiobook"));
+final player = Player(
+  configuration: PlayerConfiguration(
+    async: false,
+    osc: true,
+    title: "fl_audiobook",
+  ),
+);
 Image defaultCoverImage = Image.asset(
   "images/cover_default.png",
   key: UniqueKey(),
@@ -22,6 +32,10 @@ Image defaultCoverImage = Image.asset(
 Image coverImage = (Image.asset("images/cover_default.png", key: UniqueKey()));
 bool ready = false;
 Map<String, dynamic>? tags;
+
+// final subPositiong = player.stream.position.listen((position) {
+
+// });
 
 List<ChapterInformation>? chapters;
 
@@ -97,5 +111,17 @@ void initTimer() {
   timer = Timer.periodic(const Duration(seconds: 1), (timer) {
     //job
     ConfigProvider().updatePlaybackState();
+
+    // todo factor out into its own thing
+
+    if (player.state.playing) {
+      mediaPlayer2.emitPropertiesChanged(
+        "org.mpris.MediaPlayer2.Player",
+        changedProperties: {
+          "Position": DBusInt64(player.state.position.inMicroseconds),
+        },
+        invalidatedProperties: ["Position"],
+      );
+    }
   });
 }

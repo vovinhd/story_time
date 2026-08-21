@@ -1,0 +1,93 @@
+// This file was generated using the following command and may be overwritten.
+// dart-dbus generate-remote-object org.mpris.MediaPlayer2.TrackList.xml
+
+import 'dart:io';
+import 'package:dbus/dbus.dart';
+
+/// Signal data for org.mpris.MediaPlayer2.TrackList.TrackListReplaced.
+class Track_List_InterfaceTrackListReplaced extends DBusSignal {
+  List<DBusObjectPath> get Tracks => values[0].asObjectPathArray().toList();
+  DBusObjectPath get CurrentTrack => values[1].asObjectPath();
+
+  Track_List_InterfaceTrackListReplaced(DBusSignal signal) : super(sender: signal.sender, path: signal.path, interface: signal.interface, name: signal.name, values: signal.values);
+}
+
+/// Signal data for org.mpris.MediaPlayer2.TrackList.TrackAdded.
+class Track_List_InterfaceTrackAdded extends DBusSignal {
+  Map<String, DBusValue> get Metadata => values[0].asStringVariantDict();
+  DBusObjectPath get AfterTrack => values[1].asObjectPath();
+
+  Track_List_InterfaceTrackAdded(DBusSignal signal) : super(sender: signal.sender, path: signal.path, interface: signal.interface, name: signal.name, values: signal.values);
+}
+
+/// Signal data for org.mpris.MediaPlayer2.TrackList.TrackRemoved.
+class Track_List_InterfaceTrackRemoved extends DBusSignal {
+  DBusObjectPath get TrackId => values[0].asObjectPath();
+
+  Track_List_InterfaceTrackRemoved(DBusSignal signal) : super(sender: signal.sender, path: signal.path, interface: signal.interface, name: signal.name, values: signal.values);
+}
+
+/// Signal data for org.mpris.MediaPlayer2.TrackList.TrackMetadataChanged.
+class Track_List_InterfaceTrackMetadataChanged extends DBusSignal {
+  DBusObjectPath get TrackId => values[0].asObjectPath();
+  Map<String, DBusValue> get Metadata => values[1].asStringVariantDict();
+
+  Track_List_InterfaceTrackMetadataChanged(DBusSignal signal) : super(sender: signal.sender, path: signal.path, interface: signal.interface, name: signal.name, values: signal.values);
+}
+
+class Track_List_Interface extends DBusRemoteObject {
+  /// Stream of org.mpris.MediaPlayer2.TrackList.TrackListReplaced signals.
+  late final Stream<Track_List_InterfaceTrackListReplaced> trackListReplaced;
+
+  /// Stream of org.mpris.MediaPlayer2.TrackList.TrackAdded signals.
+  late final Stream<Track_List_InterfaceTrackAdded> trackAdded;
+
+  /// Stream of org.mpris.MediaPlayer2.TrackList.TrackRemoved signals.
+  late final Stream<Track_List_InterfaceTrackRemoved> trackRemoved;
+
+  /// Stream of org.mpris.MediaPlayer2.TrackList.TrackMetadataChanged signals.
+  late final Stream<Track_List_InterfaceTrackMetadataChanged> trackMetadataChanged;
+
+  Track_List_Interface(DBusClient client, String destination, {DBusObjectPath path = const DBusObjectPath.unchecked('/Track_List_Interface')}) : super(client, name: destination, path: path) {
+    trackListReplaced = DBusRemoteObjectSignalStream(object: this, interface: 'org.mpris.MediaPlayer2.TrackList', name: 'TrackListReplaced', signature: DBusSignature('aoo')).asBroadcastStream().map((signal) => Track_List_InterfaceTrackListReplaced(signal));
+
+    trackAdded = DBusRemoteObjectSignalStream(object: this, interface: 'org.mpris.MediaPlayer2.TrackList', name: 'TrackAdded', signature: DBusSignature('a{sv}o')).asBroadcastStream().map((signal) => Track_List_InterfaceTrackAdded(signal));
+
+    trackRemoved = DBusRemoteObjectSignalStream(object: this, interface: 'org.mpris.MediaPlayer2.TrackList', name: 'TrackRemoved', signature: DBusSignature('o')).asBroadcastStream().map((signal) => Track_List_InterfaceTrackRemoved(signal));
+
+    trackMetadataChanged = DBusRemoteObjectSignalStream(object: this, interface: 'org.mpris.MediaPlayer2.TrackList', name: 'TrackMetadataChanged', signature: DBusSignature('oa{sv}')).asBroadcastStream().map((signal) => Track_List_InterfaceTrackMetadataChanged(signal));
+  }
+
+  /// Gets org.mpris.MediaPlayer2.TrackList.Tracks
+  Future<List<DBusObjectPath>> getTracks() async {
+    var value = await getProperty('org.mpris.MediaPlayer2.TrackList', 'Tracks', signature: DBusSignature('ao'));
+    return value.asObjectPathArray().toList();
+  }
+
+  /// Gets org.mpris.MediaPlayer2.TrackList.CanEditTracks
+  Future<bool> getCanEditTracks() async {
+    var value = await getProperty('org.mpris.MediaPlayer2.TrackList', 'CanEditTracks', signature: DBusSignature('b'));
+    return value.asBoolean();
+  }
+
+  /// Invokes org.mpris.MediaPlayer2.TrackList.GetTracksMetadata()
+  Future<List<Map<String, DBusValue>>> callGetTracksMetadata(List<DBusObjectPath> TrackIds, {bool noAutoStart = false, bool allowInteractiveAuthorization = false}) async {
+    var result = await callMethod('org.mpris.MediaPlayer2.TrackList', 'GetTracksMetadata', [DBusArray.objectPath(TrackIds)], replySignature: DBusSignature('aa{sv}'), noAutoStart: noAutoStart, allowInteractiveAuthorization: allowInteractiveAuthorization);
+    return result.returnValues[0].asArray().map((child) => child.asStringVariantDict()).toList();
+  }
+
+  /// Invokes org.mpris.MediaPlayer2.TrackList.AddTrack()
+  Future<void> callAddTrack(String Uri, DBusObjectPath AfterTrack, bool SetAsCurrent, {bool noAutoStart = false, bool allowInteractiveAuthorization = false}) async {
+    await callMethod('org.mpris.MediaPlayer2.TrackList', 'AddTrack', [DBusString(Uri), AfterTrack, DBusBoolean(SetAsCurrent)], replySignature: DBusSignature(''), noAutoStart: noAutoStart, allowInteractiveAuthorization: allowInteractiveAuthorization);
+  }
+
+  /// Invokes org.mpris.MediaPlayer2.TrackList.RemoveTrack()
+  Future<void> callRemoveTrack(DBusObjectPath TrackId, {bool noAutoStart = false, bool allowInteractiveAuthorization = false}) async {
+    await callMethod('org.mpris.MediaPlayer2.TrackList', 'RemoveTrack', [TrackId], replySignature: DBusSignature(''), noAutoStart: noAutoStart, allowInteractiveAuthorization: allowInteractiveAuthorization);
+  }
+
+  /// Invokes org.mpris.MediaPlayer2.TrackList.GoTo()
+  Future<void> callGoTo(DBusObjectPath TrackId, {bool noAutoStart = false, bool allowInteractiveAuthorization = false}) async {
+    await callMethod('org.mpris.MediaPlayer2.TrackList', 'GoTo', [TrackId], replySignature: DBusSignature(''), noAutoStart: noAutoStart, allowInteractiveAuthorization: allowInteractiveAuthorization);
+  }
+}
