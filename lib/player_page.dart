@@ -7,6 +7,7 @@ import 'package:fl_audiobook/time_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:popover/popover.dart';
 import 'package:yaru/yaru.dart';
 
 import "globals.dart" as globals;
@@ -165,7 +166,21 @@ class _PlaybackControlsState extends State<PlaybackControls> {
               Row(
                 children: [
                   YaruOptionButton(
-                    onPressed: () => {},
+                    onPressed: () {
+
+                    showPopover(
+                      context: context,
+                      bodyBuilder: (context) => const VolumeSlider(),
+                      onPop: () => print('Popover was popped!'),
+                      direction: PopoverDirection.bottom,
+                      backgroundColor: YaruColors.coolGrey,
+                      width: 50,
+                      height: 200,
+                      arrowHeight: 0,
+                      arrowWidth: 0,
+                    );
+
+                    },
                     child: Icon(YaruIcons.speaker),
                   ),
                   YaruOptionButton(
@@ -190,7 +205,7 @@ class _PlaybackControlsState extends State<PlaybackControls> {
                         YaruIcons.skip_backward,
                         size: 30,
                       ), // Larger icon to fill the space
-                      onPressed: globals.seekBack,
+                      onPressed: globals.seekLastChapter,
                     ),
                   ),
                   SizedBox(
@@ -268,7 +283,7 @@ class _PlaybackControlsState extends State<PlaybackControls> {
                         YaruIcons.skip_forward,
                         size: 30,
                       ), // Larger icon to fill the space
-                      onPressed: globals.seekForward,
+                      onPressed: globals.seekNextChapter,
                     ),
                   ),
                 ],
@@ -288,6 +303,20 @@ class _PlaybackControlsState extends State<PlaybackControls> {
       ),
     );
   }
+}
+
+class VolumeSlider extends StatelessWidget {
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return 
+      RotatedBox(
+        quarterTurns: 1, child: Slider(value: 0.0, onChanged: (value) {})
+      ); 
+  }
+
+  
 }
 
 class ChapterListButton extends StatefulWidget {

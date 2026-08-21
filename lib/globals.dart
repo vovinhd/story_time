@@ -6,6 +6,7 @@ import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:fl_audiobook/book_select_page.dart';
 import 'package:fl_audiobook/config.dart';
 import 'package:fl_audiobook/media_player2.dart';
+import 'package:fl_audiobook/time_display.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 
@@ -76,6 +77,10 @@ void seekResume() async {
   await player.seek(Duration(microseconds: resumedPosition));
 }
 
+void seekLastChapter() {
+  seekOffset(-timeInChapter(player.state.position).inMicroseconds);
+}
+
 void seekBack() {
   seekOffset(-10);
 }
@@ -83,6 +88,10 @@ void seekBack() {
 void seekForward() {
   seekOffset(10);
 }
+void seekNextChapter() {
+  seekOffset(timeLeftInChapter(player.state.position).inMicroseconds);
+}
+
 
 void seekOffset(int seconds) {
   final currentPos = player.state.position;
