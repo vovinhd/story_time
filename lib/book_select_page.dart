@@ -126,6 +126,7 @@ class _BookSelectPageState extends State<BookSelectPage> {
       },
       invalidatedProperties: ["PlaybackStatus", "MetaData", "Position"],
     );
+    globals.mediaPlayer2.emitSeeked(globals.player.state.position.inMicroseconds);
   }
 
   @override

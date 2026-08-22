@@ -108,3 +108,16 @@
             variant                string "file:///home/vovin/.local/share/fl_audiobookplayer/Artemis [B076PLHRT1].m4b.jpg"
          )
       ]
+
+
+
+method call time=1787384790.321463 sender=:1.38 -> destination=org.mpris.MediaPlayer2.fl_audiobook serial=3355 path=/org/mpris/MediaPlayer2; interface=org.freedesktop.DBus.Properties; member=GetAll
+   string "org.mpris.MediaPlayer2.Player"
+error time=1787384790.324551 sender=:1.622 -> destination=:1.10 error_name=org.freedesktop.DBus.Error.UnknownObject reply_serial=62
+error time=1787384790.324629 sender=:1.622 -> destination=:1.5 error_name=org.freedesktop.DBus.Error.UnknownObject reply_serial=47
+error time=1787384790.324740 sender=:1.622 -> destination=:1.32 error_name=org.freedesktop.DBus.Error.UnknownObject reply_serial=1899
+error time=1787384790.324824 sender=:1.622 -> destination=:1.32 error_name=org.freedesktop.DBus.Error.UnknownObject reply_serial=1900
+error time=1787384790.324933 sender=:1.622 -> destination=:1.38 error_name=org.freedesktop.DBus.Error.UnknownObject reply_serial=3354
+error time=1787384790.325066 sender=:1.622 -> destination=:1.38 error_name=org.freedesktop.DBus.Error.UnknownObject reply_serial=3355
+method call time=1787384790.325071 sender=:1.32 -> destination=org.freedesktop.DBus serial=1901 path=/org/freedesktop/DBus; interface=org.freedesktop.DBus; member=RemoveMatch
+   string "type='signal',sender='org.freedesktop.DBus',interface='org.freedesktop.DBus',member='NameOwnerChanged',arg0='org.mpris.MediaPlayer2.fl_audiobook'"

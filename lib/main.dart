@@ -49,8 +49,10 @@ Future<void> main() async {
   // });
 
   await client.requestName('org.mpris.MediaPlayer2.fl_audiobook');
-
   await client.registerObject(globals.mediaPlayer2);
+  // client.emitSignal('org.freedesktop.DBus.ObjectManager', 'InterfacesAdded',
+  //       [path, encodeInterfacesAndProperties(interfacesAndProperties)])
+
   // await client.registerObject(wrappedplayerInterface);
 
   var count = 0;
@@ -59,6 +61,18 @@ Future<void> main() async {
   //   dbusObject.emitSignal('com.canonical.DBusDart', 'Ping', [DBusUint64(count)]);
   //   count++;
   // });
+
+  globals.mediaPlayer2.emitPropertiesChanged(
+    "org.mpris.MediaPlayer2", 
+    changedProperties: {
+
+    }, 
+    invalidatedProperties: []
+  );
+
+
+  // client.callMethod(path: DBusObjectPath("/org/freedesktop/DBus"), name: )
+
 
   final subPlaying = globals.player.stream.playing.listen((playing) {
     print("hi");
