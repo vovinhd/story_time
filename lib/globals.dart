@@ -77,8 +77,23 @@ void seekResume() async {
   await player.seek(Duration(microseconds: resumedPosition));
 }
 
-void seekLastChapter() {
-  seekOffset(-timeInChapter(player.state.position).inMicroseconds);
+final skipbackTime = 2;
+// bad name. skips back to chapter start if already playing and _then_ back to the previous one
+void seekLastChapter() async {
+  var timeIn = timeInChapter(player.state.position);
+
+  var pos = player.state.position;
+
+  if (timeIn.inSeconds < skipbackTime) {
+    //await player.seek(player.state.position - Duration(seconds: skipbackTime));
+
+    timeIn = timeInChapter(
+      player.state.position - Duration(seconds: skipbackTime),
+    );
+    player.seek(pos - timeIn - Duration(seconds: skipbackTime));
+  } else {
+    player.seek(pos - timeIn + Duration(milliseconds: 1));
+  }
 }
 
 void seekBack() {
@@ -88,10 +103,13 @@ void seekBack() {
 void seekForward() {
   seekOffset(10);
 }
-void seekNextChapter() {
-  seekOffset(timeLeftInChapter(player.state.position).inMicroseconds);
-}
 
+void seekNextChapter() {
+  var timeLeft = timeLeftInChapter(player.state.position);
+  player.seek(player.state.position - timeLeft);
+
+  //seekOffset(timeLeftInChapter(player.state.position).inMicroseconds);
+}
 
 void seekOffset(int seconds) {
   final currentPos = player.state.position;

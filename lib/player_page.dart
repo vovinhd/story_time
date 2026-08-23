@@ -1,9 +1,7 @@
-import 'dart:math';
-import 'dart:ui';
-
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:fl_audiobook/playback_position_slider.dart';
 import 'package:fl_audiobook/time_display.dart';
+import 'package:fl_audiobook/timer_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_portal/flutter_portal.dart';
@@ -18,14 +16,6 @@ import "globals.dart" as globals;
 
 final GlobalKey<_PlaybackControlsState> _playbackControlsState =
     GlobalKey(); // Create a key
-
-String printDuration(Duration duration) {
-  String negativeSign = duration.isNegative ? '-' : '';
-  String twoDigits(int n) => n.toString().padLeft(2, "0");
-  String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60).abs());
-  String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60).abs());
-  return "$negativeSign${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
-}
 
 int chapterInfoTimeToMicros(String timestamp) {
   try {
@@ -202,6 +192,7 @@ class _PlaybackControlsState extends State<PlaybackControls> {
 
             children: [
               Row(
+                spacing: 8.0,
                 children: [
                   PortalTarget(
                     visible: showVolumeOptions,
@@ -220,30 +211,7 @@ class _PlaybackControlsState extends State<PlaybackControls> {
                             showVolumeOptions = true;
                           });
                         },
-                        child: StreamBuilder(
-                          stream: globals.player.stream.volume,
-                          builder: (context, asyncSnapshot) {
-                            var icon = YaruIcons.speaker;
-                            if (asyncSnapshot.hasData) {
-                              final volumeBracket = fromVolume(
-                                asyncSnapshot.data!,
-                              );
-                              switch (volumeBracket) {
-                                case (VolumeBracket.overamp):
-                                  icon = YaruIcons.speaker_overamplified;
-                                case (VolumeBracket.high):
-                                  icon = YaruIcons.speaker_high;
-                                case (VolumeBracket.med):
-                                  icon = YaruIcons.speaker_medium;
-                                case (VolumeBracket.low):
-                                  icon = YaruIcons.speaker_low;
-                                case (VolumeBracket.mute):
-                                  icon = YaruIcons.speaker_muted;
-                              }
-                            }
-                            return Icon(icon);
-                          },
-                        ),
+                        child: VolumeIcon(),
                       ),
                     ),
                   ),
@@ -258,135 +226,45 @@ class _PlaybackControlsState extends State<PlaybackControls> {
 
                     child: Tooltip(
                       message: "playback speed",
-                      child: YaruOptionButton(
-                        onPressed: () {
-                          setState(() {
-                            showRateOptions = true;
-                          });
-                        },
-                        child: Text("1x"),
+                      child: SizedBox(
+                        width: 64,
+                        child: YaruOptionButton(
+                          onPressed: () {
+                            setState(() {
+                              showRateOptions = true;
+                            });
+                          },
+                          child: StreamBuilder(
+                            stream: globals.player.stream.rate,
+                            builder: (context, asyncSnapshot) {
+                              double rate = globals.player.state.rate; 
+                              if (asyncSnapshot.hasData) {
+                                rate = asyncSnapshot.data!; 
+                              }
+                        
+                              var label = rate.toStringAsFixed(2);
+                        
+                              return Text("${label}x", softWrap: false,);
+                            }
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
 
-              Row(
-                mainAxisAlignment: .center,
-
-                children: [
-                  SizedBox(
-                    width: 60, // Custom width
-                    height: 60, // Custom height
-                    child: IconButton(
-                      tooltip: "skip to last chapter",
-
-                      padding: EdgeInsets.all(
-                        12,
-                      ), // Adjust padding to center the icon
-                      icon: Icon(
-                        YaruIcons.skip_backward,
-                        size: 30,
-                      ), // Larger icon to fill the space
-                      onPressed: globals.seekLastChapter,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 60, // Custom width
-                    height: 60, // Custom height
-                    child: IconButton(
-                      tooltip: "skip back",
-                      padding: EdgeInsets.all(
-                        12,
-                      ), // Adjust padding to center the icon
-                      icon: Icon(
-                        YaruIcons.fast_backward,
-                        size: 30,
-                      ), // Larger icon to fill the space
-                      onPressed: globals.seekBack,
-                    ),
-                  ),
-
-                  SizedBox(
-                    width: 80, // Custom width
-                    height: 80, // Custom height
-                    child: StreamBuilder(
-                      stream: globals.player.stream.playing,
-                      builder: (context, asyncSnapshot) {
-                        if (asyncSnapshot.hasData) {
-                          return IconButton(
-                            tooltip: asyncSnapshot.data! ? "pause" : "play",
-
-                            padding: EdgeInsets.all(
-                              12,
-                            ), // Adjust padding to center the icon
-                            icon: Icon(
-                              asyncSnapshot.data!
-                                  ? YaruIcons.media_pause
-                                  : YaruIcons.media_play,
-                              size: 48,
-                            ), // Larger icon to fill the space
-                            onPressed: globals.player.playOrPause,
-                          );
-                        }
-                        return IconButton(
-                          padding: EdgeInsets.all(
-                            12,
-                          ), // Adjust padding to center the icon
-                          icon: Icon(
-                            globals.player.state.playing
-                                ? YaruIcons.media_pause
-                                : YaruIcons.media_play,
-                            size: 48,
-                          ), // Larger icon to fill the space
-                          onPressed: globals.player.playOrPause,
-                        );
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    width: 60, // Custom width
-                    height: 60, // Custom height
-                    child: IconButton(
-                      tooltip: "skip forwards",
-
-                      padding: EdgeInsets.all(
-                        12,
-                      ), // Adjust padding to center the icon
-                      icon: Icon(
-                        YaruIcons.fast_forward,
-                        size: 30,
-                      ), // Larger icon to fill the space
-                      onPressed: globals.seekForward,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 60, // Custom width
-                    height: 60, // Custom height
-                    child: IconButton(
-                      tooltip: "skip to next chapter",
-
-                      padding: EdgeInsets.all(
-                        12,
-                      ), // Adjust padding to center the icon
-                      icon: Icon(
-                        YaruIcons.skip_forward,
-                        size: 30,
-                      ), // Larger icon to fill the space
-                      onPressed: globals.seekNextChapter,
-                    ),
-                  ),
-                ],
-              ),
+              TrackControls(),
               Row(
                 children: [
-                  SizedBox(width: 34),
+                  SizedBox(width: 64),
 
                   PortalTarget(
                     visible: showTimerOptions,
                     anchor: const Aligned(
-                      follower: Alignment.bottomCenter,
-                      target: Alignment.topCenter,
+                      follower: Alignment.bottomRight,
+                      target: Alignment.topRight,
+                      offset: Offset(0, -8),
                     ),
                     portalFollower: TimerOptions(),
 
@@ -408,6 +286,157 @@ class _PlaybackControlsState extends State<PlaybackControls> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class TrackControls extends StatelessWidget {
+  const new({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: .center,
+    
+      children: [
+        SizedBox(
+          width: 60, // Custom width
+          height: 60, // Custom height
+          child: IconButton(
+            tooltip: "skip to last chapter",
+    
+            padding: EdgeInsets.all(
+              12,
+            ), // Adjust padding to center the icon
+            icon: Icon(
+              YaruIcons.skip_backward,
+              size: 30,
+            ), // Larger icon to fill the space
+            onPressed: globals.seekLastChapter,
+          ),
+        ),
+        SizedBox(
+          width: 60, // Custom width
+          height: 60, // Custom height
+          child: IconButton(
+            tooltip: "skip back",
+            padding: EdgeInsets.all(
+              12,
+            ), // Adjust padding to center the icon
+            icon: Icon(
+              YaruIcons.fast_backward,
+              size: 30,
+            ), // Larger icon to fill the space
+            onPressed: globals.seekBack,
+          ),
+        ),
+    
+        SizedBox(
+          width: 80, // Custom width
+          height: 80, // Custom height
+          child: StreamBuilder(
+            stream: globals.player.stream.playing,
+            builder: (context, asyncSnapshot) {
+              if (asyncSnapshot.hasData) {
+                return IconButton(
+                  tooltip: asyncSnapshot.data! ? "pause" : "play",
+    
+                  padding: EdgeInsets.all(
+                    12,
+                  ), // Adjust padding to center the icon
+                  icon: Icon(
+                    asyncSnapshot.data!
+                        ? YaruIcons.media_pause
+                        : YaruIcons.media_play,
+                    size: 48,
+                  ), // Larger icon to fill the space
+                  onPressed: globals.player.playOrPause,
+                );
+              }
+              return IconButton(
+                padding: EdgeInsets.all(
+                  12,
+                ), // Adjust padding to center the icon
+                icon: Icon(
+                  globals.player.state.playing
+                      ? YaruIcons.media_pause
+                      : YaruIcons.media_play,
+                  size: 48,
+                ), // Larger icon to fill the space
+                onPressed: globals.player.playOrPause,
+              );
+            },
+          ),
+        ),
+        SizedBox(
+          width: 60, // Custom width
+          height: 60, // Custom height
+          child: IconButton(
+            tooltip: "skip forwards",
+    
+            padding: EdgeInsets.all(
+              12,
+            ), // Adjust padding to center the icon
+            icon: Icon(
+              YaruIcons.fast_forward,
+              size: 30,
+            ), // Larger icon to fill the space
+            onPressed: globals.seekForward,
+          ),
+        ),
+        SizedBox(
+          width: 60, // Custom width
+          height: 60, // Custom height
+          child: IconButton(
+            tooltip: "skip to next chapter",
+    
+            padding: EdgeInsets.all(
+              12,
+            ), // Adjust padding to center the icon
+            icon: Icon(
+              YaruIcons.skip_forward,
+              size: 30,
+            ), // Larger icon to fill the space
+            onPressed: globals.seekNextChapter,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class VolumeIcon extends StatelessWidget {
+  const new({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: globals.player.stream.volume,
+      builder: (context, asyncSnapshot) {
+        var icon = YaruIcons.speaker;
+        if (asyncSnapshot.hasData) {
+          final volumeBracket = fromVolume(
+            asyncSnapshot.data!,
+          );
+          switch (volumeBracket) {
+            case (VolumeBracket.overamp):
+              icon = YaruIcons.speaker_overamplified;
+            case (VolumeBracket.high):
+              icon = YaruIcons.speaker_high;
+            case (VolumeBracket.med):
+              icon = YaruIcons.speaker_medium;
+            case (VolumeBracket.low):
+              icon = YaruIcons.speaker_low;
+            case (VolumeBracket.mute):
+              icon = YaruIcons.speaker_muted;
+          }
+        }
+        return Icon(icon);
+      },
     );
   }
 }
@@ -555,28 +584,6 @@ class RateOptions extends StatelessWidget {
               },
             );
           },
-        ),
-      ),
-    );
-  }
-}
-
-class TimerOptions extends StatelessWidget {
-  const new({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 100,
-      width: 34,
-      child: Container(
-        color: YaruColors.inkstone,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: RotatedBox(
-            quarterTurns: 1,
-            child: Slider(value: 0.0, onChanged: (value) {}),
-          ),
         ),
       ),
     );

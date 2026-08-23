@@ -16,7 +16,7 @@ class ConfigProvider {
     return _singleton;
   }
 
-  final streamController = StreamController<Config>();
+  final streamController = StreamController<Config>.broadcast();
 
   ConfigProvider._internal();
 

@@ -8,6 +8,7 @@ import 'package:fl_audiobook/config.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/mini_player.dart';
 import 'package:fl_audiobook/player_page.dart';
+import 'package:fl_audiobook/time_display.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:xdg_directories/xdg_directories.dart';
