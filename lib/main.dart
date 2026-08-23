@@ -73,9 +73,9 @@ Future<void> main() async {
 
   // client.callMethod(path: DBusObjectPath("/org/freedesktop/DBus"), name: )
 
-
-  final subPlaying = globals.player.stream.playing.listen((playing) {
-    print("hi");
+  
+  globals.player.stream.playing.listen((playing) {
+    //print("hi");
     globals.mediaPlayer2.emitPropertiesChanged(
       "org.mpris.MediaPlayer2.Player",
       changedProperties: {
