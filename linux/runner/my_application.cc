@@ -25,6 +25,15 @@ static void my_application_activate(GApplication* application) {
   GtkWindow* window =
       GTK_WINDOW(gtk_application_window_new(GTK_APPLICATION(application)));
 
+
+  if (g_file_test("images", G_FILE_TEST_IS_DIR))
+  {
+    gtk_window_set_icon_from_file(window, "images/app_icon.png", NULL); // For debug mode
+  }
+  else
+  {
+    gtk_window_set_icon_from_file(window, "data/flutter_assets/images/app_icon.png", NULL); // For release mode
+  }
   // Use a header bar when running in GNOME as this is the common style used
   // by applications and is the setup most users will be using (e.g. Ubuntu
   // desktop).
@@ -144,6 +153,8 @@ MyApplication* my_application_new() {
   // corresponding .desktop file. This ensures better integration by allowing
   // the application to be recognized beyond its binary name.
   g_set_prgname(APPLICATION_ID);
+
+
 
   return MY_APPLICATION(g_object_new(my_application_get_type(),
                                      "application-id", APPLICATION_ID, "flags",

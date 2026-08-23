@@ -28,7 +28,7 @@ class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
           ((chapterEndTime - chapterStartTime) * value + chapterStartTime)
               .round(),
     );
-    globals.player.seek(micros);
+    globals.seek(micros);
   }
 
   double _getPlayheadPosition(Duration duration) {

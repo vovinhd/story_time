@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:dbus/dbus.dart';
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
@@ -10,6 +11,7 @@ import 'package:fl_audiobook/mini_player.dart';
 import 'package:fl_audiobook/player_page.dart';
 import 'package:fl_audiobook/time_display.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:xdg_directories/xdg_directories.dart';
 import 'package:yaru/yaru.dart';
@@ -52,7 +54,10 @@ class _BookSelectPageState extends State<BookSelectPage> {
   bool shouldTransition = false;
 
   void _pickFile() async {
-    PlatformFile? file = await FilePicker.pickFile();
+    PlatformFile? file = await FilePicker.pickFile(
+      type: FileType.custom,
+      allowedExtensions: ["m4b"],
+    );
 
     if (file != null) {
       _openFile(BookFile(name: file.name, path: file.path!));
@@ -91,7 +96,7 @@ class _BookSelectPageState extends State<BookSelectPage> {
     }
 
     await globals.player.open(media, play: true);
-    globals.selectedBookStream.add(file); 
+    globals.selectedBookStream.add(file);
     _transition();
   }
 
@@ -123,11 +128,13 @@ class _BookSelectPageState extends State<BookSelectPage> {
           globals.mediaPlayer2.buildMetadata()!,
         ),
         "PlaybackStatus": DBusString("Playing"),
-        "Position": DBusInt64(globals.player.state.position.inMicroseconds) 
+        "Position": DBusInt64(globals.player.state.position.inMicroseconds),
       },
       invalidatedProperties: ["PlaybackStatus", "MetaData", "Position"],
     );
-    globals.mediaPlayer2.emitSeeked(globals.player.state.position.inMicroseconds);
+    globals.mediaPlayer2.emitSeeked(
+      globals.player.state.position.inMicroseconds,
+    );
   }
 
   @override
@@ -135,6 +142,72 @@ class _BookSelectPageState extends State<BookSelectPage> {
     return Column(
       mainAxisAlignment: .spaceAround,
       children: [
+        StreamBuilder(
+          stream: globals.selectedBookStream.stream,
+          builder: (context, asyncSnapshot) {
+            if (!asyncSnapshot.hasData) {
+              return SizedBox();
+            }
+            return Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 32.0,
+                horizontal: 16,
+              ),
+              child: Column(
+                crossAxisAlignment: .start,
+                children: [
+                  Text("Now Playing", textAlign: .start),
+                  ClipRRect(
+                    clipBehavior: .antiAlias,
+                    borderRadius: BorderRadiusGeometry.all(Radius.circular(32)),
+                    child: Container(
+                      height: 200,
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: Image(
+                              image: globals.coverImage.image,
+                              repeat: .repeat,
+                            ),
+                          ),
+                          Positioned.fill(
+                            child: Opacity(
+                              opacity: .8,
+                              child: Container(color: Color(0xFF000000)),
+                            ),
+                          ),
+                          BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
+
+                            child: (Container(
+                              padding: EdgeInsets.all(32),
+
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: .1,
+                                  strokeAlign: BorderSide.strokeAlignInside,
+                                ),
+                                borderRadius: BorderRadius.circular(32)
+                              ),
+
+                              child: Row(
+                                children: [
+                                  globals.coverImage,
+                                  Text(globals.tags!["title"]),
+                                ],
+                              ),
+                            )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
         Expanded(
           child: StreamBuilder(
             stream: ConfigProvider().streamController.stream,
@@ -154,7 +227,10 @@ class _BookSelectPageState extends State<BookSelectPage> {
                   return ListTile(
                     leading: coverfile == null
                         ? globals.defaultCoverImage
-                        : Image.file(coverfile, key: UniqueKey()),
+                        : Hero(
+                            tag: bookFile.name.hashCode,
+                            child: Image.file(coverfile),
+                          ),
                     title: Text(
                       "${state.title} - ${printDuration(Duration(microseconds: state.position))} ",
                     ),

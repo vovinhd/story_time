@@ -50,6 +50,7 @@ dependencies:
   file_md5: ^0.1.0
   dbus: ^0.7.15
   flutter_portal: ^1.1.4
+  flutter_animate: ^4.5.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -66,7 +67,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

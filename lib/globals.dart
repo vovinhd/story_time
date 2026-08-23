@@ -41,6 +41,7 @@ Map<String, dynamic>? tags;
 List<ChapterInformation>? chapters;
 
 StreamController<BookFile> selectedBookStream = StreamController<BookFile>.broadcast(); 
+StreamController<Duration> seekStream  = StreamController<Duration>.broadcast(); 
 
 
 int chapterInfoTimeToMicros(String timestamp) {
@@ -76,9 +77,8 @@ ChapterInformation getChapterFor(Duration position) {
   return nullChapterInfo;
 }
 
-void seekResume() async {
-  await player.seek(Duration(microseconds: resumedPosition));
-}
+
+
 
 final skipbackTime = 2;
 // bad name. skips back to chapter start if already playing and _then_ back to the previous one
@@ -89,13 +89,13 @@ void seekLastChapter() async {
 
   if (timeIn.inSeconds < skipbackTime) {
     //await player.seek(player.state.position - Duration(seconds: skipbackTime));
-
+    
     timeIn = timeInChapter(
       player.state.position - Duration(seconds: skipbackTime),
     );
-    player.seek(pos - timeIn - Duration(seconds: skipbackTime));
+    seek(pos - timeIn - Duration(seconds: skipbackTime));
   } else {
-    player.seek(pos - timeIn + Duration(milliseconds: 1));
+    seek(pos - timeIn + Duration(milliseconds: 1));
   }
 }
 
@@ -109,7 +109,7 @@ void seekForward() {
 
 void seekNextChapter() {
   var timeLeft = timeLeftInChapter(player.state.position);
-  player.seek(player.state.position - timeLeft);
+  seek(player.state.position - timeLeft);
 
   //seekOffset(timeLeftInChapter(player.state.position).inMicroseconds);
 }
@@ -122,6 +122,9 @@ void seekOffset(int seconds) {
 }
 
 void seek(Duration duration) {
+
+  seekStream.sink.add(player.state.position); 
+
   player.seek(duration);
 }
 
