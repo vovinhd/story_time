@@ -40,6 +40,9 @@ Map<String, dynamic>? tags;
 
 List<ChapterInformation>? chapters;
 
+StreamController<BookFile> selectedBookStream = StreamController<BookFile>.broadcast(); 
+
+
 int chapterInfoTimeToMicros(String timestamp) {
   try {
     return (double.parse(timestamp) * 1_000_000).round();

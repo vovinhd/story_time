@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fl_audiobook/book_select_page.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/player_page.dart';
 import 'package:fl_audiobook/time_display.dart';
@@ -99,10 +100,10 @@ class AutoPauseTimer {
   bool chapterMode = false; 
   StreamSubscription<bool> playingState;
 
-  StreamSubscription<Duration> playerState;
+  StreamSubscription<BookFile> playerState;
 
 
-  Timer tick = Timer.periodic(const Duration(seconds:1), (timer) {
+  Timer tick = Timer.periodic(const Duration(milliseconds: 200), (timer) {
     if (_instance.currentDuration.inSeconds > 0) {
       _instance._remainingStreamController.sink.add(remaining); 
     } 
@@ -122,23 +123,22 @@ class AutoPauseTimer {
     }
   }
 
-  void onDurationChanged(Duration duration) {
-    print("on duration changed"); 
-    print(duration); 
+  void onBookChanged(BookFile file) {
+    cancel(); 
   }
 
   AutoPauseTimer._privateConstructor():
       playingState = globals.player.stream.playing.listen((data) {
         _instance.onPlaybackStateChanged(data);
       }),
-      playerState = globals.player.stream.duration.listen((data) {
-        _instance.onDurationChanged(data); 
+      playerState = globals.selectedBookStream.stream.listen((data) {
+        _instance.onBookChanged(data); 
       }); 
   
 
   final _remainingStreamController = StreamController<Duration>.broadcast(); 
   final _autoPauseEmittedController = StreamController<Duration>.broadcast(); 
-  final _autoPauseCancelledController = StreamController<bool>.broadcast(); 
+  final _autoPauseRunningController = StreamController<bool>.broadcast(); 
 
   static final AutoPauseTimer _instance = AutoPauseTimer._privateConstructor();
 
@@ -164,17 +164,22 @@ class AutoPauseTimer {
     return _instance._autoPauseEmittedController.stream; 
   }
 
-  static Stream<bool> get autoPauseCancelledStream {
-    return _instance._autoPauseCancelledController.stream; 
+  static Stream<bool> get autoPauseRunnningStream {
+    return _instance._autoPauseRunningController.stream; 
   }
 
+  static bool get isChapterMode {
+    return _instance.chapterMode;
+  }
 
   static void _timerCallback() {
 
     globals.player.pause(); 
 
     _instance._autoPauseEmittedController.sink.add(_instance.currentDuration); 
-    
+    _instance._autoPauseRunningController.sink.add(false);
+    _instance._remainingStreamController.sink.add(Duration());
+
     _instance.autoPauseStopwatch
       ..stop()
       ..reset();
@@ -193,6 +198,7 @@ class AutoPauseTimer {
 
     _instance.autoPauseTimer = Timer(duration, _timerCallback);
     _instance.autoPauseStopwatch.start();
+    _instance._autoPauseRunningController.sink.add(true);
 
     if (!globals.player.state.playing) {
       _instance.onPlaybackStateChanged(false); 
@@ -216,7 +222,7 @@ class AutoPauseTimer {
       ..reset();
 
     _instance.currentDuration = Duration();
-    _instance._autoPauseCancelledController.sink.add(true);
+    _instance._autoPauseRunningController.sink.add(false);
     _instance._remainingStreamController.sink.add(Duration());
 
   }

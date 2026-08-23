@@ -92,12 +92,128 @@ class _PlayerPageState extends State<PlayerPage> {
               spacing: 16.0,
               children: [
                 Expanded(
-                  child: Container(
-                    key: UniqueKey(),
-                    padding: EdgeInsets.all(16.0),
-                    margin: EdgeInsets.all(16.0),
-                    constraints: BoxConstraints.expand(),
-                    child: widget.cover,
+                  child: Stack(
+                    children: [
+                      Container(
+                        key: UniqueKey(),
+                        padding: EdgeInsets.all(16.0),
+                        margin: EdgeInsets.all(16.0),
+                        constraints: BoxConstraints.expand(),
+                        child: widget.cover,
+                      ),
+
+                      StreamBuilder(
+                        stream: AutoPauseTimer.autoPauseRunnningStream,
+                        builder: (context, asyncSnapshot) {
+                          bool show = false;
+                          if (asyncSnapshot.hasData && asyncSnapshot.data!) {
+                            show = true;
+                          }
+                          return AnimatedOpacity(
+                            opacity: show ? 1 : 0,
+                            duration: Duration(milliseconds: 400),
+                            child: Align(
+                              alignment: AlignmentGeometry.topCenter,
+                              child: Container(
+                                constraints: BoxConstraints.loose(
+                                  Size(200, 100),
+                                ),
+                                margin: EdgeInsets.symmetric(
+                                  vertical: 0,
+                                  horizontal: 32,
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 0,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: YaruColors.coolGrey,
+                                  borderRadius: BorderRadius.circular(1000),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                      spreadRadius: 1,
+                                      blurRadius: 7,
+                                      offset: Offset(
+                                        0,
+                                        3,
+                                      ), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: .center,
+                                  spacing: 8,
+                                  children: [
+                                    // Icon(YaruIcons.stopwatch, size: 30,weight: 4,),
+                                    Icon(
+                                      YaruIcons.clear_night,
+                                      size: 30,
+                                      weight: 4,
+                                    ),
+
+                                    StreamBuilder(
+                                      stream: AutoPauseTimer.remainingStream,
+                                      builder: (context, asyncSnapshot) {
+                                        if (!asyncSnapshot.hasData)
+                                          return Text(
+                                            ":00",
+                                            style: TextStyle(
+                                              fontWeight: .bold,
+                                              fontSize: 20,
+                                            ),
+                                          );
+                                        final label = printDuration(
+                                          asyncSnapshot.data!,
+                                        );
+                                        return Text(
+                                          label,
+                                          style: TextStyle(
+                                            fontWeight: .bold,
+                                            fontSize: 20,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+
+                      Align(
+                        alignment: AlignmentGeometry.bottomCenter,
+                        child: Row(
+                          mainAxisAlignment: .center,
+                          children: [
+                            Container(
+                              child: TextButton.icon(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: YaruColors.coolGrey,
+                                  textStyle: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: .bold,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: const .all(
+                                      Radius.circular(1000),
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () {},
+                                label: Text("unskip"),
+                                icon: Icon(YaruIcons.arrow_left),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Column(
@@ -237,15 +353,15 @@ class _PlaybackControlsState extends State<PlaybackControls> {
                           child: StreamBuilder(
                             stream: globals.player.stream.rate,
                             builder: (context, asyncSnapshot) {
-                              double rate = globals.player.state.rate; 
+                              double rate = globals.player.state.rate;
                               if (asyncSnapshot.hasData) {
-                                rate = asyncSnapshot.data!; 
+                                rate = asyncSnapshot.data!;
                               }
-                        
+
                               var label = rate.toStringAsFixed(2);
-                        
-                              return Text("${label}x", softWrap: false,);
-                            }
+
+                              return Text("${label}x", softWrap: false);
+                            },
                           ),
                         ),
                       ),
@@ -270,13 +386,31 @@ class _PlaybackControlsState extends State<PlaybackControls> {
 
                     child: Tooltip(
                       message: "timer",
-                      child: YaruOptionButton(
-                        onPressed: () {
-                          setState(() {
-                            showTimerOptions = true;
-                          });
+                      child: StreamBuilder(
+                        stream: AutoPauseTimer.autoPauseRunnningStream,
+                        builder: (context, asyncSnapshot) {
+                          var runnning =
+                              asyncSnapshot.hasData && asyncSnapshot.data!;
+                          return YaruOptionButton(
+                            style: runnning
+                                ? ButtonStyle(
+                                    backgroundColor:
+                                        WidgetStatePropertyAll<Color>(
+                                          YaruColors.adwaitaYellow,
+                                        ),
+                                    iconColor: WidgetStatePropertyAll<Color>(
+                                      Colors.black,
+                                    ),
+                                  )
+                                : ButtonStyle(),
+                            onPressed: () {
+                              setState(() {
+                                showTimerOptions = true;
+                              });
+                            },
+                            child: Icon(YaruIcons.stopwatch),
+                          );
                         },
-                        child: Icon(YaruIcons.stopwatch),
                       ),
                     ),
                   ),
@@ -291,25 +425,21 @@ class _PlaybackControlsState extends State<PlaybackControls> {
 }
 
 class TrackControls extends StatelessWidget {
-  const new({
-    super.key,
-  });
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: .center,
-    
+
       children: [
         SizedBox(
           width: 60, // Custom width
           height: 60, // Custom height
           child: IconButton(
             tooltip: "skip to last chapter",
-    
-            padding: EdgeInsets.all(
-              12,
-            ), // Adjust padding to center the icon
+
+            padding: EdgeInsets.all(12), // Adjust padding to center the icon
             icon: Icon(
               YaruIcons.skip_backward,
               size: 30,
@@ -322,9 +452,7 @@ class TrackControls extends StatelessWidget {
           height: 60, // Custom height
           child: IconButton(
             tooltip: "skip back",
-            padding: EdgeInsets.all(
-              12,
-            ), // Adjust padding to center the icon
+            padding: EdgeInsets.all(12), // Adjust padding to center the icon
             icon: Icon(
               YaruIcons.fast_backward,
               size: 30,
@@ -332,7 +460,7 @@ class TrackControls extends StatelessWidget {
             onPressed: globals.seekBack,
           ),
         ),
-    
+
         SizedBox(
           width: 80, // Custom width
           height: 80, // Custom height
@@ -342,7 +470,7 @@ class TrackControls extends StatelessWidget {
               if (asyncSnapshot.hasData) {
                 return IconButton(
                   tooltip: asyncSnapshot.data! ? "pause" : "play",
-    
+
                   padding: EdgeInsets.all(
                     12,
                   ), // Adjust padding to center the icon
@@ -375,10 +503,8 @@ class TrackControls extends StatelessWidget {
           height: 60, // Custom height
           child: IconButton(
             tooltip: "skip forwards",
-    
-            padding: EdgeInsets.all(
-              12,
-            ), // Adjust padding to center the icon
+
+            padding: EdgeInsets.all(12), // Adjust padding to center the icon
             icon: Icon(
               YaruIcons.fast_forward,
               size: 30,
@@ -391,10 +517,8 @@ class TrackControls extends StatelessWidget {
           height: 60, // Custom height
           child: IconButton(
             tooltip: "skip to next chapter",
-    
-            padding: EdgeInsets.all(
-              12,
-            ), // Adjust padding to center the icon
+
+            padding: EdgeInsets.all(12), // Adjust padding to center the icon
             icon: Icon(
               YaruIcons.skip_forward,
               size: 30,
@@ -408,9 +532,7 @@ class TrackControls extends StatelessWidget {
 }
 
 class VolumeIcon extends StatelessWidget {
-  const new({
-    super.key,
-  });
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -419,9 +541,7 @@ class VolumeIcon extends StatelessWidget {
       builder: (context, asyncSnapshot) {
         var icon = YaruIcons.speaker;
         if (asyncSnapshot.hasData) {
-          final volumeBracket = fromVolume(
-            asyncSnapshot.data!,
-          );
+          final volumeBracket = fromVolume(asyncSnapshot.data!);
           switch (volumeBracket) {
             case (VolumeBracket.overamp):
               icon = YaruIcons.speaker_overamplified;
@@ -674,7 +794,7 @@ class _ChapterListButtonState extends State<ChapterListButton> {
                             ),
                             onTap: () {
                               widget._seekChapter(widget.chapters[index]);
-                                Navigator.pop(context);
+                              Navigator.pop(context);
                             },
                           );
                         },

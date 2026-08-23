@@ -91,7 +91,7 @@ class _BookSelectPageState extends State<BookSelectPage> {
     }
 
     await globals.player.open(media, play: true);
-
+    globals.selectedBookStream.add(file); 
     _transition();
   }
 
