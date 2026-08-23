@@ -1,10 +1,17 @@
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:flutter/material.dart';
 
-double lastPos = 0.0;
 
-class PlaybackPositionSlider extends StatelessWidget {
+class PlaybackPositionSlider extends StatefulWidget {
+
   const new({super.key});
+
+  @override
+  State<PlaybackPositionSlider> createState() => _PlaybackPositionSliderState();
+}
+
+class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
+  double lastPos = 0.0;
 
   void _seekPlayhead(double value) {
     lastPos = value;
@@ -63,7 +70,7 @@ class PlaybackPositionSlider extends StatelessWidget {
           );
         } else {
           return Slider(
-            value: lastPos,
+            value: _getPlayheadPosition(globals.player.state.position),
             min: 0,
             max: 1.0,
             onChanged: (value) => _seekPlayhead(value),

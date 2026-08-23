@@ -98,6 +98,10 @@ class AutoPauseTimer {
   Duration currentDuration = Duration(microseconds: 0);
   bool chapterMode = false; 
   StreamSubscription<bool> playingState;
+
+  StreamSubscription<Duration> playerState;
+
+
   Timer tick = Timer.periodic(const Duration(seconds:1), (timer) {
     if (_instance.currentDuration.inSeconds > 0) {
       _instance._remainingStreamController.sink.add(remaining); 
@@ -116,12 +120,19 @@ class AutoPauseTimer {
       autoPauseTimer!.cancel(); 
       currentDuration = remainingDuration; 
     }
+  }
 
+  void onDurationChanged(Duration duration) {
+    print("on duration changed"); 
+    print(duration); 
   }
 
   AutoPauseTimer._privateConstructor():
       playingState = globals.player.stream.playing.listen((data) {
         _instance.onPlaybackStateChanged(data);
+      }),
+      playerState = globals.player.stream.duration.listen((data) {
+        _instance.onDurationChanged(data); 
       }); 
   
 
@@ -183,7 +194,9 @@ class AutoPauseTimer {
     _instance.autoPauseTimer = Timer(duration, _timerCallback);
     _instance.autoPauseStopwatch.start();
 
-    // open question: 
+    if (!globals.player.state.playing) {
+      _instance.onPlaybackStateChanged(false); 
+    }
 
   }
 
@@ -192,6 +205,9 @@ class AutoPauseTimer {
     if (_instance.autoPauseTimer == null) {
       return;
     }
+
+    print("timer cancelled");
+
     _instance.autoPauseTimer!.cancel();
     _instance.autoPauseTimer = null;
 

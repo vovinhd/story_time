@@ -1,7 +1,7 @@
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
+import 'package:fl_audiobook/auto_pause_timer.dart';
 import 'package:fl_audiobook/playback_position_slider.dart';
 import 'package:fl_audiobook/time_display.dart';
-import 'package:fl_audiobook/timer_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_portal/flutter_portal.dart';
@@ -609,7 +609,7 @@ class ChapterListButton extends StatefulWidget {
       microseconds: chapterInfoTimeToMicros(chapterInformation.startTime!),
     ));
 
-    player.seek(micros);
+    player.seek(micros + Duration(milliseconds: 1));
   }
 }
 
@@ -640,6 +640,7 @@ class _ChapterListButtonState extends State<ChapterListButton> {
           isScrollControlled: true,
           context: context,
           useSafeArea: true,
+
           constraints: BoxConstraints(
             maxHeight: MediaQuery.sizeOf(context).height * 0.9,
             maxWidth: 650,
@@ -671,8 +672,9 @@ class _ChapterListButtonState extends State<ChapterListButton> {
                                 ),
                               ),
                             ),
-                            onTap: () => {
-                              widget._seekChapter(widget.chapters[index]),
+                            onTap: () {
+                              widget._seekChapter(widget.chapters[index]);
+                                Navigator.pop(context);
                             },
                           );
                         },
