@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:yaru/yaru.dart';
 
 import 'globals.dart' as globals;
+import 'tray.dart' as tray;
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey(); // Create a key
 
@@ -25,6 +26,10 @@ class _IndexPageState extends State<IndexPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: YaruWindowTitleBar(
+        backgroundColor: Colors.transparent,
+        onClose: (p0) {
+          tray.hideOrClose(); 
+        },
         onShowMenu: (p0) => {},
         border: BorderSide.none,
         leading: IconButton(

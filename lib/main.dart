@@ -6,6 +6,7 @@ import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/home.dart';
 import 'package:fl_audiobook/media_player2.dart';
 import 'package:fl_audiobook/model.dart';
+import 'package:fl_audiobook/tray.dart';
 
 import 'package:media_kit/media_kit.dart';
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
@@ -86,4 +87,5 @@ Future<void> main() async {
   });
 
   runApp(const ExampleHome());
+  await initSystemTray(); 
 }

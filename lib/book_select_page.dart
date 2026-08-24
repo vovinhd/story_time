@@ -8,6 +8,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:fl_audiobook/config.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/mini_player.dart';
+import 'package:fl_audiobook/playback_position_slider.dart';
 import 'package:fl_audiobook/player_page.dart';
 import 'package:fl_audiobook/time_display.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +97,9 @@ class _BookSelectPageState extends State<BookSelectPage> {
     }
 
     await globals.player.open(media, play: true);
+    
     globals.selectedBookStream.add(file);
+    
     _transition();
   }
 
@@ -148,66 +151,146 @@ class _BookSelectPageState extends State<BookSelectPage> {
             if (!asyncSnapshot.hasData) {
               return SizedBox();
             }
-            return Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 32.0,
-                horizontal: 16,
-              ),
-              child: Column(
-                crossAxisAlignment: .start,
-                children: [
-                  Text("Now Playing", textAlign: .start),
-                  ClipRRect(
-                    clipBehavior: .antiAlias,
-                    borderRadius: BorderRadiusGeometry.all(Radius.circular(32)),
-                    child: Container(
-                      height: 200,
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: Image(
-                              image: globals.coverImage.image,
-                              repeat: .repeat,
-                            ),
-                          ),
-                          Positioned.fill(
-                            child: Opacity(
-                              opacity: .8,
-                              child: Container(color: Color(0xFF000000)),
-                            ),
-                          ),
-                          BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
-
-                            child: (Container(
-                              padding: EdgeInsets.all(32),
-
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: .1,
-                                  strokeAlign: BorderSide.strokeAlignInside,
-                                ),
-                                borderRadius: BorderRadius.circular(32)
-                              ),
-
-                              child: Row(
-                                children: [
-                                  globals.coverImage,
-                                  Text(globals.tags!["title"]),
-                                ],
-                              ),
-                            )),
-                          ),
-                        ],
-                      ),
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (context) => PlayerPage(
+                      player: globals.player,
+                      chapters: globals.chapters!,
+                      tags: globals.tags!,
+                      cover: globals.coverImage,
                     ),
                   ),
-                ],
+                );
+              },
+              child: Material(
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    // vertical: 32.0,
+                    // horizontal: 16,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      // Text("Now Playing", textAlign: .start),
+                      ClipRRect(
+                        clipBehavior: .antiAlias,
+                        borderRadius: BorderRadiusGeometry.all(
+                          Radius.circular(32),
+                        ),
+                        child: Container(
+                          height: 200,
+                          child: Stack(
+                            children: [
+                              Positioned.fill(
+                                child: Image(
+                                  image: globals.coverImage.image,
+                                  repeat: .repeat,
+                                ),
+                              ),
+                              Positioned.fill(
+                                child: Opacity(
+                                  opacity: .8,
+                                  child: Container(color: Color(0xFF000000)),
+                                ),
+                              ),
+                              BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaX: 100,
+                                  sigmaY: 100,
+                                ),
+                
+                                child: (Container(
+                                  padding: EdgeInsets.all(32),
+                
+                                  decoration: BoxDecoration(
+                                    // border: Border.all(
+                                    //   color: Colors.white,
+                                    //   width: .1,
+                                    //   strokeAlign: BorderSide.strokeAlignInside,
+                                    // ),
+                                    // borderRadius: BorderRadius.circular(32),
+                                  ),
+                
+                                  child: Row(
+                                    children: [
+                                      Hero(
+                                        tag: asyncSnapshot.data!.name.hashCode,
+                                        child: globals.coverImage,
+                                      ),
+                
+                                      Flexible(
+                                        child: Column(
+                                          crossAxisAlignment: .start,
+                                          mainAxisAlignment: .spaceBetween,
+                                          // spacing: 16,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 16.0,
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment: .start,
+                
+                                                children: [
+                                                  Text("Now Playing", style: TextStyle(
+                                                      fontSize: 10,
+                                                    ),),
+                                                  Text(
+                                                    globals.tags!["title"],
+                                                    style: TextStyle(
+                                                      fontSize: 32,
+                                                    ),
+                                                  ),
+                                                  Text(globals.tags!["artist"],style: TextStyle(
+                                                      fontSize: 22,
+                                                    ),),
+                                                ],
+                                              ),
+                                            ),
+                                            Row(
+                                              children: [
+                                                IconButton(
+                                                  onPressed:
+                                                      globals.player.playOrPause,
+                                                  icon:
+                                                      globals.player.state.playing
+                                                      ? Icon(
+                                                          YaruIcons.media_pause,
+                                                        )
+                                                      : Icon(
+                                                          YaruIcons.media_play,
+                                                        ),
+                                                ),
+                                                CurrentPositionInChapterLabel(),
+                                                Expanded(
+                                                  child: PlaybackPositionSlider(),
+                                                ),
+                                                EndLabel(),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             );
           },
         ),
+        Text("Last played"),
         Expanded(
           child: StreamBuilder(
             stream: ConfigProvider().streamController.stream,
@@ -223,6 +306,9 @@ class _BookSelectPageState extends State<BookSelectPage> {
                 itemBuilder: (BuildContext context, int index) {
                   final state = books[index];
                   final bookFile = BookFile(name: state.file, path: state.path);
+                  if (globals.playingFile !=null && bookFile.name == globals.playingFile!.name) {
+                    return SizedBox();
+                  }
                   final coverfile = bookFile.coverImage;
                   return ListTile(
                     leading: coverfile == null
@@ -278,7 +364,7 @@ class _BookSelectPageState extends State<BookSelectPage> {
             ),
           ),
         ),
-        MiniPlayer(),
+        // MiniPlayer(),
       ],
     );
   }
