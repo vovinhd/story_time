@@ -79,18 +79,18 @@ class ConfigProvider {
     notify();
   }
 
-  void updatePlaybackState() {
-    if (globals.playingFile == null) return;
+  void updatePlaybackState() async {
+    if (globals.playingFile == null || globals.player.state.duration.inMicroseconds == 0) return;
+    await Future.delayed(Duration(milliseconds: 100));
     final filename = globals.playingFile!.name;
     final state = BookPlaybackState(
       file: filename,
-      path: globals.playingFile!.path!,
+      path: globals.playingFile!.path,
       title: globals.tags!["title"],
       position: globals.player.state.position.inMicroseconds,
       duration: globals.player.state.duration.inMicroseconds,
-      lastPlayed: DateTime.now(),
+      lastPlayed: DateTime.now(), author: globals.tags!["artist"],
     );
-
     config.playbackStates.removeWhere((value) => value.file == filename);
     config.playbackStates.insert(0, state);
 
@@ -129,6 +129,8 @@ class BookPlaybackState {
   final String file;
   final String path;
   final String title;
+  final String author;
+
   final int position;
   final int duration;
   final DateTime lastPlayed;
@@ -139,13 +141,15 @@ class BookPlaybackState {
     required this.lastPlayed,
     required this.duration,
     required this.path,
-    required this.title,
+    required this.title, required this.author,
   });
 
   BookPlaybackState.fromJson(Map<String, dynamic> json)
     : file = json["file"] as String,
       path = json["path"] as String,
       title = json["title"] as String,
+      author = json["author"] as String,
+
       position = json["position"] as int,
       duration = json["duration"] as int,
 
@@ -157,6 +161,7 @@ class BookPlaybackState {
     'file': file,
     'path': path,
     'title': title,
+    'author': author,
 
     'position': position,
     'last_played': lastPlayed.millisecondsSinceEpoch,

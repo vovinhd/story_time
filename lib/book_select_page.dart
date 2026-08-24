@@ -13,6 +13,7 @@ import 'package:fl_audiobook/player_page.dart';
 import 'package:fl_audiobook/time_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:xdg_directories/xdg_directories.dart';
@@ -153,16 +154,35 @@ class BookSelectPageState extends State<BookSelectPage> {
     );
   }
 
+  var offset = 0.0;
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: .spaceAround,
+      crossAxisAlignment: .start,
       children: [
         StreamBuilder(
           stream: globals.selectedBookStream.stream,
           builder: (context, asyncSnapshot) {
             if (!asyncSnapshot.hasData || asyncSnapshot.data == null) {
-              return Container(height: 200, child: SizedBox());
+              return Container(
+                height: 200,
+                child: Column(
+                  children: [
+                    Text("Nothing playing"),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Center(
+                        child: YaruSplitButton(
+                          items: null,
+                          child: Text("Open Audiobook"),
+                          onPressed: () => pickFile(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
             }
             return GestureDetector(
               onTap: () {
@@ -184,10 +204,18 @@ class BookSelectPageState extends State<BookSelectPage> {
                         child: Stack(
                           children: [
                             Positioned.fill(
-                              child: Image(
-                                image: globals.coverImage.image,
-                                repeat: .repeat,
-                              ).animate(key: UniqueKey()).fade(),
+                              child:
+                                  Image(
+                                        fit: .fill,
+                                        image: globals.coverImage.image,
+                                        height: double.infinity,
+                                        width: double.infinity,
+                                        repeat: .noRepeat,
+                                      )
+                                      .animate(
+                                        key: Key(asyncSnapshot.data!.name),
+                                      )
+                                      .fade(),
                             ),
                             Positioned.fill(
                               child: Opacity(
@@ -313,98 +341,206 @@ class BookSelectPageState extends State<BookSelectPage> {
             );
           },
         ),
-        Text("Last played"),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
+          child: Text("Last played"),
+        ),
+
         Expanded(
-          child: StreamBuilder(
-            stream: ConfigProvider().streamController.stream,
-            builder: (context, asyncSnapshot) {
-              var books = ConfigProvider().playbackStates;
+          child: Stack(
+            children: [
+              offset > 18 ? Container(color: YaruColors.jet) : SizedBox(),
+              StreamBuilder(
+                stream: ConfigProvider().streamController.stream,
+                builder: (context, asyncSnapshot) {
+                  var books = ConfigProvider().playbackStates;
 
-              if (asyncSnapshot.hasData) {
-                books = asyncSnapshot.data!.playbackStates;
-              }
-              return ListView.builder(
-                padding: EdgeInsets.only(
-                  top: 16,
-                  left: 4,
-                  right: 4,
-                  bottom: 100,
-                ),
-                itemCount: books.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index >= books.length) {
-                    return Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Center(
-                        child: YaruSplitButton(
-                          items: null,
-                          child: Text("Open Audiobook"),
-                          onPressed: () => pickFile(),
-                        ),
-                      ),
-                    );
+                  if (asyncSnapshot.hasData) {
+                    books = asyncSnapshot.data!.playbackStates;
                   }
-                  final state = books[index];
-                  final bookFile = BookFile(name: state.file, path: state.path);
-                  if (globals.playingFile != null &&
-                      bookFile.name == globals.playingFile!.name) {
-                    return SizedBox();
-                  }
-                  final coverfile = bookFile.coverImage;
-                  final now = DateTime.now();
-                  final agoDateTime = now.subtract(
-                    now.difference(state.lastPlayed),
-                  );
-                  final dateTimeLabel = timeago.format(agoDateTime);
-                  return GestureDetector(
-                    onTap: () => {
-                      _openFile(bookFile, position: state.position),
+                  return NotificationListener<ScrollUpdateNotification>(
+                    onNotification: (notification) {
+                      //How many pixels scrolled from pervious frame
+                      // print(notification.scrollDelta);
+
+                      //List scroll position
+                      offset = notification.metrics.pixels;
+                      setState(() {});
+                      return true;
                     },
-                    child: Card(
-                      child: Container(
-                        padding: EdgeInsets.only(right: 8),
-                        height: 100,
-                        child: Row(
-                          mainAxisAlignment: .start,
-                          crossAxisAlignment: .center,
-                          spacing: 8,
-                          children: [
-                            coverfile == null
-                                ? globals.defaultCoverImage
-                                : Image.file(coverfile),
+                    child: ListView.builder(
+                      padding: EdgeInsets.only(
+                        top: 16,
+                        left: 16,
+                        right: 16,
+                        bottom: 100,
+                      ),
+                      itemCount: books.length + 1,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index >= books.length) {
+                          return Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Center(
+                              child: YaruSplitButton(
+                                items: null,
+                                child: Text("Open Audiobook"),
+                                onPressed: () => pickFile(),
+                              ),
+                            ),
+                          );
+                        }
+                        final state = books[index];
+                        final bookFile = BookFile(
+                          name: state.file,
+                          path: state.path,
+                        );
+                        if (globals.playingFile != null &&
+                            bookFile.name == globals.playingFile!.name) {
+                          return SizedBox();
+                        }
+                        final coverfile = bookFile.coverImage;
+                        final now = DateTime.now();
+                        final agoDateTime = now.subtract(
+                          now.difference(state.lastPlayed),
+                        );
+                        final dateTimeLabel = timeago.format(agoDateTime);
 
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: .start,
+                        final timeRemaining =
+                            Duration(microseconds: state.duration) -
+                            Duration(microseconds: state.position);
+                        final timeRemainingLabel = printDuration(timeRemaining);
+
+                        final listeningProgress =
+                            state.position / state.duration;
+
+                        return GestureDetector(
+                          onTap: () => {
+                            _openFile(bookFile, position: state.position),
+                          },
+                          child: Card(
+                            child: Container(
+                              padding: EdgeInsets.only(right: 8),
+                              height: 100,
+                              child: Row(
+                                mainAxisAlignment: .start,
+                                crossAxisAlignment: .center,
+                                spacing: 8,
                                 children: [
-                                  Text("${state.title}  "),
-                                  Text(
-                                    "${printDuration(Duration(microseconds: state.position))} - ${printDuration(Duration(microseconds: state.duration))}",
+                                  coverfile == null
+                                      ? globals.defaultCoverImage
+                                      : Image.file(coverfile),
+
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: Column(
+                                        crossAxisAlignment: .start,
+                                        mainAxisAlignment: .spaceBetween,
+                                        children: [
+                                          Row(
+                                            spacing: 8,
+
+                                            children: [
+                                              Text(
+                                                state.title,
+                                                style: .new(fontSize: 20),
+                                              ),
+                                              Text(
+                                                "by ${state.author}",
+                                                style: .new(
+                                                  fontSize: 14,
+                                                  color: YaruColors.warmGrey,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Text("last played $dateTimeLabel"),
+
+                                          Expanded(
+                                            child: Row(
+                                              spacing: 8,
+                                              children: [
+                                                Flexible(
+                                                  child:
+                                                      LinearProgressIndicator(
+                                                        value:
+                                                            listeningProgress,
+                                                      ),
+                                                ),
+                                                Text(
+                                                  "$timeRemainingLabel remaining",
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                  Text("last played $dateTimeLabel"),
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        tooltip: "play ${state.title}",
+
+                                        padding: EdgeInsets.all(
+                                          0,
+                                        ), // Adjust padding to center the icon
+                                        icon: Icon(
+                                          YaruIcons.media_play,
+                                          size: 30,
+                                        ), // Larger icon to fill the space
+                                        onPressed: () {
+                                          _openFile(
+                                            bookFile,
+                                            position: state.position,
+                                          );
+                                        },
+                                      ),
+                                      //BookMenuButton(state: state),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
-                            IconButton(
-                              tooltip: "play ${state.title}",
-
-                              padding: EdgeInsets.all(
-                                0,
-                              ), // Adjust padding to center the icon
-                              icon: Icon(
-                                YaruIcons.media_play,
-                                size: 30,
-                              ), // Larger icon to fill the space
-                              onPressed: globals.player.playOrPause,
-                            ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   );
                 },
-              );
-            },
+              ),
+              Container(
+                // fake a shadow the hard way
+                clipBehavior: .none,
+                width: double.infinity,
+                height: 15,
+                child: offset > 18
+                    ? Stack(
+                        children: [
+                          Container(
+                            constraints: .expand(),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: .topCenter,
+                                end: .bottomCenter,
+                                colors: [
+                                  const Color.fromARGB(100, 0, 0, 0),
+                                  Colors.transparent,
+                                ],
+                                stops: [0.11, 1.0],
+                              ),
+                            ),
+                          ).animate().scaleY(
+                            begin: 0,
+                            alignment: .topCenter,
+                            duration: Duration(milliseconds: 200),
+                          ),
+                          Container(height: 1, color: YaruColors.coolGrey),
+                        ],
+                      )
+                    : SizedBox(),
+              ),
+            ],
           ),
         ),
 
@@ -426,6 +562,66 @@ class BookSelectPageState extends State<BookSelectPage> {
         // ),
         // MiniPlayer(),
       ],
+    );
+  }
+}
+
+class BookMenuButton extends StatefulWidget {
+  const new({super.key, required this.state});
+
+  final BookPlaybackState state;
+
+  @override
+  State<BookMenuButton> createState() => _BookMenuButtonState();
+}
+
+class _BookMenuButtonState extends State<BookMenuButton> {
+  bool showBookMenu = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return PortalTarget(
+      visible: showBookMenu,
+
+      anchor: const Aligned(
+        follower: Alignment.topRight,
+        target: Alignment.bottomRight,
+        offset: Offset(0, 8),
+      ),
+      portalFollower: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          setState(() {
+            showBookMenu = false;
+          });
+        },
+
+        child: Container(
+          decoration: popoverBoxDecoration,
+          child: Column(
+            children: [
+              YaruSplitButton(
+                onPressed: () {},
+                icon: Icon(YaruIcons.trash),
+                child: Text("forget"),
+              ),
+            ],
+          ),
+        ),
+      ),
+      child: IconButton(
+        tooltip: "options ${widget.state.title}",
+
+        padding: EdgeInsets.all(0), // Adjust padding to center the icon
+        icon: Icon(
+          YaruIcons.view_more_horizontal,
+          size: 30,
+        ), // Larger icon to fill the space
+        onPressed: () {
+          showBookMenu = true;
+          setState(() {});
+        },
+      ),
     );
   }
 }
