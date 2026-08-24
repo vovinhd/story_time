@@ -61,6 +61,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -110,3 +111,9 @@ ffmpeg_kit_extended_config:
   type: "audio" # pre-bundled builds: debug, base, full, audio, video, video_hw
   gpl: true # enable to include GPL libraries. WARNING: Make sure you understand what GPL license means before enabling. Check https://www.ffmpeg.org/legal.html for more information.
   small: true # enable to use smaller builds
+
+flutter_launcher_icons:  
+  image_path: "images/app_icon.png"  # Path to your source image  
+  windows: true  
+  macos: true  
+  linux: true  

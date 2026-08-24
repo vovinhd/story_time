@@ -21,6 +21,8 @@ void hideOrClose() {
 
 }
 
+
+
 Future<void> initSystemTray() async {
   String path =
       Platform.isWindows ? 'assets/app_icon.ico' : 'images/app_icon.png';
