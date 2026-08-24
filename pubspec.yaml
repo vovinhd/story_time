@@ -51,6 +51,7 @@ dependencies:
   dbus: ^0.7.15
   flutter_portal: ^1.1.4
   flutter_animate: ^4.5.2
+  timeago: ^3.7.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

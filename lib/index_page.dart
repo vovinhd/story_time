@@ -40,6 +40,11 @@ class _IndexPageState extends State<IndexPage> {
       ),
       drawer: Drawer(width: 200,child: DrawerContents(),),
       body: BookSelectPage(),
+  //       floatingActionButton: FloatingActionButton(
+  //       child: Icon(Icons.book), onPressed: () {  
+  //         requestFilePickStream.sink.add(true); 
+  //       },
+  // ),
     );
   }
 }
