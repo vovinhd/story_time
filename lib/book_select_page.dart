@@ -7,7 +7,6 @@ import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fl_audiobook/config.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
-import 'package:fl_audiobook/mini_player.dart';
 import 'package:fl_audiobook/playback_position_slider.dart';
 import 'package:fl_audiobook/player_page.dart';
 import 'package:fl_audiobook/time_display.dart';
@@ -155,6 +154,8 @@ class BookSelectPageState extends State<BookSelectPage> {
   }
 
   var offset = 0.0;
+
+  var showBookMenu = "";
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -496,7 +497,45 @@ class BookSelectPageState extends State<BookSelectPage> {
                                           );
                                         },
                                       ),
-                                      //BookMenuButton(state: state),
+
+                                      PortalTarget(
+                                        visible: showBookMenu != "",
+                                        portalFollower: GestureDetector(
+                                          behavior: HitTestBehavior.opaque,
+                                          onTap: () {
+                                            setState(() {
+                                              showBookMenu = "";
+                                            });
+                                          },
+                                        ),
+
+                                        child: PortalTarget(
+                                          visible: showBookMenu == state.file,
+                                          anchor: const Aligned(
+                                            follower: Alignment.centerRight,
+                                            target: Alignment.centerLeft,
+                                            offset: Offset(-8, 0),
+                                          ),
+                                          portalFollower: BookMenu(
+                                            bookPlayebackState: state,
+                                          ),
+                                          child: IconButton(
+                                            tooltip:
+                                                "options for ${state.title}",
+
+                                            padding: EdgeInsets.all(0), // Adjust padding to center the icon
+                                            icon: Icon(
+                                              YaruIcons.view_more_horizontal,
+                                              size: 30,
+                                            ), // Larger icon to fill the space
+                                            onPressed: () {
+                                              setState(() {
+                                                showBookMenu = state.file;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ],
@@ -566,61 +605,78 @@ class BookSelectPageState extends State<BookSelectPage> {
   }
 }
 
-class BookMenuButton extends StatefulWidget {
-  const new({super.key, required this.state});
 
-  final BookPlaybackState state;
+void openBookDirectory(String path) async {
+  print("Show ${path} in file explorer");
+  try {
 
-  @override
-  State<BookMenuButton> createState() => _BookMenuButtonState();
+    final isDirectory = await Directory(path).exists();
+    final isFile = await File(path).exists();
+
+    if (isDirectory) {
+      Process.run("xdg-open", [path]);
+      return; 
+    } else if (isFile) {
+      // remove file name 
+      var dirs = path.split("/"); 
+      dirs.removeLast(); 
+      var dir = dirs.join("/"); 
+      Process.run("xdg-open", [dir]);
+    } else {
+      print("?????"); 
+    }
+
+  } catch (e) {
+    print(e); 
+  }
 }
 
-class _BookMenuButtonState extends State<BookMenuButton> {
-  bool showBookMenu = false;
+class BookMenu extends StatelessWidget {
+  final BookPlaybackState bookPlayebackState;
+
+  const new({super.key, required this.bookPlayebackState});
 
   @override
   Widget build(BuildContext context) {
-    return PortalTarget(
-      visible: showBookMenu,
+    return GestureDetector(
+      onTap: () {
+        print("hi");
+      },
+      child: Container(
+        height: 76,
+        width: 200,
 
-      anchor: const Aligned(
-        follower: Alignment.topRight,
-        target: Alignment.bottomRight,
-        offset: Offset(0, 8),
-      ),
-      portalFollower: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          setState(() {
-            showBookMenu = false;
-          });
-        },
+        clipBehavior: .antiAlias,
+        decoration: popoverBoxDecoration,
+        child: Column(
+          children: [
 
-        child: Container(
-          decoration: popoverBoxDecoration,
-          child: Column(
-            children: [
-              YaruSplitButton(
-                onPressed: () {},
-                icon: Icon(YaruIcons.trash),
-                child: Text("forget"),
+            TextButton(
+              onPressed: () => {openBookDirectory(bookPlayebackState.path)},
+              child: Row(
+                spacing: 8,
+                children: [
+                  Icon(YaruIcons.folder_open, color: Colors.white),
+                  Text("Show in file explorer", style: .new(color: Colors.white,),)
+                ],
               ),
-            ],
-          ),
-        ),
-      ),
-      child: IconButton(
-        tooltip: "options ${widget.state.title}",
+            ),
 
-        padding: EdgeInsets.all(0), // Adjust padding to center the icon
-        icon: Icon(
-          YaruIcons.view_more_horizontal,
-          size: 30,
-        ), // Larger icon to fill the space
-        onPressed: () {
-          showBookMenu = true;
-          setState(() {});
-        },
+
+            TextButton(
+              onLongPress: () => {ConfigProvider().removePlaybackState(bookPlayebackState.path)},
+              onPressed: () => [],
+              child: Row(
+                                spacing: 8,
+
+                children: [
+                  Icon(YaruIcons.trash, color: Colors.red),
+                  Text("remove from history", style: .new(color: Colors.red)),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -62,7 +62,7 @@ static void my_application_activate(GApplication* application) {
     gtk_window_set_title(window, "fl_audiobook");
   }
 
-  gtk_window_set_default_size(window, 800, 800);
+  gtk_window_set_default_size(window, 588, 811);
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(
@@ -117,7 +117,6 @@ static void my_application_startup(GApplication* application) {
   // MyApplication* self = MY_APPLICATION(object);
 
   // Perform any actions required at application startup.
-
   G_APPLICATION_CLASS(my_application_parent_class)->startup(application);
 }
 
@@ -154,7 +153,6 @@ MyApplication* my_application_new() {
   // corresponding .desktop file. This ensures better integration by allowing
   // the application to be recognized beyond its binary name.
   g_set_prgname(APPLICATION_ID);
-
 
 
   return MY_APPLICATION(g_object_new(my_application_get_type(),

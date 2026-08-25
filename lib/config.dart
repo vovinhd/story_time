@@ -91,11 +91,19 @@ class ConfigProvider {
       duration: globals.player.state.duration.inMicroseconds,
       lastPlayed: DateTime.now(), author: globals.tags!["artist"],
     );
-    config.playbackStates.removeWhere((value) => value.file == filename);
+    config.playbackStates.removeWhere((value) => value.path == globals.playingFile!.path);
+
     config.playbackStates.insert(0, state);
 
     SaveConfig();
     notify();
+  }
+
+  void removePlaybackState(String path) async {
+    config.playbackStates.removeWhere((value) => value.path == path);
+    SaveConfig();
+    notify();
+
   }
 }
 

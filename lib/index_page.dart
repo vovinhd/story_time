@@ -26,6 +26,7 @@ class _IndexPageState extends State<IndexPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: YaruWindowTitleBar(
+        key: Key("appbar"), 
         backgroundColor: Colors.transparent,
         onClose: (p0) {
           tray.hideOrClose(); 
@@ -38,7 +39,7 @@ class _IndexPageState extends State<IndexPage> {
         ),
         title: Text("Player"),
       ),
-      drawer: Drawer(width: 200,child: DrawerContents(),),
+      drawer: Drawer(width: 200,child: DrawerContents(),shape: RoundedRectangleBorder(borderRadius: .only(topLeft: Radius.circular(8), bottomLeft: Radius.circular(8))),),
       body: BookSelectPage(),
   //       floatingActionButton: FloatingActionButton(
   //       child: Icon(Icons.book), onPressed: () {  

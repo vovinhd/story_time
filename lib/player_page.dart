@@ -85,6 +85,8 @@ class _PlayerPageState extends State<PlayerPage> {
         autofocus: true,
         child: Scaffold(
           appBar: YaruWindowTitleBar(
+                    key: Key("appbar"), 
+
             onClose: (p0) {
               tray.hideOrClose();
             },
