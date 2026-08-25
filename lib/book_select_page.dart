@@ -186,6 +186,7 @@ class BookSelectPageState extends State<BookSelectPage> {
               );
             }
             return GestureDetector(
+              
               onTap: () {
                 _pushPlayerRoute();
               },
@@ -296,16 +297,19 @@ class BookSelectPageState extends State<BookSelectPage> {
                                                       .player
                                                       .playOrPause,
                                                   icon:
-                                                      globals
-                                                          .player
-                                                          .state
-                                                          .playing
-                                                      ? Icon(
-                                                          YaruIcons.media_pause,
-                                                        )
-                                                      : Icon(
-                                                          YaruIcons.media_play,
-                                                        ),
+                                                      StreamBuilder(
+                                                        stream: globals.player.stream.playing,
+                                                        builder: (context, asyncSnapshot) {
+                                                          var playing = globals.player.state.playing; 
+                                                          if (asyncSnapshot.hasData) {
+                                                            playing = asyncSnapshot.data!; 
+                                                          }
+                                                          return Icon(
+                                                              playing ? YaruIcons.media_pause : YaruIcons.media_play,
+                                                            );
+                                                        }
+                                                      )
+                                                      
                                                 ),
                                                 CurrentPositionInChapterLabel(),
                                                 Expanded(
@@ -319,15 +323,15 @@ class BookSelectPageState extends State<BookSelectPage> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 60, // Custom width
-                                      height: 60, // Custom height
+                                    // SizedBox(
+                                    //   width: 60, // Custom width
+                                    //   height: 60, // Custom height
 
-                                      child: Icon(
-                                        Icons.keyboard_arrow_right,
-                                        size: 30,
-                                      ),
-                                    ),
+                                    //   child: Icon(
+                                    //     Icons.keyboard_arrow_right,
+                                    //     size: 30,
+                                    //   ),
+                                    // ),
                                   ],
                                 ),
                               )),

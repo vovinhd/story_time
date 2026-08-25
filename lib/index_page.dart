@@ -26,7 +26,7 @@ class _IndexPageState extends State<IndexPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: YaruWindowTitleBar(
-        key: Key("appbar"), 
+        heroTag: "appbar", 
         backgroundColor: Colors.transparent,
         onClose: (p0) {
           tray.hideOrClose(); 

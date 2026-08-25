@@ -84,6 +84,9 @@ Future<void> main() async {
       },
       invalidatedProperties: ["PlaybackStatus"],
     );
+
+    setSytemTrayCanPlayPause(playing);
+
   });
 
   runApp(const ExampleHome());

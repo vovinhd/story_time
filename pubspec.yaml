@@ -79,7 +79,8 @@ flutter:
   assets:
      - images/cover_default.png
      - images/app_icon.png
-
+     - images/play.png     
+     - images/pause.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
