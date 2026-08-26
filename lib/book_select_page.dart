@@ -169,16 +169,34 @@ class BookSelectPageState extends State<BookSelectPage> {
               return Container(
                 height: 200,
                 child: Column(
+                  mainAxisAlignment: .center,
                   children: [
-                    Text("Nothing playing"),
+                    SizedBox(
+                      height: 60,
+                      child: Image.asset("images/cover_default.png", key: UniqueKey())),
+                    Text(
+                      "Listen to audiobooks",
+                      style: .new(fontSize: 32, fontWeight: .bold),
+                    ),
+                    Text(
+                      "in .m4b format with metadata because this is programmed like crap",
+                    ),
+
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Center(
-                        child: YaruSplitButton(
-                          items: null,
-                          child: Text("Open Audiobook"),
-                          onPressed: () => pickFile(),
-                        ),
+                      child: Column(
+                        children: [
+                          Center(
+                            child: TextButton(
+                              child: Text("Open Audiobook", style: .new(fontWeight: .bold),),
+                              onPressed: () => pickFile(),
+                              style: .new(
+                                backgroundColor: WidgetStatePropertyAll(YaruColors.adwaitaYellow), 
+                                foregroundColor: WidgetStatePropertyAll(YaruColors.porcelain)
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -186,7 +204,6 @@ class BookSelectPageState extends State<BookSelectPage> {
               );
             }
             return GestureDetector(
-              
               onTap: () {
                 _pushPlayerRoute();
               },
@@ -296,20 +313,35 @@ class BookSelectPageState extends State<BookSelectPage> {
                                                   onPressed: globals
                                                       .player
                                                       .playOrPause,
-                                                  icon:
-                                                      StreamBuilder(
-                                                        stream: globals.player.stream.playing,
-                                                        builder: (context, asyncSnapshot) {
-                                                          var playing = globals.player.state.playing; 
-                                                          if (asyncSnapshot.hasData) {
-                                                            playing = asyncSnapshot.data!; 
+                                                  icon: StreamBuilder(
+                                                    stream: globals
+                                                        .player
+                                                        .stream
+                                                        .playing,
+                                                    builder:
+                                                        (
+                                                          context,
+                                                          asyncSnapshot,
+                                                        ) {
+                                                          var playing = globals
+                                                              .player
+                                                              .state
+                                                              .playing;
+                                                          if (asyncSnapshot
+                                                              .hasData) {
+                                                            playing =
+                                                                asyncSnapshot
+                                                                    .data!;
                                                           }
                                                           return Icon(
-                                                              playing ? YaruIcons.media_pause : YaruIcons.media_play,
-                                                            );
-                                                        }
-                                                      )
-                                                      
+                                                            playing
+                                                                ? YaruIcons
+                                                                      .media_pause
+                                                                : YaruIcons
+                                                                      .media_play,
+                                                          );
+                                                        },
+                                                  ),
                                                 ),
                                                 CurrentPositionInChapterLabel(),
                                                 Expanded(
@@ -423,6 +455,7 @@ class BookSelectPageState extends State<BookSelectPage> {
                             _openFile(bookFile, position: state.position),
                           },
                           child: Card(
+                            clipBehavior: .antiAlias,
                             child: Container(
                               padding: EdgeInsets.only(right: 8),
                               height: 100,
@@ -609,29 +642,26 @@ class BookSelectPageState extends State<BookSelectPage> {
   }
 }
 
-
 void openBookDirectory(String path) async {
   print("Show ${path} in file explorer");
   try {
-
     final isDirectory = await Directory(path).exists();
     final isFile = await File(path).exists();
 
     if (isDirectory) {
       Process.run("xdg-open", [path]);
-      return; 
+      return;
     } else if (isFile) {
-      // remove file name 
-      var dirs = path.split("/"); 
-      dirs.removeLast(); 
-      var dir = dirs.join("/"); 
+      // remove file name
+      var dirs = path.split("/");
+      dirs.removeLast();
+      var dir = dirs.join("/");
       Process.run("xdg-open", [dir]);
     } else {
-      print("?????"); 
+      print("?????");
     }
-
   } catch (e) {
-    print(e); 
+    print(e);
   }
 }
 
@@ -654,24 +684,27 @@ class BookMenu extends StatelessWidget {
         decoration: popoverBoxDecoration,
         child: Column(
           children: [
-
             TextButton(
               onPressed: () => {openBookDirectory(bookPlayebackState.path)},
               child: Row(
                 spacing: 8,
                 children: [
                   Icon(YaruIcons.folder_open, color: Colors.white),
-                  Text("Show in file explorer", style: .new(color: Colors.white,),)
+                  Text(
+                    "Show in file explorer",
+                    style: .new(color: Colors.white),
+                  ),
                 ],
               ),
             ),
 
-
             TextButton(
-              onLongPress: () => {ConfigProvider().removePlaybackState(bookPlayebackState.path)},
+              onLongPress: () => {
+                ConfigProvider().removePlaybackState(bookPlayebackState.path),
+              },
               onPressed: () => [],
               child: Row(
-                                spacing: 8,
+                spacing: 8,
 
                 children: [
                   Icon(YaruIcons.trash, color: Colors.red),
