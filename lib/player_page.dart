@@ -34,39 +34,11 @@ int chapterInfoTimeToMicros(String timestamp) {
 double lastPos = 0.0;
 
 class PlayerPage extends StatefulWidget {
-  const PlayerPage({
-    super.key,
-    required this.player,
-    required this.chapters,
-    required this.tags,
-    required this.cover,
-  });
-
-  final Player player;
-  final List<ChapterInformation> chapters;
-  final Map<String, dynamic> tags;
-  final Image cover;
-
-  ChapterInformation _getChapterFor(Duration position) {
-    for (var chapter in chapters) {
-      final chapterStartTime = chapterInfoTimeToMicros(chapter.startTime!);
-      final chapterEndTime = chapterInfoTimeToMicros(chapter.endTime!);
-      final positionMicros = position.inMicroseconds;
-      if (chapterStartTime < positionMicros &&
-          positionMicros <= chapterEndTime) {
-        return chapter;
-      }
-    }
-
-    return chapters.first;
-  }
+  const PlayerPage({super.key});
 
   @override
   State<PlayerPage> createState() => _PlayerPageState();
 
-  void _openChapterActionSheet() {
-    print("TODO!");
-  }
 }
 
 class _PlayerPageState extends State<PlayerPage> {
@@ -74,7 +46,6 @@ class _PlayerPageState extends State<PlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
         const SingleActivator(LogicalKeyboardKey.space): () {
@@ -166,7 +137,7 @@ class _PlayerPageState extends State<PlayerPage> {
                                   constraints: BoxConstraints.expand(),
                                   child: Hero(
                                     tag: globals.playingFile!.name.hashCode,
-                                    child: widget.cover,
+                                    child: globals.coverImage,
                                   ),
                                 ),
               
@@ -278,9 +249,9 @@ class _PlayerPageState extends State<PlayerPage> {
                                     pos = globals.player.state.position;
                                   }
                                   return ChapterListButton(
-                                    chapters: widget.chapters,
+                                    chapters: globals.chapters!,
                                     currentChapter: globals.getChapterFor(pos),
-                                    player: widget.player,
+                                    player: globals.player,
                                   );
                                 },
                               ),

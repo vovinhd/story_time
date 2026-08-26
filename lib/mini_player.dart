@@ -65,10 +65,6 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                     context,
                                     MaterialPageRoute<void>(
                                       builder: (context) => PlayerPage(
-                                        player: globals.player,
-                                        chapters: globals.chapters!,
-                                        tags: globals.tags!,
-                                        cover: globals.coverImage,
                                       ),
                                     ),
                                   ),

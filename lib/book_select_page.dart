@@ -5,9 +5,10 @@ import 'dart:ui';
 import 'package:dbus/dbus.dart';
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:fl_audiobook/config.dart';
+import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/playback_position_slider.dart';
+import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/player_page.dart';
 import 'package:fl_audiobook/time_display.dart';
 import 'package:flutter/material.dart';
@@ -19,22 +20,6 @@ import 'package:xdg_directories/xdg_directories.dart';
 import 'package:yaru/yaru.dart';
 
 StreamSubscription? subs;
-
-final class BookFile {
-  final String name;
-  final String path;
-
-  new({required this.name, required this.path});
-  File? get coverImage {
-    final coverPath = "${dataHome.path}/${globals.APP_DIR}/${name}.jpg";
-    var coverFile = File(coverPath);
-    if (coverFile.existsSync()) {
-      return coverFile;
-    }
-
-    return null;
-  }
-}
 
 StreamController<bool> requestFilePickStream = StreamController<bool>.new();
 
@@ -116,10 +101,7 @@ class BookSelectPageState extends State<BookSelectPage> {
       Navigator.of(context).push(
         MaterialPageRoute<void>(
           builder: (context) => PlayerPage(
-            player: globals.player,
-            chapters: globals.chapters!,
-            tags: globals.tags!,
-            cover: globals.coverImage,
+            
           ),
         ),
       );
