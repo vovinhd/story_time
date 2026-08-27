@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:dbus/dbus.dart';
-import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
+// import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
@@ -18,6 +18,8 @@ import 'package:media_kit/media_kit.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:xdg_directories/xdg_directories.dart';
 import 'package:yaru/yaru.dart';
+import 'package:ffmpeg_kit_next_flutter/ffprobe_kit.dart';
+import 'package:ffmpeg_kit_next_flutter/ffmpeg_kit.dart';
 
 StreamSubscription? subs;
 
@@ -69,10 +71,30 @@ class BookSelectPageState extends State<BookSelectPage> {
     final canonicalPath = "\"${file.path}\"";
     globals.playingFile = file;
 
-    final session = FFprobeKit.getMediaInformation(canonicalPath);
+
+    final commandArguments = [
+      "-v",
+      "error",
+      "-hide_banner",
+      "-print_format",
+      "json",
+      "-show_format",
+      "-show_streams",
+      "-show_chapters",
+      "-show_entries", "format",
+      "-i",
+      file.path
+    ];
+
+
+    final session = await FFprobeKit.getMediaInformationFromCommandArguments(commandArguments);
     final info = session.getMediaInformation();
-    globals.chapters = info?.chapters;
-    globals.tags = info?.tags;
+    var tempChapters = info?.getChapters();
+    globals.chapters = tempChapters!.map((ffprobeChapter) => AudiobookChapter.fromChapterInfo(ffprobeChapter)).toList();
+    var temp = info?.getTags();
+    var temp2 = temp!.map((key, value) => MapEntry(key.toString(), value.toString()));
+
+    globals.tags = temp2; 
 
     var coverFile = file.coverImage;
 
@@ -519,6 +541,7 @@ class BookSelectPageState extends State<BookSelectPage> {
 
                                       PortalTarget(
                                         visible: showBookMenu != "",
+                                        // portalFollower: Container(color: Colors.amber,),
                                         portalFollower: GestureDetector(
                                           behavior: HitTestBehavior.opaque,
                                           onTap: () {

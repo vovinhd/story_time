@@ -16,11 +16,11 @@ class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
   void _seekPlayhead(double value) {
     lastPos = value;
     var currentChapter = globals.getCurrentChapter();
-    final double chapterStartTime = globals
-        .chapterInfoTimeToMicros(currentChapter.startTime!)
+    final double chapterStartTime = 
+        currentChapter.start.inMicroseconds
         .toDouble();
-    final double chapterEndTime = globals
-        .chapterInfoTimeToMicros(currentChapter.endTime!)
+    final double chapterEndTime = 
+        currentChapter.end.inMicroseconds
         .toDouble();
 
     final micros = Duration(
@@ -37,11 +37,9 @@ class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
     }
     var currentChapter = globals.getCurrentChapter();
 
-    final double chapterStartTime = globals
-        .chapterInfoTimeToMicros(currentChapter.startTime!)
+    final double chapterStartTime = currentChapter.start.inMicroseconds
         .toDouble();
-    final double chapterEndTime = globals
-        .chapterInfoTimeToMicros(currentChapter.endTime!)
+    final double chapterEndTime = currentChapter.end.inMicroseconds
         .toDouble();
     final double positionMicros = duration.inMicroseconds.toDouble();
 

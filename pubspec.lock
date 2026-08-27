@@ -209,6 +209,20 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.13"
+  ffmpeg_kit_next_flutter:
+    dependency: "direct main"
+    description:
+      path: "../../ffmpeg-kit-next/flutter/flutter"
+      relative: true
+    source: path
+    version: "9.0.0"
+  ffmpeg_kit_next_flutter_platform_interface:
+    dependency: transitive
+    description:
+      path: "../../ffmpeg-kit-next/flutter/flutter_platform_interface"
+      relative: true
+    source: path
+    version: "0.3.0"
   file_md5:
     dependency: "direct main"
     description:

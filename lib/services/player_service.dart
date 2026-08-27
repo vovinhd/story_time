@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
+import 'package:ffmpeg_kit_next_flutter/chapter.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:flutter/widgets.dart';
 import 'package:media_kit/media_kit.dart';
@@ -24,31 +25,35 @@ final class BookFile {
   }
 }
 
-class Chapter {
+class AudiobookChapter {
+
+  // ignore: non_constant_identifier_names
+  static AudiobookChapter EMPTY = AudiobookChapter._(title: "", start: Duration(seconds: 0), end: Duration(seconds: 1), duration: Duration(seconds: 1));  
+
   Duration start;
   Duration end;
   String title;
   Duration duration;
 
-  factory Chapter.fromChapterInfo(ChapterInformation info) {
+  factory AudiobookChapter.fromChapterInfo(Chapter info) {
     // it's either parsing timestamps in seconds like "60.0000002" or
     // parsing a time base (like "1/44100") and dividing info.start and info.end
     // by that. This seemed easier at the moment, but maybe there's value
     // in caputring the sample rate?
-    final startMicros = _chapterInfoTimeToMicros(info.startTime!);
-    final endMicros = _chapterInfoTimeToMicros(info.endTime!);
+    final startMicros = _chapterInfoTimeToMicros(info.getStartTime()!);
+    final endMicros = _chapterInfoTimeToMicros(info.getEndTime()!);
 
     final durationMicros = endMicros - startMicros;
 
     var title = "";
 
-    if (info.tags != null && info.tags!["title"] != null) {
-      title = info.tags!["title"];
-    } else if (info.id != null) {
-      title = info.id!.toString();
+    if (info.getTags() != null && info.getTags()!["title"] != null) {
+      title = info.getTags()!["title"];
+    } else if (info.getId() != null) {
+      title = info.getId()!.toString();
     }
 
-    return Chapter._(
+    return AudiobookChapter._(
       title: title,
       start: Duration(microseconds: startMicros),
       end: Duration(microseconds: endMicros),
@@ -56,7 +61,7 @@ class Chapter {
     );
   }
 
-  Chapter._({
+  AudiobookChapter._({
     required this.title,
     required this.start,
     required this.end,
@@ -100,9 +105,9 @@ class PlayerService {
   int resumedPosition = 0;
 
   final skipbackTime = 2;
-  List<Chapter> chapters = [];
+  List<AudiobookChapter> chapters = [];
 
-  Chapter? get currentChapter {
+  AudiobookChapter? get currentChapter {
     return getChapterFor(_player.state.position);
   }
 
@@ -121,7 +126,7 @@ class PlayerService {
     return _player.stream.position;
   }
 
-  Chapter? getChapterFor(Duration position) {
+  AudiobookChapter? getChapterFor(Duration position) {
     for (var chapter in chapters) {
       final positionMicros = position.inMicroseconds;
       if (chapter.start.inMicroseconds <= positionMicros &&
@@ -140,34 +145,34 @@ class PlayerService {
   }
 
   Future<void> openFile(BookFile file, {int position = 0}) async {
-    // TODO finish this tmr
-    print("opening ${file.name} at ${position}");
+    // // TODO finish this tmr
+    // print("opening ${file.name} at ${position}");
 
-    resumedPosition = position;
-    playingFile = file;
+    // resumedPosition = position;
+    // playingFile = file;
 
-    final canonicalPath = "\"${file.path}\"";
-    final session = FFprobeKit.getMediaInformation(canonicalPath);
+    // final canonicalPath = "\"${file.path}\"";
+    // final session = FFprobeKit.getMediaInformation(canonicalPath);
 
-    final media = Media(file.path, start: Duration(microseconds: position));
-    final info = session.getMediaInformation();
+    // final media = Media(file.path, start: Duration(microseconds: position));
+    // final info = session.getMediaInformation();
 
-    if (info != null) {
-      chapters = info.chapters.map(Chapter.fromChapterInfo).toList();
-      if (info.tags != null) {
-        tags = info.tags!; 
-      }
-    } else {
-      chapters = [
-        Chapter._(
-          title: "title",
-          start: Duration(microseconds: 0),
-          end: media.end!,
-          duration: media.end!,
-        ),
-      ];
-    }
-    return;
+    // if (info != null) {
+    //   chapters = info.chapters.map(AudiobookChapter.fromChapterInfo).toList();
+    //   if (info.tags != null) {
+    //     tags = info.tags!; 
+    //   }
+    // } else {
+    //   chapters = [
+    //     AudiobookChapter._(
+    //       title: "title",
+    //       start: Duration(microseconds: 0),
+    //       end: media.end!,
+    //       duration: media.end!,
+    //     ),
+    //   ];
+    // }
+    // return;
   }
 
   void seek(Duration duration) {
@@ -180,7 +185,7 @@ class PlayerService {
     seekOffset(-10);
   }
 
-  void seekChapter(Chapter ch) {
+  void seekChapter(AudiobookChapter ch) {
     seek(ch.start);
   }
 

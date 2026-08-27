@@ -2,8 +2,10 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
+import 'package:ffmpeg_kit_next_flutter/chapter.dart';
 import 'package:fl_audiobook/auto_pause_timer.dart';
 import 'package:fl_audiobook/playback_position_slider.dart';
+import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/time_display.dart';
 import 'package:fl_audiobook/tray.dart' as tray;
 import 'package:flutter/material.dart';
@@ -846,15 +848,15 @@ class ChapterListButton extends StatefulWidget {
     required this.player,
   });
 
-  final List<ChapterInformation> chapters;
-  final ChapterInformation currentChapter;
+  final List<AudiobookChapter> chapters;
+  final AudiobookChapter currentChapter;
   final Player player;
   @override
   State<ChapterListButton> createState() => _ChapterListButtonState();
 
-  void _seekChapter(ChapterInformation chapterInformation) {
+  void _seekChapter(AudiobookChapter chapterInformation) {
     final micros = (Duration(
-      microseconds: chapterInfoTimeToMicros(chapterInformation.startTime!),
+      microseconds:chapterInformation.start.inMicroseconds,
     ));
 
     player.seek(micros + Duration(milliseconds: 1));
@@ -878,7 +880,7 @@ class _ChapterListButtonState extends State<ChapterListButton> {
               } else {
                 pos = globals.player.state.position;
               }
-              return Text(globals.getChapterFor(pos).tags!["title"]);
+              return Text(globals.getChapterFor(pos).title);
             },
           ),
         ],
@@ -910,13 +912,13 @@ class _ChapterListButtonState extends State<ChapterListButton> {
                         itemCount: widget.chapters.length,
                         itemBuilder: (BuildContext context, int index) {
                           return ListTile(
-                            title: Text(widget.chapters[index].tags!["title"]),
+                            title: Text(widget.chapters[index].title),
                             trailing: Text(
                               printDuration(
                                 Duration(
-                                  microseconds: (chapterInfoTimeToMicros(
-                                    widget.chapters[index].startTime!,
-                                  )),
+                                  microseconds: (
+                                    widget.chapters[index].start.inMicroseconds
+                                  ),
                                 ),
                               ),
                             ),

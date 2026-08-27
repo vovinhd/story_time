@@ -19,18 +19,14 @@ String printDuration(Duration duration) {
 
 Duration timeInChapter(Duration position) {
   var currentChapter = globals.getChapterFor(position);
-  final int chapterStartTime = globals.chapterInfoTimeToMicros(
-    currentChapter.startTime!,
-  );
+  final int chapterStartTime = currentChapter.start.inMicroseconds;
   return Duration(microseconds: (position.inMicroseconds - chapterStartTime));
 }
 
 
 Duration timeLeftInChapter(Duration position) {
   var currentChapter = globals.getChapterFor(position);
-  final int chapterEndTime = globals.chapterInfoTimeToMicros(
-    currentChapter.endTime!,
-  );
+  final int chapterEndTime = currentChapter.end.inMicroseconds; 
   return Duration(microseconds: (position.inMicroseconds - chapterEndTime));
 }
 

@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:dbus/dbus.dart';
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
+import 'package:ffmpeg_kit_next_flutter/chapter.dart';
 import 'package:fl_audiobook/book_select_page.dart';
 import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/media_player2.dart';
@@ -39,7 +40,7 @@ Map<String, dynamic>? tags;
 
 // });
 
-List<ChapterInformation>? chapters;
+List<AudiobookChapter>? chapters;
 
 StreamController<BookFile> selectedBookStream = StreamController<BookFile>.broadcast(); 
 StreamController<Duration> seekStream  = StreamController<Duration>.broadcast(); 
@@ -53,29 +54,22 @@ int chapterInfoTimeToMicros(String timestamp) {
   }
 }
 
-ChapterInformation getCurrentChapter() {
+AudiobookChapter getCurrentChapter() {
   return getChapterFor(player.state.position);
 }
 
-ChapterInformation getChapterFor(Duration position) {
-  var nullChapterInfo = ChapterInformation(
-    id: -1,
-    startTime: "00:00:00",
-    endTime: player.state.duration.toString(),
-    tagsJson: "{\"title\": \"title\" }",
-  );
-  if (chapters == null) {
-    return nullChapterInfo;
-  }
+AudiobookChapter getChapterFor(Duration position) {
+
   for (var chapter in chapters!) {
-    final chapterStartTime = chapterInfoTimeToMicros(chapter.startTime!);
-    final chapterEndTime = chapterInfoTimeToMicros(chapter.endTime!);
+    final chapterStartTime = chapter.start.inMicroseconds;
+    final chapterEndTime = chapter.end.inMicroseconds;
     final positionMicros = position.inMicroseconds;
     if (chapterStartTime < positionMicros && positionMicros <= chapterEndTime) {
       return chapter;
     }
   }
-  return nullChapterInfo;
+
+  return AudiobookChapter.EMPTY; 
 }
 
 

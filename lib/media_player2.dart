@@ -161,13 +161,11 @@ class MediaPlayer2 extends DBusObject {
     final tags = globals.tags!;
     final currentChapterInfo = globals.getCurrentChapter();
 
-    final title = currentChapterInfo.tags!["title"] ?? "";
+    final title = currentChapterInfo.title;
     final List<String> artist = [tags["artist"]] ;
     final album = tags["album"] ?? "";
 
-    final length =
-        chapterInfoTimeToMicros(currentChapterInfo.endTime!) -
-        chapterInfoTimeToMicros(currentChapterInfo.startTime!);
+    final length = currentChapterInfo.duration.inMicroseconds; 
     final fileUrl = "file://${globals.playingFile!.path}";
     final artUrl = "file://${globals.playingFile!.coverImage!.path}";
 
