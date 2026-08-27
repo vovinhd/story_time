@@ -1,8 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
-import 'package:ffmpeg_kit_next_flutter/chapter.dart';
 import 'package:fl_audiobook/auto_pause_timer.dart';
 import 'package:fl_audiobook/playback_position_slider.dart';
 import 'package:fl_audiobook/services/player_service.dart';

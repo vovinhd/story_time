@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:ffmpeg_kit_next_flutter/chapter.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:flutter/widgets.dart';

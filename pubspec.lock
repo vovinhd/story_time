@@ -97,14 +97,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.2"
-  code_assets:
-    dependency: transitive
-    description:
-      name: code_assets
-      sha256: bf394f466ba9205f1812a0433b392d6af280f155f56651eda7c18cc32ed493b8
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.1"
   collection:
     dependency: transitive
     description:
@@ -201,14 +193,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.2"
-  ffmpeg_kit_extended_flutter:
-    dependency: "direct main"
-    description:
-      name: ffmpeg_kit_extended_flutter
-      sha256: d4c9262b28bff3810184a2845b69b0b32fd052b1785589f5ff3dcfe2f9ed9eab
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.5.13"
   ffmpeg_kit_next_flutter:
     dependency: "direct main"
     description:
@@ -371,14 +355,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.2"
-  hooks:
-    dependency: transitive
-    description:
-      name: hooks
-      sha256: "9a62a50b50b769a737bc0a8ff381f333529df3ab746b2f6b02e83760231455ba"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.2"
   http:
     dependency: transitive
     description:
@@ -667,14 +643,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
-  record_use:
-    dependency: transitive
-    description:
-      name: record_use
-      sha256: "2551bd8eecfe95d14ae75f6021ad0248be5c27f138c2ec12fcb52b500b3ba1ed"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.6.0"
   safe_change_notifier:
     dependency: "direct main"
     description:

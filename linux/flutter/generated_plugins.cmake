@@ -3,7 +3,6 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  ffmpeg_kit_extended_flutter
   ffmpeg_kit_next_flutter
   gtk
   handy_window

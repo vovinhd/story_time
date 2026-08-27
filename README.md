@@ -15,3 +15,6 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+vovin@the-red-scare:~/git/fl-audiobook/fl_audiobook$ LD_LIBRARY_PATH="$LD_LIBRARY_PATH://home/vovin/git/fl-audiobook/fl_audiobook/build/linux/x64/release/bundle/lib/" fastforge package --platform=linux --targets=appimage --skip-clean

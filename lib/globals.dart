@@ -2,9 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:dbus/dbus.dart';
-import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
-import 'package:ffmpeg_kit_next_flutter/chapter.dart';
-import 'package:fl_audiobook/book_select_page.dart';
 import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/media_player2.dart';
 import 'package:fl_audiobook/services/player_service.dart';
@@ -123,10 +120,8 @@ void seek(Duration duration) {
   player.seek(duration);
 }
 
-void seekChapter(ChapterInformation ch) {
-  final micros = (Duration(
-    microseconds: chapterInfoTimeToMicros(ch.startTime!),
-  ));
+void seekChapter(AudiobookChapter ch) {
+  final micros = ch.start;
 
   player.seek(micros);
 }
