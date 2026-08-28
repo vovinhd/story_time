@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
@@ -280,7 +281,17 @@ class UnskipButton extends StatefulWidget {
 
 class _UnskipButtonState extends State<UnskipButton> {
   Duration lastUnskip = Duration();
-  var show = false;
+  Duration lastConsumed = Duration(); 
+  bool timedOut = false; 
+  Timer? timer;  
+  
+
+  void onTimedOut() {
+    setState(
+      () => timedOut = true
+    );
+    return;  
+  }
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -292,15 +303,21 @@ class _UnskipButtonState extends State<UnskipButton> {
             if (!asyncSnapshot.hasData) {
               return SizedBox();
             }
-            show =
-                lastUnskip.inMilliseconds != asyncSnapshot.data!.inMilliseconds;
 
-            // print("{lastUnskip.inMilliseconds} != ${lastUnskip.inMilliseconds}? ${show}");
-            lastUnskip = asyncSnapshot.data!;
+            print("${asyncSnapshot.data!.inSeconds}, ${lastUnskip.inSeconds}, ${lastConsumed.inSeconds}, ${timedOut}");
 
-            if (!show) {
+            if (lastUnskip.inSeconds == lastConsumed.inSeconds || timedOut) {
+              lastUnskip = asyncSnapshot.data!;
+              timedOut = false; 
               return SizedBox();
             }
+
+
+            timer?.cancel(); 
+
+            timer =  Timer(const Duration(seconds: 5), onTimedOut); 
+
+
             return Container(
               child: TextButton.icon(
                 style: TextButton.styleFrom(
@@ -315,14 +332,16 @@ class _UnskipButtonState extends State<UnskipButton> {
                   if (asyncSnapshot.hasData) {
                     print("unskip ${asyncSnapshot.data!.inSeconds}");
                     PlayerService().seek(asyncSnapshot.data!); // don't use globals.seek to not reemit the position and make a looping go back go back go back button
+                    lastConsumed = asyncSnapshot.data!;
                     lastUnskip = asyncSnapshot.data!;
-                    setState(() {});
+
+                    // setState(() {});
                   }
                 },
                 label: Text(
-                  "unskip ${asyncSnapshot.data?.inSeconds ?? "null"}",
+                  "go back",
                 ),
-                icon: Icon(YaruIcons.arrow_left),
+                icon: Icon(YaruIcons.undo),
               ),
             ).animate().slideY(begin: .2, end: 0).fade();
           },

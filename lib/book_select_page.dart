@@ -180,8 +180,7 @@ class BookSelectPageState extends State<BookSelectPage> {
                               child:
                                   Image(
                                         fit: .fill,
-                                        image: globals
-                                            .playerService
+                                        image: PlayerService()
                                             .coverImage
                                             .image,
                                         height: double.infinity,
@@ -250,16 +249,14 @@ class BookSelectPageState extends State<BookSelectPage> {
                                                     ),
                                                   ),
                                                   Text(
-                                                    globals
-                                                        .playerService
+                                                    PlayerService()
                                                         .tags["title"],
                                                     style: TextStyle(
                                                       fontSize: 32,
                                                     ),
                                                   ),
                                                   Text(
-                                                    globals
-                                                        .playerService
+                                                    PlayerService()
                                                         .tags["artist"],
                                                     style: TextStyle(
                                                       fontSize: 22,
@@ -271,20 +268,17 @@ class BookSelectPageState extends State<BookSelectPage> {
                                             Row(
                                               children: [
                                                 IconButton(
-                                                  onPressed: globals
-                                                      .playerService
+                                                  onPressed: PlayerService()
                                                       .playOrPause,
                                                   icon: StreamBuilder(
-                                                    stream: globals
-                                                        .playerService
+                                                    stream: PlayerService()
                                                         .isPlayingStream,
                                                     builder:
                                                         (
                                                           context,
                                                           asyncSnapshot,
                                                         ) {
-                                                          var playing = globals
-                                                              .playerService
+                                                          var playing = PlayerService()
                                                               .isPlaying;
                                                           if (asyncSnapshot
                                                               .hasData) {

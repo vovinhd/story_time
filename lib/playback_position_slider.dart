@@ -1,9 +1,7 @@
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:flutter/material.dart';
 
-
 class PlaybackPositionSlider extends StatefulWidget {
-
   const new({super.key});
 
   @override
@@ -16,12 +14,9 @@ class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
   void _seekPlayhead(double value) {
     lastPos = value;
     var currentChapter = PlayerService().currentChapter;
-    final double chapterStartTime = 
-        currentChapter!.start.inMicroseconds
+    final double chapterStartTime = currentChapter!.start.inMicroseconds
         .toDouble();
-    final double chapterEndTime = 
-        currentChapter.end.inMicroseconds
-        .toDouble();
+    final double chapterEndTime = currentChapter.end.inMicroseconds.toDouble();
 
     final micros = Duration(
       microseconds:
@@ -39,8 +34,7 @@ class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
 
     final double chapterStartTime = currentChapter.start.inMicroseconds
         .toDouble();
-    final double chapterEndTime = currentChapter.end.inMicroseconds
-        .toDouble();
+    final double chapterEndTime = currentChapter.end.inMicroseconds.toDouble();
     final double positionMicros = duration.inMicroseconds.toDouble();
 
     final res =
@@ -57,25 +51,35 @@ class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: PlayerService().positionStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Slider(
-            value: _getPlayheadPosition(snapshot.data!),
-            min: 0,
-            max: 1.0,
-            onChanged: (value) => _seekPlayhead(value),
-          );
-        } else {
-          return Slider(
-            value: _getPlayheadPosition(PlayerService().position),
-            min: 0,
-            max: 1.0,
-            onChanged: (value) => _seekPlayhead(value),
-          );
+      stream: PlayerService().seekStream.stream,
+      builder: (context, asyncSnapshot) {
 
+        var position = PlayerService().position; 
+        if (asyncSnapshot.hasData) {
+          position = asyncSnapshot.data!; 
         }
-      },
+
+        return StreamBuilder(
+          stream: PlayerService().positionStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Slider(
+                value: _getPlayheadPosition(snapshot.data!),
+                min: 0,
+                max: 1.0,
+                onChanged: (value) => _seekPlayhead(value),
+              );
+            } else {
+              return Slider(
+                value: _getPlayheadPosition(position),
+                min: 0,
+                max: 1.0,
+                onChanged: (value) => _seekPlayhead(value),
+              );
+            }
+          },
+        );
+      }
     );
   }
 }
