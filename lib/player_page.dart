@@ -13,7 +13,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:yaru/yaru.dart';
 
-import "globals.dart" as globals;
 
 // Source - https://stackoverflow.com/a/54775297
 // Posted by diegoveloper, modified by community. See post 'Timeline' for change history
@@ -49,7 +48,7 @@ class _PlayerPageState extends State<PlayerPage> {
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
         const SingleActivator(LogicalKeyboardKey.space): () {
-          globals.playerService.playOrPause();
+          PlayerService().playOrPause();
         },
       },
       child: 
@@ -105,7 +104,7 @@ class _PlayerPageState extends State<PlayerPage> {
                   Positioned.fill(
                     child: Image(
                       fit: .fill,
-                      image: globals.playerService.coverImage.image,
+                      image: PlayerService().coverImage.image,
                       height: double.infinity,
                       width: double.infinity,
                       repeat: .noRepeat,
@@ -136,7 +135,7 @@ class _PlayerPageState extends State<PlayerPage> {
                                   margin: EdgeInsets.all(16.0),
                                   constraints: BoxConstraints.expand(),
                                   child: Hero(
-                                    tag: globals.playerService.playingFile?.name.hashCode ?? "",
+                                    tag: PlayerService().playingFile?.name.hashCode ?? "",
                                     child: CoverImage(),
                                   ),
                                 ),
@@ -241,17 +240,17 @@ class _PlayerPageState extends State<PlayerPage> {
                             crossAxisAlignment: .start,
                             children: [
                               StreamBuilder(
-                                stream: globals.playerService.positionStream,
+                                stream: PlayerService().positionStream,
                                 builder: (context, snapshotPosition) {
                                   Duration pos;
                                   if (snapshotPosition.hasData) {
                                     pos = snapshotPosition.data!;
                                   } else {
-                                    pos = globals.playerService.position;
+                                    pos = PlayerService().position;
                                   }
                                   return ChapterListButton(
-                                    chapters: globals.playerService.chapters,
-                                    currentChapter: globals.playerService.currentChapter!,
+                                    chapters: PlayerService().chapters,
+                                    currentChapter: PlayerService().currentChapter!,
                                   );
                                 },
                               ),
@@ -288,7 +287,7 @@ class _UnskipButtonState extends State<UnskipButton> {
       mainAxisAlignment: .center,
       children: [
         StreamBuilder(
-          stream: globals.playerService.seekStream.stream,
+          stream: PlayerService().seekStream.stream,
           builder: (context, asyncSnapshot) {
             if (!asyncSnapshot.hasData) {
               return SizedBox();
@@ -315,7 +314,7 @@ class _UnskipButtonState extends State<UnskipButton> {
                 onPressed: () {
                   if (asyncSnapshot.hasData) {
                     print("unskip ${asyncSnapshot.data!.inSeconds}");
-                    globals.playerService.seek(asyncSnapshot.data!); // don't use globals.seek to not reemit the position and make a looping go back go back go back button
+                    PlayerService().seek(asyncSnapshot.data!); // don't use globals.seek to not reemit the position and make a looping go back go back go back button
                     lastUnskip = asyncSnapshot.data!;
                     setState(() {});
                   }
@@ -436,9 +435,9 @@ class _PlaybackControlsState extends State<PlaybackControls> {
                             });
                           },
                           child: StreamBuilder(
-                            stream: globals.playerService.rateStream,
+                            stream: PlayerService().rateStream,
                             builder: (context, asyncSnapshot) {
-                              double rate = globals.playerService.rate;
+                              double rate = PlayerService().rate;
                               if (asyncSnapshot.hasData) {
                                 rate = asyncSnapshot.data!;
                               }
@@ -529,7 +528,7 @@ class TrackControls extends StatelessWidget {
               YaruIcons.skip_backward,
               size: 30,
             ), // Larger icon to fill the space
-            onPressed: globals.playerService.seekLastChapter,
+            onPressed: PlayerService().seekLastChapter,
           ),
         ),
         SizedBox(
@@ -542,7 +541,7 @@ class TrackControls extends StatelessWidget {
               YaruIcons.fast_backward,
               size: 30,
             ), // Larger icon to fill the space
-            onPressed: globals.playerService.seekBack,
+            onPressed: PlayerService().seekBack,
           ),
         ),
 
@@ -558,7 +557,7 @@ class TrackControls extends StatelessWidget {
               YaruIcons.fast_forward,
               size: 30,
             ), // Larger icon to fill the space
-            onPressed: globals.playerService.seekForward,
+            onPressed: PlayerService().seekForward,
           ),
         ),
         SizedBox(
@@ -572,7 +571,7 @@ class TrackControls extends StatelessWidget {
               YaruIcons.skip_forward,
               size: 30,
             ), // Larger icon to fill the space
-            onPressed: globals.playerService.seekNextChapter,
+            onPressed: PlayerService().seekNextChapter,
           ),
         ),
       ],
@@ -589,7 +588,7 @@ class PlayPauseButton extends StatelessWidget {
       width: 80, // Custom width
       height: 80, // Custom height
       child: StreamBuilder(
-        stream: globals.playerService.isPlayingStream,
+        stream: PlayerService().isPlayingStream,
         builder: (context, asyncSnapshot) {
           if (asyncSnapshot.hasData) {
             return IconButton(
@@ -602,18 +601,18 @@ class PlayPauseButton extends StatelessWidget {
                     : YaruIcons.media_play,
                 size: 48,
               ), // Larger icon to fill the space
-              onPressed: globals.playerService.playOrPause,
+              onPressed: PlayerService().playOrPause,
             );
           }
           return IconButton(
             padding: EdgeInsets.all(12), // Adjust padding to center the icon
             icon: Icon(
-              globals.playerService.isPlaying
+              PlayerService().isPlaying
                   ? YaruIcons.media_pause
                   : YaruIcons.media_play,
               size: 48,
             ), // Larger icon to fill the space
-            onPressed: globals.playerService.playOrPause,
+            onPressed: PlayerService().playOrPause,
           );
         },
       ),
@@ -640,10 +639,10 @@ class TagInfo extends StatelessWidget {
                           right: 8,
                           bottom: 8,
                         ),
-        itemCount: globals.playerService.tags.length,
+        itemCount: PlayerService().tags.length,
         
         itemBuilder: (BuildContext context, int index) {
-          final tags = globals.playerService.tags; 
+          final tags = PlayerService().tags; 
           String key = tags.keys.elementAt(index);
           var value = tags[key]; 
           return Container(
@@ -666,7 +665,7 @@ class VolumeIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: globals.playerService.volumeStream,
+      stream: PlayerService().volumeStream,
       builder: (context, asyncSnapshot) {
         var icon = YaruIcons.speaker;
         if (asyncSnapshot.hasData) {
@@ -727,20 +726,20 @@ class VolumeSlider extends StatelessWidget {
                 child: RotatedBox(
                   quarterTurns: 3,
                   child: StreamBuilder(
-                    stream: globals.playerService.volumeStream,
+                    stream: PlayerService().volumeStream,
                     builder: (context, asyncSnapshot) {
                       var volume = 1.0;
                       if (asyncSnapshot.hasData) {
                         volume = asyncSnapshot.data!;
                       } else {
-                        volume = globals.playerService.volume;
+                        volume = PlayerService().volume;
                       }
                       return Slider(
                         value: volume,
                         min: 0,
                         max: 100.0,
                         onChanged: (value) {
-                          globals.playerService.volume = value;
+                          PlayerService().volume = value;
                         },
                       );
                     },
@@ -792,13 +791,13 @@ class RateOptions extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: StreamBuilder(
-          stream: globals.playerService.rateStream,
+          stream: PlayerService().rateStream,
           builder: (context, asyncSnapshot) {
             var currentRate = 1.0;
             if (asyncSnapshot.hasData) {
               currentRate = asyncSnapshot.data!;
             } else {
-              currentRate = globals.playerService.rate;
+              currentRate = PlayerService().rate;
             }
 
             return ListView.builder(
@@ -822,7 +821,7 @@ class RateOptions extends StatelessWidget {
                   return TextButton(
                     onPressed: () {
                       print("select rate: ${speeds[index]}");
-                      globals.playerService.rate = speeds[index];
+                      PlayerService().rate = speeds[index];
                     },
                     child: Align(
                       alignment: .centerStart,
@@ -857,7 +856,7 @@ class ChapterListButton extends StatefulWidget {
       microseconds:chapterInformation.start.inMicroseconds,
     ));
 
-    globals.playerService.seek(micros + Duration(milliseconds: 1));
+    PlayerService().seek(micros + Duration(milliseconds: 1));
   }
 }
 
@@ -870,15 +869,15 @@ class _ChapterListButtonState extends State<ChapterListButton> {
         children: [
           Icon(YaruIcons.unordered_list),
           StreamBuilder(
-            stream: globals.playerService.positionStream,
+            stream: PlayerService().positionStream,
             builder: (context, asyncSnapshot) {
               Duration pos;
               if (asyncSnapshot.hasData) {
                 pos = asyncSnapshot.data!;
               } else {
-                pos = globals.playerService.position;
+                pos = PlayerService().position;
               }
-              return Text(globals.playerService.getChapterFor(pos)!.title);
+              return Text(PlayerService().getChapterFor(pos)!.title);
             },
           ),
         ],

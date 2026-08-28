@@ -1,14 +1,14 @@
 import 'dart:io';
 
+import 'package:fl_audiobook/services/player_service.dart';
 import 'package:system_tray/system_tray.dart';
 
-import "globals.dart" as globals;
 
 final AppWindow appWindow = AppWindow();
 final SystemTray systemTray = SystemTray();
 
 void hideOrClose() {
-  if (globals.playerService.playingFile != null) {
+  if (PlayerService().playingFile != null) {
     appWindow.hide();
   } else {
     appWindow.close();
@@ -26,8 +26,8 @@ Future<void> setSytemTrayCanPlayPause(bool playing) async {
     image: !playing ? "images/play.png" : "images/pause.png",
     label: !playing ? 'Play' : 'Pause',
     onClicked: !playing
-        ? (menuItem) => globals.playerService.play()
-        : (menuItem) => globals.playerService.pause(),
+        ? (menuItem) => PlayerService().play()
+        : (menuItem) => PlayerService().pause(),
   );
 
   var options = [playPauseMenuOption, ...persistentMenuOptions];

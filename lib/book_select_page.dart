@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:dbus/dbus.dart';
 // import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fl_audiobook/services/config.dart';
@@ -53,7 +52,7 @@ class BookSelectPageState extends State<BookSelectPage> {
 
     if (file != null) {
       try {
-        await globals.playerService.openFile(
+        await PlayerService().openFile(
           BookFile(name: file.name, path: file.path!),
         );
         _transition();
@@ -88,12 +87,12 @@ class BookSelectPageState extends State<BookSelectPage> {
     //       (await globals.mediaPlayer2.buildMetadata())!,
     //     ),
     //     "PlaybackStatus": DBusString("Playing"),
-    //     "Position": DBusInt64(globals.playerService.position.inMicroseconds),
+    //     "Position": DBusInt64(PlayerService().position.inMicroseconds),
     //   },
     //   invalidatedProperties: ["PlaybackStatus", "MetaData", "Position"],
     // );
     // globals.mediaPlayer2.emitSeeked(
-    //   globals.playerService.position.inMicroseconds,
+    //   PlayerService().position.inMicroseconds,
     // );
   }
 
@@ -107,7 +106,7 @@ class BookSelectPageState extends State<BookSelectPage> {
       crossAxisAlignment: .start,
       children: [
         StreamBuilder(
-          stream: globals.playerService.selectedBookStream.stream,
+          stream: PlayerService().selectedBookStream.stream,
           builder: (context, asyncSnapshot) {
             if (!asyncSnapshot.hasData || asyncSnapshot.data == null) {
               return SizedBox(
@@ -222,7 +221,7 @@ class BookSelectPageState extends State<BookSelectPage> {
                                   children: [
                                     Hero(
                                       tag: asyncSnapshot.data!.name.hashCode,
-                                      child: globals.playerService.coverImage,
+                                      child: PlayerService().coverImage,
                                     ),
 
                                     Flexible(
@@ -392,9 +391,9 @@ class BookSelectPageState extends State<BookSelectPage> {
                           name: state.file,
                           path: state.path,
                         );
-                        if (globals.playerService.playingFile != null &&
+                        if (PlayerService().playingFile != null &&
                             bookFile.name ==
-                                globals.playerService.playingFile!.name) {
+                                PlayerService().playingFile!.name) {
                           return SizedBox();
                         }
                         final coverfile = bookFile.coverImage;
@@ -414,7 +413,7 @@ class BookSelectPageState extends State<BookSelectPage> {
 
                         return GestureDetector(
                           onTap: () async {
-                            await globals.playerService.openFile(
+                            await PlayerService().openFile(
                               bookFile,
                               position: state.position,
                             );
@@ -503,7 +502,7 @@ class BookSelectPageState extends State<BookSelectPage> {
                                           size: 30,
                                         ), // Larger icon to fill the space
                                         onPressed: () async {
-                                          await globals.playerService.openFile(
+                                          await PlayerService().openFile(
                                             bookFile,
                                             position: state.position,
                                           );

@@ -1,5 +1,5 @@
+import 'package:fl_audiobook/services/player_service.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fl_audiobook/globals.dart' as globals;
 
 class CoverImage extends StatelessWidget {
   const new({super.key});
@@ -7,9 +7,9 @@ class CoverImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: globals.playerService.coverStream.stream,
+      stream: PlayerService().coverStream.stream,
       builder: (context, asyncSnapshot) {
-        var image = globals.playerService.coverImage; 
+        var image = PlayerService().coverImage; 
         if (asyncSnapshot.hasData) {
           image = asyncSnapshot.data!; 
         }

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/player_page.dart';
 import 'package:fl_audiobook/time_display.dart';
@@ -77,7 +76,7 @@ class TimerOptions extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    AutoPauseTimer.startTimer(-timeLeftInChapter(globals.playerService.position), true); 
+                    AutoPauseTimer.startTimer(-timeLeftInChapter(PlayerService().position), true); 
                   },
                   child: Align(
                     alignment: .centerStart,
@@ -128,10 +127,10 @@ class AutoPauseTimer {
   }
 
   AutoPauseTimer._privateConstructor():
-      playingState = globals.playerService.isPlayingStream.listen((data) {
+      playingState = PlayerService().isPlayingStream.listen((data) {
         _instance.onPlaybackStateChanged(data);
       }),
-      playerState = globals.playerService.selectedBookStream.stream.listen((data) {
+      playerState = PlayerService().selectedBookStream.stream.listen((data) {
         _instance.onBookChanged(data); 
       }); 
   
@@ -174,7 +173,7 @@ class AutoPauseTimer {
 
   static void _timerCallback() {
 
-    globals.playerService.pause(); 
+    PlayerService().pause(); 
 
     _instance._autoPauseEmittedController.sink.add(_instance.currentDuration); 
     _instance._autoPauseRunningController.sink.add(false);
@@ -200,7 +199,7 @@ class AutoPauseTimer {
     _instance.autoPauseStopwatch.start();
     _instance._autoPauseRunningController.sink.add(true);
 
-    if (!globals.playerService.isPlaying) {
+    if (!PlayerService().isPlaying) {
       _instance.onPlaybackStateChanged(false); 
     }
 

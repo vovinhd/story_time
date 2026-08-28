@@ -1,8 +1,8 @@
 import 'package:fl_audiobook/book_select_page.dart';
+import 'package:fl_audiobook/services/player_service.dart';
 import 'package:flutter/material.dart';
 import 'package:yaru/yaru.dart';
 
-import 'globals.dart' as globals;
 import 'tray.dart' as tray;
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey(); // Create a key
@@ -17,7 +17,7 @@ class IndexPage extends StatefulWidget {
 class _IndexPageState extends State<IndexPage> {
   @override
   void dispose() {
-    globals.playerService.dispose();
+    PlayerService().dispose();
     super.dispose();
   }
 

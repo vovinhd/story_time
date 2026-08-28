@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:fl_audiobook/globals.dart' as globals;
+import 'package:fl_audiobook/services/player_service.dart';
 import 'package:xdg_directories/xdg_directories.dart';
 
 // ignore: non_constant_identifier_names
@@ -80,26 +81,26 @@ class ConfigProvider {
   }
 
   void updatePlaybackState() async {
-    if (globals.playerService.playingFile == null || globals.playerService.duration.inMicroseconds == 0) return;
+    if (PlayerService().playingFile == null || PlayerService().duration.inMicroseconds == 0) return;
     await Future.delayed(Duration(milliseconds: 100));
-    final filename = globals.playerService.playingFile!.name;
-    final filepath = globals.playerService.playingFile!.path;
+    final filename = PlayerService().playingFile!.name;
+    final filepath = PlayerService().playingFile!.path;
 
-    var currentState = config.playbackStates.firstWhere((value) => value.path == globals.playerService.playingFile!.path);
-    if (currentState.position == globals.playerService.position.inMicroseconds) {
+    var currentState = config.playbackStates.firstWhere((value) => value.path == PlayerService().playingFile!.path);
+    if (currentState.position == PlayerService().position.inMicroseconds) {
       return; 
     }
 
     final state = BookPlaybackState(
       file: filename,
       path: filepath,
-      title: globals.playerService.tags["title"],
-      position: globals.playerService.position.inMicroseconds,
-      duration: globals.playerService.duration.inMicroseconds,
-      lastPlayed: DateTime.now(), author: globals.playerService.tags["artist"],
+      title: PlayerService().tags["title"],
+      position: PlayerService().position.inMicroseconds,
+      duration: PlayerService().duration.inMicroseconds,
+      lastPlayed: DateTime.now(), author: PlayerService().tags["artist"],
     );
     
-    config.playbackStates.removeWhere((value) => value.path == globals.playerService.playingFile!.path);
+    config.playbackStates.removeWhere((value) => value.path == PlayerService().playingFile!.path);
 
     config.playbackStates.insert(0, state);
 

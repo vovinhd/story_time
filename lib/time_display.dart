@@ -1,4 +1,4 @@
-import 'package:fl_audiobook/globals.dart' as globals;
+import 'package:fl_audiobook/services/player_service.dart';
 import 'package:flutter/material.dart';
 
 // Source - https://stackoverflow.com/a/54775297
@@ -19,14 +19,14 @@ String printDuration(Duration duration) {
 
 // todo marked for refactor!
 Duration timeInChapter(Duration position) {
-  var currentChapter = globals.playerService.getChapterFor(position)!;
+  var currentChapter = PlayerService().getChapterFor(position)!;
   final int chapterStartTime = currentChapter.start.inMicroseconds;
   return Duration(microseconds: (position.inMicroseconds - chapterStartTime));
 }
 
 
 Duration timeLeftInChapter(Duration position) {
-  var currentChapter = globals.playerService.getChapterFor(position)!;
+  var currentChapter = PlayerService().getChapterFor(position)!;
   final int chapterEndTime = currentChapter.end.inMicroseconds; 
   return Duration(microseconds: (position.inMicroseconds - chapterEndTime));
 }
@@ -38,21 +38,21 @@ class CurrentPositionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row (children: [StreamBuilder(
-      stream: globals.playerService.positionStream,
+      stream: PlayerService().positionStream,
       builder: (context, asyncSnapshot) {
         if (asyncSnapshot.hasData) {
           return Text(printDuration(asyncSnapshot.data!)); 
         }
         
-        return Text(printDuration(globals.playerService.position));
+        return Text(printDuration(PlayerService().position));
       }
     ),Text("/"), StreamBuilder(
-      stream: globals.playerService.durationStream,
+      stream: PlayerService().durationStream,
       builder: (context, asyncSnapshot) {
         if (asyncSnapshot.hasData) {
           return Text(printDuration(asyncSnapshot.data!)); 
         }
-        return Text(printDuration(globals.playerService.duration));
+        return Text(printDuration(PlayerService().duration));
       }
     )]);
   }
@@ -64,12 +64,12 @@ class CurrentPositionInChapterLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: globals.playerService.positionStream,
+      stream: PlayerService().positionStream,
       builder: (context, asyncSnapshot) {
         if (asyncSnapshot.hasData) {
           return Text(printDuration(timeInChapter(asyncSnapshot.data!))); 
         }
-        return Text(printDuration(timeInChapter(globals.playerService.position)));
+        return Text(printDuration(timeInChapter(PlayerService().position)));
       }
     );
   }
@@ -83,12 +83,12 @@ class EndLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: globals.playerService.positionStream,
+      stream: PlayerService().positionStream,
       builder: (context, asyncSnapshot) {
         if (asyncSnapshot.hasData) {
           return Text(printDuration(timeLeftInChapter(asyncSnapshot.data!))); 
         }
-        return Text(printDuration(timeLeftInChapter(globals.playerService.position)));
+        return Text(printDuration(timeLeftInChapter(PlayerService().position)));
       }
     );
   }}

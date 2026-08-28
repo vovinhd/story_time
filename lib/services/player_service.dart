@@ -129,7 +129,7 @@ class PlayerService {
       return 0;
     }
   }
-
+  
   Image coverImage = (Image.asset(
     "images/cover_default.png",
     key: UniqueKey(),
@@ -143,6 +143,13 @@ class PlayerService {
 
   final skipbackTime = 2;
   List<AudiobookChapter> chapters = [];
+
+  PlayerService._privateConstructor();
+  static final PlayerService _instance = PlayerService._privateConstructor(); 
+
+  factory PlayerService() {
+    return _instance;
+  }
 
   AudiobookChapter? get currentChapter {
     return getChapterFor(_player.state.position);

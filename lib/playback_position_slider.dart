@@ -1,4 +1,4 @@
-import 'package:fl_audiobook/globals.dart' as globals;
+import 'package:fl_audiobook/services/player_service.dart';
 import 'package:flutter/material.dart';
 
 
@@ -15,7 +15,7 @@ class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
 
   void _seekPlayhead(double value) {
     lastPos = value;
-    var currentChapter = globals.playerService.currentChapter;
+    var currentChapter = PlayerService().currentChapter;
     final double chapterStartTime = 
         currentChapter!.start.inMicroseconds
         .toDouble();
@@ -28,14 +28,14 @@ class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
           ((chapterEndTime - chapterStartTime) * value + chapterStartTime)
               .round(),
     );
-    globals.playerService.seek(micros);
+    PlayerService().seek(micros);
   }
 
   double _getPlayheadPosition(Duration duration) {
-    if (!globals.playerService.isPlaying) {
+    if (!PlayerService().isPlaying) {
       return lastPos;
     }
-    var currentChapter = globals.playerService.currentChapter!;
+    var currentChapter = PlayerService().currentChapter!;
 
     final double chapterStartTime = currentChapter.start.inMicroseconds
         .toDouble();
@@ -57,7 +57,7 @@ class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: globals.playerService.positionStream,
+      stream: PlayerService().positionStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Slider(
@@ -68,7 +68,7 @@ class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
           );
         } else {
           return Slider(
-            value: _getPlayheadPosition(globals.playerService.position),
+            value: _getPlayheadPosition(PlayerService().position),
             min: 0,
             max: 1.0,
             onChanged: (value) => _seekPlayhead(value),

@@ -5,6 +5,7 @@ import 'package:dbus/dbus.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/home.dart';
 import 'package:fl_audiobook/model.dart';
+import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/tray.dart';
 
 import 'package:media_kit/media_kit.dart';
@@ -31,7 +32,7 @@ Future<void> main() async {
     ..registerLazySingleton<Model>(
       () => Model(di<Connectivity>()),
       dispose: (m) => m.dispose(),
-    );
+    ); 
 
   await di<Model>().init();
 
@@ -72,7 +73,7 @@ Future<void> main() async {
   // client.callMethod(path: DBusObjectPath("/org/freedesktop/DBus"), name: )
 
   
-  globals.playerService.isPlayingStream.listen((playing) {
+  PlayerService().isPlayingStream.listen((playing) {
     //print("hi");
     globals.mediaPlayer2.emitPropertiesChanged(
       "org.mpris.MediaPlayer2.Player",
