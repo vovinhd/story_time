@@ -17,7 +17,7 @@ class IndexPage extends StatefulWidget {
 class _IndexPageState extends State<IndexPage> {
   @override
   void dispose() {
-    globals.player.dispose();
+    globals.playerService.dispose();
     super.dispose();
   }
 

@@ -56,105 +56,105 @@ class BookSelectPageState extends State<BookSelectPage> {
     );
 
     if (file != null) {
-      _openFile(BookFile(name: file.name, path: file.path!));
+      try {
+        await globals.playerService.openFile(
+          BookFile(name: file.name, path: file.path!),
+        );
+        _transition();
+      } catch (e) {
+        print(e);
+      }
     } else {
       // User canceled the picker
       print("User canceled the picker");
     }
   }
 
-  void _openFile(BookFile file, {int position = 0}) async {
-    print("opening ${file.name} at ${position}");
-    globals.resumedPosition = position;
-    final media = Media(file.path, start: Duration(microseconds: position));
-    // print(media.toString());
-    final canonicalPath = "\"${file.path}\"";
-    globals.playingFile = file;
+  // void _openFile(BookFile file, {int position = 0}) async {
+  //   print("opening ${file.name} at ${position}");
+  //   globals.resumedPosition = position;
+  //   final media = Media(file.path, start: Duration(microseconds: position));
+  //   // print(media.toString());
+  //   final canonicalPath = "\"${file.path}\"";
+  //   globals.playingFile = file;
 
+  //   final commandArguments = [
+  //     "-v",
+  //     "error",
+  //     "-hide_banner",
+  //     "-print_format",
+  //     "json",
+  //     "-show_format",
+  //     "-show_streams",
+  //     "-show_chapters",
+  //     "-show_entries", "format",
+  //     "-i",
+  //     file.path
+  //   ];
 
-    final commandArguments = [
-      "-v",
-      "error",
-      "-hide_banner",
-      "-print_format",
-      "json",
-      "-show_format",
-      "-show_streams",
-      "-show_chapters",
-      "-show_entries", "format",
-      "-i",
-      file.path
-    ];
+  //   final session = await FFprobeKit.getMediaInformationFromCommandArguments(commandArguments);
+  //   final info = session.getMediaInformation();
+  //   var tempChapters = info?.getChapters();
+  //   globals.chapters = tempChapters!.map((ffprobeChapter) => AudiobookChapter.fromChapterInfo(ffprobeChapter)).toList();
+  //   var temp = info?.getTags();
+  //   var temp2 = temp!.map((key, value) => MapEntry(key.toString(), value.toString()));
 
+  //   globals.tags = temp2;
 
-    final session = await FFprobeKit.getMediaInformationFromCommandArguments(commandArguments);
-    final info = session.getMediaInformation();
-    var tempChapters = info?.getChapters();
-    globals.chapters = tempChapters!.map((ffprobeChapter) => AudiobookChapter.fromChapterInfo(ffprobeChapter)).toList();
-    var temp = info?.getTags();
-    var temp2 = temp!.map((key, value) => MapEntry(key.toString(), value.toString()));
+  //   var coverFile = await file.coverImage;
 
-    globals.tags = temp2; 
+  //   if (coverFile == null) {
+  //     final coverPath = "${dataHome.path}/${globals.APP_DIR}/${file.name}.jpg";
 
-    var coverFile = await file.coverImage;
+  //     final coverSess = await FFmpegKit.execute(
+  //       "-y -v error -hide_banner -i $canonicalPath -an -vcodec copy \"$coverPath\"",
+  //     );
 
-    if (coverFile == null) {
-      final coverPath = "${dataHome.path}/${globals.APP_DIR}/${file.name}.jpg";
+  //     coverFile = File(coverPath);
+  //     globals.coverImage = Image.file(coverFile, key: UniqueKey());
+  //   } else {
+  //     globals.coverImage = Image.file(coverFile, key: UniqueKey());
+  //   }
 
-      final coverSess = await FFmpegKit.execute(
-        "-y -v error -hide_banner -i $canonicalPath -an -vcodec copy \"$coverPath\"",
-      );
+  //   await globals.player.open(media, play: true);
 
-      coverFile = File(coverPath);
-      globals.coverImage = Image.file(coverFile, key: UniqueKey());
-    } else {
-      globals.coverImage = Image.file(coverFile, key: UniqueKey());
-    }
+  //   globals.selectedBookStream.add(file);
 
-    await globals.player.open(media, play: true);
-
-    globals.selectedBookStream.add(file);
-
-    _transition();
-  }
+  //   _transition();
+  // }
 
   void _pushPlayerRoute() {
     if (mounted) {
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (context) => PlayerPage(
-            
-          ),
-        ),
-      );
+      Navigator.of(context)
+          .push(MaterialPageRoute<void>(builder: (context) => PlayerPage()));
     }
   }
 
   void _transition() async {
-    globals.ready = true;
-    globals.initTimer();
+    // globals.ready = true;
+    // globals.initTimer();
     ConfigProvider().updatePlaybackState();
     // await Future.delayed(Duration(milliseconds: 300), () => {});
     _pushPlayerRoute();
 
     // emit the dbus state change
 
-    globals.mediaPlayer2.emitPropertiesChanged(
-      "org.mpris.MediaPlayer2.Player",
-      changedProperties: {
-        "Metadata": DBusDict(
-          DBusSignature.string,
-          DBusSignature.variant,
-          (await globals.mediaPlayer2.buildMetadata())!,
-        ),
-        "PlaybackStatus": DBusString("Playing"),
-        "Position": DBusInt64(globals.player.state.position.inMicroseconds),
-      },
-      invalidatedProperties: ["PlaybackStatus", "MetaData", "Position"],
-    );
-    globals.mediaPlayer2.emitSeeked(
-      globals.player.state.position.inMicroseconds,
-    );
+    // globals.mediaPlayer2.emitPropertiesChanged(
+    //   "org.mpris.MediaPlayer2.Player",
+    //   changedProperties: {
+    //     "Metadata": DBusDict(
+    //       DBusSignature.string,
+    //       DBusSignature.variant,
+    //       (await globals.mediaPlayer2.buildMetadata())!,
+    //     ),
+    //     "PlaybackStatus": DBusString("Playing"),
+    //     "Position": DBusInt64(globals.playerService.position.inMicroseconds),
+    //   },
+    //   invalidatedProperties: ["PlaybackStatus", "MetaData", "Position"],
+    // );
+    // globals.mediaPlayer2.emitSeeked(
+    //   globals.playerService.position.inMicroseconds,
+    // );
   }
 
   var offset = 0.0;
@@ -167,7 +167,7 @@ class BookSelectPageState extends State<BookSelectPage> {
       crossAxisAlignment: .start,
       children: [
         StreamBuilder(
-          stream: globals.selectedBookStream.stream,
+          stream: globals.playerService.selectedBookStream.stream,
           builder: (context, asyncSnapshot) {
             if (!asyncSnapshot.hasData || asyncSnapshot.data == null) {
               return Container(
@@ -177,7 +177,11 @@ class BookSelectPageState extends State<BookSelectPage> {
                   children: [
                     SizedBox(
                       height: 60,
-                      child: Image.asset("images/cover_default.png", key: UniqueKey())),
+                      child: Image.asset(
+                        "images/cover_default.png",
+                        key: UniqueKey(),
+                      ),
+                    ),
                     Text(
                       "Listen to audiobooks",
                       style: .new(fontSize: 32, fontWeight: .bold),
@@ -192,11 +196,18 @@ class BookSelectPageState extends State<BookSelectPage> {
                         children: [
                           Center(
                             child: TextButton(
-                              child: Text("Open Audiobook", style: .new(fontWeight: .bold),),
+                              child: Text(
+                                "Open Audiobook",
+                                style: .new(fontWeight: .bold),
+                              ),
                               onPressed: () => pickFile(),
                               style: .new(
-                                backgroundColor: WidgetStatePropertyAll(YaruColors.adwaitaYellow), 
-                                foregroundColor: WidgetStatePropertyAll(YaruColors.porcelain)
+                                backgroundColor: WidgetStatePropertyAll(
+                                  YaruColors.adwaitaYellow,
+                                ),
+                                foregroundColor: WidgetStatePropertyAll(
+                                  YaruColors.porcelain,
+                                ),
                               ),
                             ),
                           ),
@@ -230,7 +241,10 @@ class BookSelectPageState extends State<BookSelectPage> {
                               child:
                                   Image(
                                         fit: .fill,
-                                        image: globals.coverImage.image,
+                                        image: globals
+                                            .playerService
+                                            .coverImage
+                                            .image,
                                         height: double.infinity,
                                         width: double.infinity,
                                         repeat: .noRepeat,
@@ -268,7 +282,7 @@ class BookSelectPageState extends State<BookSelectPage> {
                                   children: [
                                     Hero(
                                       tag: asyncSnapshot.data!.name.hashCode,
-                                      child: globals.coverImage,
+                                      child: globals.playerService.coverImage,
                                     ),
 
                                     Flexible(
@@ -297,13 +311,17 @@ class BookSelectPageState extends State<BookSelectPage> {
                                                     ),
                                                   ),
                                                   Text(
-                                                    globals.tags!["title"],
+                                                    globals
+                                                        .playerService
+                                                        .tags["title"],
                                                     style: TextStyle(
                                                       fontSize: 32,
                                                     ),
                                                   ),
                                                   Text(
-                                                    globals.tags!["artist"],
+                                                    globals
+                                                        .playerService
+                                                        .tags["artist"],
                                                     style: TextStyle(
                                                       fontSize: 22,
                                                     ),
@@ -315,22 +333,20 @@ class BookSelectPageState extends State<BookSelectPage> {
                                               children: [
                                                 IconButton(
                                                   onPressed: globals
-                                                      .player
+                                                      .playerService
                                                       .playOrPause,
                                                   icon: StreamBuilder(
                                                     stream: globals
-                                                        .player
-                                                        .stream
-                                                        .playing,
+                                                        .playerService
+                                                        .isPlayingStream,
                                                     builder:
                                                         (
                                                           context,
                                                           asyncSnapshot,
                                                         ) {
                                                           var playing = globals
-                                                              .player
-                                                              .state
-                                                              .playing;
+                                                              .playerService
+                                                              .isPlaying;
                                                           if (asyncSnapshot
                                                               .hasData) {
                                                             playing =
@@ -435,8 +451,9 @@ class BookSelectPageState extends State<BookSelectPage> {
                           name: state.file,
                           path: state.path,
                         );
-                        if (globals.playingFile != null &&
-                            bookFile.name == globals.playingFile!.name) {
+                        if (globals.playerService.playingFile != null &&
+                            bookFile.name ==
+                                globals.playerService.playingFile!.name) {
                           return SizedBox();
                         }
                         final coverfile = bookFile.coverImage;
@@ -455,8 +472,12 @@ class BookSelectPageState extends State<BookSelectPage> {
                             state.position / state.duration;
 
                         return GestureDetector(
-                          onTap: () => {
-                            _openFile(bookFile, position: state.position),
+                          onTap: () async {
+                            await globals.playerService.openFile(
+                              bookFile,
+                              position: state.position,
+                            );
+                            _transition();
                           },
                           child: Card(
                             clipBehavior: .antiAlias,
@@ -469,16 +490,14 @@ class BookSelectPageState extends State<BookSelectPage> {
                                 spacing: 8,
                                 children: [
                                   FutureBuilder(
-                                        future: coverfile,
-                                        builder: (context, asyncSnapshot) {
-                                          if(asyncSnapshot.data != null) {
-
-                                          return Image.file(asyncSnapshot.data!);
-                                          }
-                                      return  globals.defaultCoverImage;
-                                      
-                                        }
-                                      ),
+                                    future: coverfile,
+                                    builder: (context, asyncSnapshot) {
+                                      if (asyncSnapshot.data != null) {
+                                        return Image.file(asyncSnapshot.data!);
+                                      }
+                                      return globals.defaultCoverImage;
+                                    },
+                                  ),
 
                                   Expanded(
                                     child: Padding(
@@ -539,11 +558,12 @@ class BookSelectPageState extends State<BookSelectPage> {
                                           YaruIcons.media_play,
                                           size: 30,
                                         ), // Larger icon to fill the space
-                                        onPressed: () {
-                                          _openFile(
+                                        onPressed: () async {
+                                          await globals.playerService.openFile(
                                             bookFile,
                                             position: state.position,
                                           );
+                                          _transition();
                                         },
                                       ),
 

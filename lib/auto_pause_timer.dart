@@ -78,7 +78,7 @@ class TimerOptions extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    AutoPauseTimer.startTimer(-timeLeftInChapter(globals.player.state.position), true); 
+                    AutoPauseTimer.startTimer(-timeLeftInChapter(globals.playerService.position), true); 
                   },
                   child: Align(
                     alignment: .centerStart,
@@ -129,10 +129,10 @@ class AutoPauseTimer {
   }
 
   AutoPauseTimer._privateConstructor():
-      playingState = globals.player.stream.playing.listen((data) {
+      playingState = globals.playerService.isPlayingStream.listen((data) {
         _instance.onPlaybackStateChanged(data);
       }),
-      playerState = globals.selectedBookStream.stream.listen((data) {
+      playerState = globals.playerService.selectedBookStream.stream.listen((data) {
         _instance.onBookChanged(data); 
       }); 
   
@@ -175,7 +175,7 @@ class AutoPauseTimer {
 
   static void _timerCallback() {
 
-    globals.player.pause(); 
+    globals.playerService.pause(); 
 
     _instance._autoPauseEmittedController.sink.add(_instance.currentDuration); 
     _instance._autoPauseRunningController.sink.add(false);
@@ -201,7 +201,7 @@ class AutoPauseTimer {
     _instance.autoPauseStopwatch.start();
     _instance._autoPauseRunningController.sink.add(true);
 
-    if (!globals.player.state.playing) {
+    if (!globals.playerService.isPlaying) {
       _instance.onPlaybackStateChanged(false); 
     }
 

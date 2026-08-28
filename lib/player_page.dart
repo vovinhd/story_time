@@ -49,7 +49,7 @@ class _PlayerPageState extends State<PlayerPage> {
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
         const SingleActivator(LogicalKeyboardKey.space): () {
-          globals.player.playOrPause();
+          globals.playerService.playOrPause();
         },
       },
       child: 
@@ -105,7 +105,7 @@ class _PlayerPageState extends State<PlayerPage> {
                   Positioned.fill(
                     child: Image(
                       fit: .fill,
-                      image: globals.coverImage.image,
+                      image: globals.playerService.coverImage.image,
                       height: double.infinity,
                       width: double.infinity,
                       repeat: .noRepeat,
@@ -136,8 +136,8 @@ class _PlayerPageState extends State<PlayerPage> {
                                   margin: EdgeInsets.all(16.0),
                                   constraints: BoxConstraints.expand(),
                                   child: Hero(
-                                    tag: globals.playingFile!.name.hashCode,
-                                    child: globals.coverImage,
+                                    tag: globals.playerService.playingFile?.name.hashCode ?? "",
+                                    child: globals.playerService.coverImage,
                                   ),
                                 ),
               
@@ -240,18 +240,17 @@ class _PlayerPageState extends State<PlayerPage> {
                             crossAxisAlignment: .start,
                             children: [
                               StreamBuilder(
-                                stream: globals.player.stream.position,
+                                stream: globals.playerService.positionStream,
                                 builder: (context, snapshotPosition) {
                                   Duration pos;
                                   if (snapshotPosition.hasData) {
                                     pos = snapshotPosition.data!;
                                   } else {
-                                    pos = globals.player.state.position;
+                                    pos = globals.playerService.position;
                                   }
                                   return ChapterListButton(
-                                    chapters: globals.chapters!,
-                                    currentChapter: globals.getChapterFor(pos),
-                                    player: globals.player,
+                                    chapters: globals.playerService.chapters!,
+                                    currentChapter: globals.playerService.currentChapter!,
                                   );
                                 },
                               ),
@@ -288,7 +287,7 @@ class _UnskipButtonState extends State<UnskipButton> {
       mainAxisAlignment: .center,
       children: [
         StreamBuilder(
-          stream: globals.seekStream.stream,
+          stream: globals.playerService.seekStream.stream,
           builder: (context, asyncSnapshot) {
             if (!asyncSnapshot.hasData) {
               return SizedBox();
@@ -315,7 +314,7 @@ class _UnskipButtonState extends State<UnskipButton> {
                 onPressed: () {
                   if (asyncSnapshot.hasData) {
                     print("unskip ${asyncSnapshot.data!.inSeconds}");
-                    globals.player.seek(asyncSnapshot.data!); // don't use globals.seek to not reemit the position and make a looping go back go back go back button
+                    globals.playerService.seek(asyncSnapshot.data!); // don't use globals.seek to not reemit the position and make a looping go back go back go back button
                     lastUnskip = asyncSnapshot.data!;
                     setState(() {});
                   }
@@ -436,9 +435,9 @@ class _PlaybackControlsState extends State<PlaybackControls> {
                             });
                           },
                           child: StreamBuilder(
-                            stream: globals.player.stream.rate,
+                            stream: globals.playerService.rateStream,
                             builder: (context, asyncSnapshot) {
-                              double rate = globals.player.state.rate;
+                              double rate = globals.playerService.rate;
                               if (asyncSnapshot.hasData) {
                                 rate = asyncSnapshot.data!;
                               }
@@ -529,7 +528,7 @@ class TrackControls extends StatelessWidget {
               YaruIcons.skip_backward,
               size: 30,
             ), // Larger icon to fill the space
-            onPressed: globals.seekLastChapter,
+            onPressed: globals.playerService.seekLastChapter,
           ),
         ),
         SizedBox(
@@ -542,7 +541,7 @@ class TrackControls extends StatelessWidget {
               YaruIcons.fast_backward,
               size: 30,
             ), // Larger icon to fill the space
-            onPressed: globals.seekBack,
+            onPressed: globals.playerService.seekBack,
           ),
         ),
 
@@ -558,7 +557,7 @@ class TrackControls extends StatelessWidget {
               YaruIcons.fast_forward,
               size: 30,
             ), // Larger icon to fill the space
-            onPressed: globals.seekForward,
+            onPressed: globals.playerService.seekForward,
           ),
         ),
         SizedBox(
@@ -572,7 +571,7 @@ class TrackControls extends StatelessWidget {
               YaruIcons.skip_forward,
               size: 30,
             ), // Larger icon to fill the space
-            onPressed: globals.seekNextChapter,
+            onPressed: globals.playerService.seekNextChapter,
           ),
         ),
       ],
@@ -589,7 +588,7 @@ class PlayPauseButton extends StatelessWidget {
       width: 80, // Custom width
       height: 80, // Custom height
       child: StreamBuilder(
-        stream: globals.player.stream.playing,
+        stream: globals.playerService.isPlayingStream,
         builder: (context, asyncSnapshot) {
           if (asyncSnapshot.hasData) {
             return IconButton(
@@ -602,18 +601,18 @@ class PlayPauseButton extends StatelessWidget {
                     : YaruIcons.media_play,
                 size: 48,
               ), // Larger icon to fill the space
-              onPressed: globals.player.playOrPause,
+              onPressed: globals.playerService.playOrPause,
             );
           }
           return IconButton(
             padding: EdgeInsets.all(12), // Adjust padding to center the icon
             icon: Icon(
-              globals.player.state.playing
+              globals.playerService.isPlaying
                   ? YaruIcons.media_pause
                   : YaruIcons.media_play,
               size: 48,
             ), // Larger icon to fill the space
-            onPressed: globals.player.playOrPause,
+            onPressed: globals.playerService.playOrPause,
           );
         },
       ),
@@ -638,13 +637,12 @@ class TagInfo extends StatelessWidget {
                           right: 8,
                           bottom: 8,
                         ),
-        itemCount: globals.tags == null ? 0 : globals.tags!.length,
+        itemCount: globals.playerService.tags.length,
         
         itemBuilder: (BuildContext context, int index) {
-          var itemCount = globals.tags == null ? 0 : globals.tags!.length; 
-          if (itemCount == 0) return SizedBox(); 
-          String key = globals.tags!.keys.elementAt(index);
-          var value = globals.tags![key]; 
+          final tags = globals.playerService.tags; 
+          String key = tags.keys.elementAt(index);
+          var value = tags[key]; 
           return Container(
             padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
             child: Column(
@@ -665,7 +663,7 @@ class VolumeIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: globals.player.stream.volume,
+      stream: globals.playerService.volumeStream,
       builder: (context, asyncSnapshot) {
         var icon = YaruIcons.speaker;
         if (asyncSnapshot.hasData) {
@@ -726,20 +724,20 @@ class VolumeSlider extends StatelessWidget {
                 child: RotatedBox(
                   quarterTurns: 3,
                   child: StreamBuilder(
-                    stream: globals.player.stream.volume,
+                    stream: globals.playerService.volumeStream,
                     builder: (context, asyncSnapshot) {
                       var volume = 1.0;
                       if (asyncSnapshot.hasData) {
                         volume = asyncSnapshot.data!;
                       } else {
-                        volume = globals.player.state.volume;
+                        volume = globals.playerService.volume;
                       }
                       return Slider(
                         value: volume,
                         min: 0,
                         max: 100.0,
                         onChanged: (value) {
-                          globals.player.setVolume(value);
+                          globals.playerService.volume = value;
                         },
                       );
                     },
@@ -791,13 +789,13 @@ class RateOptions extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: StreamBuilder(
-          stream: globals.player.stream.rate,
+          stream: globals.playerService.rateStream,
           builder: (context, asyncSnapshot) {
             var currentRate = 1.0;
             if (asyncSnapshot.hasData) {
               currentRate = asyncSnapshot.data!;
             } else {
-              currentRate = globals.player.state.rate;
+              currentRate = globals.playerService.rate;
             }
 
             return ListView.builder(
@@ -821,7 +819,7 @@ class RateOptions extends StatelessWidget {
                   return TextButton(
                     onPressed: () {
                       print("select rate: ${speeds[index]}");
-                      globals.player.setRate(speeds[index]);
+                      globals.playerService.rate = speeds[index];
                     },
                     child: Align(
                       alignment: .centerStart,
@@ -843,12 +841,11 @@ class ChapterListButton extends StatefulWidget {
     super.key,
     required this.chapters,
     required this.currentChapter,
-    required this.player,
   });
 
+    // todo factor out!
   final List<AudiobookChapter> chapters;
   final AudiobookChapter currentChapter;
-  final Player player;
   @override
   State<ChapterListButton> createState() => _ChapterListButtonState();
 
@@ -857,7 +854,7 @@ class ChapterListButton extends StatefulWidget {
       microseconds:chapterInformation.start.inMicroseconds,
     ));
 
-    player.seek(micros + Duration(milliseconds: 1));
+    globals.playerService.seek(micros + Duration(milliseconds: 1));
   }
 }
 
@@ -870,15 +867,15 @@ class _ChapterListButtonState extends State<ChapterListButton> {
         children: [
           Icon(YaruIcons.unordered_list),
           StreamBuilder(
-            stream: globals.player.stream.position,
+            stream: globals.playerService.positionStream,
             builder: (context, asyncSnapshot) {
               Duration pos;
               if (asyncSnapshot.hasData) {
                 pos = asyncSnapshot.data!;
               } else {
-                pos = globals.player.state.position;
+                pos = globals.playerService.position;
               }
-              return Text(globals.getChapterFor(pos).title);
+              return Text(globals.playerService.getChapterFor(pos)!.title);
             },
           ),
         ],

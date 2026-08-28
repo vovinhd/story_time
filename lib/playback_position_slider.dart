@@ -15,9 +15,9 @@ class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
 
   void _seekPlayhead(double value) {
     lastPos = value;
-    var currentChapter = globals.getCurrentChapter();
+    var currentChapter = globals.playerService.currentChapter;
     final double chapterStartTime = 
-        currentChapter.start.inMicroseconds
+        currentChapter!.start.inMicroseconds
         .toDouble();
     final double chapterEndTime = 
         currentChapter.end.inMicroseconds
@@ -28,14 +28,14 @@ class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
           ((chapterEndTime - chapterStartTime) * value + chapterStartTime)
               .round(),
     );
-    globals.seek(micros);
+    globals.playerService.seek(micros);
   }
 
   double _getPlayheadPosition(Duration duration) {
-    if (!globals.player.state.playing) {
+    if (!globals.playerService.isPlaying) {
       return lastPos;
     }
-    var currentChapter = globals.getCurrentChapter();
+    var currentChapter = globals.playerService.currentChapter!;
 
     final double chapterStartTime = currentChapter.start.inMicroseconds
         .toDouble();
@@ -57,7 +57,7 @@ class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: globals.player.stream.position,
+      stream: globals.playerService.positionStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Slider(
@@ -68,7 +68,7 @@ class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
           );
         } else {
           return Slider(
-            value: _getPlayheadPosition(globals.player.state.position),
+            value: _getPlayheadPosition(globals.playerService.position),
             min: 0,
             max: 1.0,
             onChanged: (value) => _seekPlayhead(value),

@@ -80,18 +80,20 @@ class ConfigProvider {
   }
 
   void updatePlaybackState() async {
-    if (globals.playingFile == null || globals.player.state.duration.inMicroseconds == 0) return;
+    if (globals.playerService.playingFile == null || globals.playerService.duration.inMicroseconds == 0) return;
     await Future.delayed(Duration(milliseconds: 100));
-    final filename = globals.playingFile!.name;
+    final filename = globals.playerService.playingFile!.name;
+    final filepath = globals.playerService.playingFile!.path;
+
     final state = BookPlaybackState(
       file: filename,
-      path: globals.playingFile!.path,
-      title: globals.tags!["title"],
-      position: globals.player.state.position.inMicroseconds,
-      duration: globals.player.state.duration.inMicroseconds,
-      lastPlayed: DateTime.now(), author: globals.tags!["artist"],
+      path: filepath,
+      title: globals.playerService.tags["title"],
+      position: globals.playerService.position.inMicroseconds,
+      duration: globals.playerService.duration.inMicroseconds,
+      lastPlayed: DateTime.now(), author: globals.playerService.tags["artist"],
     );
-    config.playbackStates.removeWhere((value) => value.path == globals.playingFile!.path);
+    config.playbackStates.removeWhere((value) => value.path == globals.playerService.playingFile!.path);
 
     config.playbackStates.insert(0, state);
 

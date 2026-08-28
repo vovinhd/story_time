@@ -145,6 +145,16 @@ class PlayerService {
     return _player.state.position;
   }
 
+  Stream<Duration> get durationStream {
+    return _player.stream.duration;
+  }
+
+
+  Duration get duration {
+    return _player.state.duration;
+  }
+
+
   Stream<Duration> get positionStream {
     return _player.stream.position;
   }
@@ -231,11 +241,21 @@ class PlayerService {
     // tags
     var ffprobeTags = mediaInformation.getTags();
     if (ffprobeTags == null || ffprobeTags.isEmpty) {
-      tags = {"title": file.name};
+      tags = {"title": file.name, "artist": ""};
     } else {
       tags = ffprobeTags.map(
         (key, value) => MapEntry(key.toString(), value.toString()),
       );
+
+      //  ensure title, artist is always set
+      if (!tags.containsKey("title")) {
+        tags = {"title": file.name};
+      }
+
+      if (!tags.containsKey("artist")) {
+        tags = {"artist": ""};
+      }
+
     }
 
     // cover image
@@ -243,6 +263,8 @@ class PlayerService {
     if (coverfile == null) {
       print("didn't find a cover for ${file.path}");
       coverImage = Image.asset("images/cover_default.png", key: UniqueKey());
+    } else {
+      coverImage = Image.file(coverfile, key: UniqueKey()); 
     }
 
     // start playing
@@ -255,6 +277,23 @@ class PlayerService {
 
     // start updating config with play state
     initTimer(); 
+  }
+
+  //-------------------------------
+  //---------player controls-------
+  //-------------------------------
+
+  Future<void> play() async {
+    await _player.play();
+  }
+
+  Future<void> pause()async {
+   await _player.pause();
+
+  }
+
+  Future<void> playOrPause()async {
+   await _player.playOrPause();
   }
 
   void seek(Duration duration) {
@@ -316,7 +355,29 @@ class PlayerService {
     return currentChapter!.end - position;
   }
 
+  Stream<double> get rateStream => _player.stream.rate;
+
+  double get rate {
+    return _player.state.rate; 
+  } 
+
+  set rate(double rate) {
+    _player.setRate(rate); 
+  }
+
+  
+  Stream<double> get volumeStream => _player.stream.volume;
+
+  double get volume {
+    return _player.state.volume; 
+  } 
+
+  set volume(double volume) {
+    _player.setVolume(volume); 
+  }
+
   Timer? timer;
+
 
   void initTimer() {
     if (timer != null && timer!.isActive) return;
@@ -327,15 +388,19 @@ class PlayerService {
       ConfigProvider().updatePlaybackState();
 
 
-      if (player.state.playing) {
+      if (_player.state.playing) {
         mediaPlayer2.emitPropertiesChanged(
           "org.mpris.MediaPlayer2.Player",
           changedProperties: {
-            "Position": DBusInt64(player.state.position.inMicroseconds),
+            "Position": DBusInt64(_player.state.position.inMicroseconds),
           },
           invalidatedProperties: ["Position"],
         );
       }
     });
+  }
+
+  void dispose() {
+    _player.dispose(); 
   }
 }

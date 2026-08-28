@@ -9,7 +9,7 @@ final AppWindow appWindow = AppWindow();
 final SystemTray systemTray = SystemTray();
 
 void hideOrClose() {
-  if (globals.playingFile != null) {
+  if (globals.playerService.playingFile != null) {
     appWindow.hide();
   } else {
     appWindow.close();
@@ -27,8 +27,8 @@ Future<void> setSytemTrayCanPlayPause(bool playing) async {
     image: !playing ? "images/play.png" : "images/pause.png",
     label: !playing ? 'Play' : 'Pause',
     onClicked: !playing
-        ? (menuItem) => globals.player.play()
-        : (menuItem) => globals.player.pause(),
+        ? (menuItem) => globals.playerService.play()
+        : (menuItem) => globals.playerService.pause(),
   );
 
   var options = [playPauseMenuOption, ...persistentMenuOptions];

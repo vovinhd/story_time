@@ -35,35 +35,35 @@ class MediaPlayer2 extends DBusObject {
 
   /// Implementation of org.mpris.MediaPlayer2.Player.Pause()
   Future<DBusMethodResponse> doPlay() async {
-    await globals.player.play();
+    await globals.playerService.play();
 
     return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
   }
 
   /// Implementation of org.mpris.MediaPlayer2.Player.Pause()
   Future<DBusMethodResponse> doPause() async {
-    await globals.player.pause();
+    await globals.playerService.pause();
 
     return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
   }
 
   /// Implementation of org.mpris.MediaPlayer2.Player.PlayPause()
   Future<DBusMethodResponse> doPlayPause() async {
-    await globals.player.playOrPause();
+    await globals.playerService.playOrPause();
     return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
   }
 
   /// Implementation of org.mpris.MediaPlayer2.Player.Stop()
   Future<DBusMethodResponse> doStop() async {
-    await globals.player.stop();
+    // await globals.player.stop();
 
     return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
   }
 
   Future<DBusMethodResponse> doSeek(int Offset) async {
-    await globals.player.seek(
+    globals.playerService.seek(
       Duration(
-        microseconds: Offset + globals.player.state.position.inMicroseconds,
+        microseconds: Offset + globals.playerService.position.inMicroseconds,
       ),
     );
     return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
@@ -85,17 +85,16 @@ class MediaPlayer2 extends DBusObject {
   }
 
   Future<DBusMethodResponse> getPlaybackStatus() async {
-    final state = globals.player.state;
-    final status = state.duration.inMicroseconds == 0
+    final status = !globals.playerService.ready
         ? "Stopped"
-        : state.playing
+        : globals.playerService.isPlaying
         ? "Playing"
         : "Paused";
     return DBusMethodSuccessResponse([DBusVariant(DBusString(status))]);
   }
 
   Future<DBusMethodResponse> getPosition() async {
-    final time = timeInChapter(globals.player.state.position).inMicroseconds;
+    final time = timeInChapter(globals.playerService.position).inMicroseconds;
 
     return DBusMethodSuccessResponse([DBusVariant(DBusInt64(time))]);
   }
@@ -138,13 +137,13 @@ class MediaPlayer2 extends DBusObject {
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.Rate
   Future<DBusMethodResponse> getRate() async {
-    final rate = globals.player.state.rate;
+    final rate = globals.playerService.rate;
     return DBusMethodSuccessResponse([DBusVariant(DBusDouble(rate))]);
   }
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.Rate
   Future<DBusMethodResponse> setRate(double rate) async {
-    globals.player.setRate(rate);
+    globals.playerService.rate = rate;
     return DBusMethodSuccessResponse([DBusVariant(DBusDouble(rate))]);
   }
 
@@ -154,26 +153,26 @@ class MediaPlayer2 extends DBusObject {
   }
 
   Future<Map<DBusString, DBusVariant>?> buildMetadata() async{
-    if (globals.playingFile == null) {
+    if (globals.playerService.playingFile == null) {
       return null;
     }
 
-    final tags = globals.tags!;
-    final currentChapterInfo = globals.getCurrentChapter();
+    final tags = globals.playerService.tags;
+    final currentChapterInfo = globals.playerService.currentChapter!;
 
     final title = currentChapterInfo.title;
     final List<String> artist = [tags["artist"]] ;
     final album = tags["album"] ?? "";
 
     final length = currentChapterInfo.duration.inMicroseconds; 
-    final fileUrl = "file://${globals.playingFile!.path}";
-    final artUrl = "file://${(await globals.playingFile!.coverImage)?.path}";
+    final fileUrl = "file://${globals.playerService.playingFile!.path}";
+    final artUrl = "file://${(await globals.playerService.playingFile!.coverImage)?.path}";
 
     Map<DBusString, DBusVariant> metadata = {
       // idk
       DBusString("mpris:trackid"): DBusVariant(
         DBusObjectPath(
-          "/io/github/fl_audiobook/book/${globals.playingFile!.name.hashCode}",
+          "/io/github/fl_audiobook/book/${globals.playerService.playingFile!.name.hashCode}",
         ),
       ),
 
