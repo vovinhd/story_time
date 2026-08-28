@@ -1,7 +1,6 @@
 // This file was generated using the following command and may be overwritten.
 // dart-dbus generate-remote-object org.mpris.MediaPlayer2.Playlists.xml
 
-import 'dart:io';
 import 'package:dbus/dbus.dart';
 
 /// Signal data for org.mpris.MediaPlayer2.Playlists.PlaylistChanged.
@@ -15,7 +14,7 @@ class Playlists_Interface extends DBusRemoteObject {
   /// Stream of org.mpris.MediaPlayer2.Playlists.PlaylistChanged signals.
   late final Stream<Playlists_InterfacePlaylistChanged> playlistChanged;
 
-  Playlists_Interface(DBusClient client, String destination, {DBusObjectPath path = const DBusObjectPath.unchecked('/Playlists_Interface')}) : super(client, name: destination, path: path) {
+  Playlists_Interface(super.client, String destination, {super.path = const DBusObjectPath.unchecked('/Playlists_Interface')}) : super(name: destination) {
     playlistChanged = DBusRemoteObjectSignalStream(object: this, interface: 'org.mpris.MediaPlayer2.Playlists', name: 'PlaylistChanged', signature: DBusSignature('(oss)')).asBroadcastStream().map((signal) => Playlists_InterfacePlaylistChanged(signal));
   }
 

@@ -19,7 +19,7 @@ final class BookFile {
 
   new({required this.name, required this.path});
   Future<File?> get coverImage async {
-    final coverPath = "${dataHome.path}/${globals.APP_DIR}/${name}.jpg";
+    final coverPath = "${dataHome.path}/${globals.APP_DIR}/$name.jpg";
     var coverFile = File(coverPath);
     if (coverFile.existsSync()) {
       return coverFile;
@@ -178,7 +178,7 @@ class PlayerService {
   }
 
   Future<void> openFile(BookFile file, {int position = 0}) async {
-    print("opening ${file.name} at ${position}");
+    print("opening ${file.name} at $position");
 
     loading = true;
 

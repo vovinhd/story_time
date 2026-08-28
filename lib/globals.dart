@@ -1,13 +1,7 @@
-import 'dart:async';
-import 'dart:math';
 
-import 'package:dbus/dbus.dart';
-import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/media_player2.dart';
 import 'package:fl_audiobook/services/player_service.dart';
-import 'package:fl_audiobook/time_display.dart';
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
 
 // ignore: constant_identifier_names
 const String APP_DIR = "fl_audiobookplayer";

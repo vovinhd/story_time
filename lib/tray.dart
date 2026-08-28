@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/widgets.dart';
 import 'package:system_tray/system_tray.dart';
 
 import "globals.dart" as globals;

@@ -39,7 +39,7 @@ class _IndexPageState extends State<IndexPage> {
         ),
         title: Text("Player"),
       ),
-      drawer: Drawer(width: 200,child: DrawerContents(),shape: RoundedRectangleBorder(borderRadius: .only(topLeft: Radius.circular(8), bottomLeft: Radius.circular(8))),),
+      drawer: Drawer(width: 200,shape: RoundedRectangleBorder(borderRadius: .only(topLeft: Radius.circular(8), bottomLeft: Radius.circular(8))),child: DrawerContents(),),
       body: BookSelectPage(),
   //       floatingActionButton: FloatingActionButton(
   //       child: Icon(Icons.book), onPressed: () {  

@@ -1,11 +1,10 @@
 // This file was generated using the following command and may be overwritten.
 // dart-dbus generate-remote-object org.mpris.MediaPlayer2.xml
 
-import 'dart:io';
 import 'package:dbus/dbus.dart';
 
 class Media_Player extends DBusRemoteObject {
-  Media_Player(DBusClient client, String destination, {DBusObjectPath path = const DBusObjectPath.unchecked('/Media_Player')}) : super(client, name: destination, path: path);
+  Media_Player(super.client, String destination, {super.path = const DBusObjectPath.unchecked('/Media_Player')}) : super(name: destination);
 
   /// Gets org.mpris.MediaPlayer2.CanQuit
   Future<bool> getCanQuit() async {

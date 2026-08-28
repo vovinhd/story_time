@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:fl_audiobook/book_select_page.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/player_page.dart';

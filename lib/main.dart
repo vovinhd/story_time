@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:dbus/dbus.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/home.dart';
-import 'package:fl_audiobook/media_player2.dart';
 import 'package:fl_audiobook/model.dart';
 import 'package:fl_audiobook/tray.dart';
 
@@ -39,7 +38,7 @@ Future<void> main() async {
   var client = DBusClient.session(introspectable: true);
 
   client.nameAcquired.listen((event) {
-    print("DBus Name aquired: " + event);
+    print("DBus Name aquired: $event");
   });
 
 

@@ -1,7 +1,6 @@
 // This file was generated using the following command and may be overwritten.
 // dart-dbus generate-remote-object org.mpris.MediaPlayer2.TrackList.xml
 
-import 'dart:io';
 import 'package:dbus/dbus.dart';
 
 /// Signal data for org.mpris.MediaPlayer2.TrackList.TrackListReplaced.
@@ -48,7 +47,7 @@ class Track_List_Interface extends DBusRemoteObject {
   /// Stream of org.mpris.MediaPlayer2.TrackList.TrackMetadataChanged signals.
   late final Stream<Track_List_InterfaceTrackMetadataChanged> trackMetadataChanged;
 
-  Track_List_Interface(DBusClient client, String destination, {DBusObjectPath path = const DBusObjectPath.unchecked('/Track_List_Interface')}) : super(client, name: destination, path: path) {
+  Track_List_Interface(super.client, String destination, {super.path = const DBusObjectPath.unchecked('/Track_List_Interface')}) : super(name: destination) {
     trackListReplaced = DBusRemoteObjectSignalStream(object: this, interface: 'org.mpris.MediaPlayer2.TrackList', name: 'TrackListReplaced', signature: DBusSignature('aoo')).asBroadcastStream().map((signal) => Track_List_InterfaceTrackListReplaced(signal));
 
     trackAdded = DBusRemoteObjectSignalStream(object: this, interface: 'org.mpris.MediaPlayer2.TrackList', name: 'TrackAdded', signature: DBusSignature('a{sv}o')).asBroadcastStream().map((signal) => Track_List_InterfaceTrackAdded(signal));

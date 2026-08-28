@@ -1,7 +1,6 @@
 // This file was generated using the following command and may be overwritten.
 // dart-dbus generate-object org.mpris.MediaPlayer2.TrackList.xml
 
-import 'dart:io';
 import 'package:dbus/dbus.dart';
 
 class Track_List_Interface extends DBusObject {

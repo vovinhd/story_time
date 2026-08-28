@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_portal/flutter_portal.dart';
-import 'package:media_kit/media_kit.dart';
 import 'package:yaru/yaru.dart';
 
 import "globals.dart" as globals;
@@ -200,7 +199,7 @@ class _PlayerPageState extends State<PlayerPage> {
                                                 stream:
                                                     AutoPauseTimer.remainingStream,
                                                 builder: (context, asyncSnapshot) {
-                                                  if (!asyncSnapshot.hasData)
+                                                  if (!asyncSnapshot.hasData) {
                                                     return Text(
                                                       ":00",
                                                       style: TextStyle(
@@ -208,6 +207,7 @@ class _PlayerPageState extends State<PlayerPage> {
                                                         fontSize: 20,
                                                       ),
                                                     );
+                                                  }
                                                   final label = printDuration(
                                                     asyncSnapshot.data!,
                                                   );
@@ -249,7 +249,7 @@ class _PlayerPageState extends State<PlayerPage> {
                                     pos = globals.playerService.position;
                                   }
                                   return ChapterListButton(
-                                    chapters: globals.playerService.chapters!,
+                                    chapters: globals.playerService.chapters,
                                     currentChapter: globals.playerService.currentChapter!,
                                   );
                                 },
@@ -622,6 +622,8 @@ class PlayPauseButton extends StatelessWidget {
 
 
 class TagInfo extends StatelessWidget {
+  const TagInfo({super.key});
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;

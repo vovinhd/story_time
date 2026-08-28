@@ -14,16 +14,12 @@ import 'package:fl_audiobook/time_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_portal/flutter_portal.dart';
-import 'package:media_kit/media_kit.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:xdg_directories/xdg_directories.dart';
 import 'package:yaru/yaru.dart';
-import 'package:ffmpeg_kit_next_flutter/ffprobe_kit.dart';
-import 'package:ffmpeg_kit_next_flutter/ffmpeg_kit.dart';
 
 StreamSubscription? subs;
 
-StreamController<bool> requestFilePickStream = StreamController<bool>.new();
+StreamController<bool> requestFilePickStream = StreamController<bool>();
 
 // File? getCoverImageForFile(filename) {
 //   final coverPath = "${dataHome.path}/${globals.APP_DIR}/${filename}.jpg";
@@ -69,60 +65,6 @@ class BookSelectPageState extends State<BookSelectPage> {
       print("User canceled the picker");
     }
   }
-
-  // void _openFile(BookFile file, {int position = 0}) async {
-  //   print("opening ${file.name} at ${position}");
-  //   globals.resumedPosition = position;
-  //   final media = Media(file.path, start: Duration(microseconds: position));
-  //   // print(media.toString());
-  //   final canonicalPath = "\"${file.path}\"";
-  //   globals.playingFile = file;
-
-  //   final commandArguments = [
-  //     "-v",
-  //     "error",
-  //     "-hide_banner",
-  //     "-print_format",
-  //     "json",
-  //     "-show_format",
-  //     "-show_streams",
-  //     "-show_chapters",
-  //     "-show_entries", "format",
-  //     "-i",
-  //     file.path
-  //   ];
-
-  //   final session = await FFprobeKit.getMediaInformationFromCommandArguments(commandArguments);
-  //   final info = session.getMediaInformation();
-  //   var tempChapters = info?.getChapters();
-  //   globals.chapters = tempChapters!.map((ffprobeChapter) => AudiobookChapter.fromChapterInfo(ffprobeChapter)).toList();
-  //   var temp = info?.getTags();
-  //   var temp2 = temp!.map((key, value) => MapEntry(key.toString(), value.toString()));
-
-  //   globals.tags = temp2;
-
-  //   var coverFile = await file.coverImage;
-
-  //   if (coverFile == null) {
-  //     final coverPath = "${dataHome.path}/${globals.APP_DIR}/${file.name}.jpg";
-
-  //     final coverSess = await FFmpegKit.execute(
-  //       "-y -v error -hide_banner -i $canonicalPath -an -vcodec copy \"$coverPath\"",
-  //     );
-
-  //     coverFile = File(coverPath);
-  //     globals.coverImage = Image.file(coverFile, key: UniqueKey());
-  //   } else {
-  //     globals.coverImage = Image.file(coverFile, key: UniqueKey());
-  //   }
-
-  //   await globals.player.open(media, play: true);
-
-  //   globals.selectedBookStream.add(file);
-
-  //   _transition();
-  // }
-
   void _pushPlayerRoute() {
     if (mounted) {
       Navigator.of(context)
@@ -131,30 +73,28 @@ class BookSelectPageState extends State<BookSelectPage> {
   }
 
   void _transition() async {
-    // globals.ready = true;
-    // globals.initTimer();
     ConfigProvider().updatePlaybackState();
-    // await Future.delayed(Duration(milliseconds: 300), () => {});
     _pushPlayerRoute();
 
     // emit the dbus state change
 
-    // globals.mediaPlayer2.emitPropertiesChanged(
-    //   "org.mpris.MediaPlayer2.Player",
-    //   changedProperties: {
-    //     "Metadata": DBusDict(
-    //       DBusSignature.string,
-    //       DBusSignature.variant,
-    //       (await globals.mediaPlayer2.buildMetadata())!,
-    //     ),
-    //     "PlaybackStatus": DBusString("Playing"),
-    //     "Position": DBusInt64(globals.playerService.position.inMicroseconds),
-    //   },
-    //   invalidatedProperties: ["PlaybackStatus", "MetaData", "Position"],
-    // );
-    // globals.mediaPlayer2.emitSeeked(
-    //   globals.playerService.position.inMicroseconds,
-    // );
+    // TODO factor into media_player2 
+    globals.mediaPlayer2.emitPropertiesChanged(
+      "org.mpris.MediaPlayer2.Player",
+      changedProperties: {
+        "Metadata": DBusDict(
+          DBusSignature.string,
+          DBusSignature.variant,
+          (await globals.mediaPlayer2.buildMetadata())!,
+        ),
+        "PlaybackStatus": DBusString("Playing"),
+        "Position": DBusInt64(globals.playerService.position.inMicroseconds),
+      },
+      invalidatedProperties: ["PlaybackStatus", "MetaData", "Position"],
+    );
+    globals.mediaPlayer2.emitSeeked(
+      globals.playerService.position.inMicroseconds,
+    );
   }
 
   var offset = 0.0;
@@ -170,7 +110,7 @@ class BookSelectPageState extends State<BookSelectPage> {
           stream: globals.playerService.selectedBookStream.stream,
           builder: (context, asyncSnapshot) {
             if (!asyncSnapshot.hasData || asyncSnapshot.data == null) {
-              return Container(
+              return SizedBox(
                 height: 200,
                 child: Column(
                   mainAxisAlignment: .center,
@@ -196,10 +136,6 @@ class BookSelectPageState extends State<BookSelectPage> {
                         children: [
                           Center(
                             child: TextButton(
-                              child: Text(
-                                "Open Audiobook",
-                                style: .new(fontWeight: .bold),
-                              ),
                               onPressed: () => pickFile(),
                               style: .new(
                                 backgroundColor: WidgetStatePropertyAll(
@@ -208,6 +144,10 @@ class BookSelectPageState extends State<BookSelectPage> {
                                 foregroundColor: WidgetStatePropertyAll(
                                   YaruColors.porcelain,
                                 ),
+                              ),
+                              child: Text(
+                                "Open Audiobook",
+                                style: .new(fontWeight: .bold),
                               ),
                             ),
                           ),
@@ -233,7 +173,7 @@ class BookSelectPageState extends State<BookSelectPage> {
                     crossAxisAlignment: .start,
                     children: [
                       // Text("Now Playing", textAlign: .start),
-                      Container(
+                      SizedBox(
                         height: 200,
                         child: Stack(
                           children: [
@@ -676,7 +616,7 @@ class BookSelectPageState extends State<BookSelectPage> {
 }
 
 void openBookDirectory(String path) async {
-  print("Show ${path} in file explorer");
+  print("Show $path in file explorer");
   try {
     final isDirectory = await Directory(path).exists();
     final isFile = await File(path).exists();
