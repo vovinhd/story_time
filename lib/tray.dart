@@ -8,7 +8,7 @@ final AppWindow appWindow = AppWindow();
 final SystemTray systemTray = SystemTray();
 
 void hideOrClose() {
-  if (PlayerService().playingFile != null) {
+  if (PlayerService().playingFile != null && PlayerService().isPlaying) {
     appWindow.hide();
   } else {
     appWindow.close();

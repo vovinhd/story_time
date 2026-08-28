@@ -81,14 +81,22 @@ class ConfigProvider {
   }
 
   void updatePlaybackState() async {
-    if (PlayerService().playingFile == null || PlayerService().duration.inMicroseconds == 0) return;
+    if (PlayerService().playingFile == null ||
+        PlayerService().duration.inMicroseconds == 0)
+      return;
     await Future.delayed(Duration(milliseconds: 100));
     final filename = PlayerService().playingFile!.name;
     final filepath = PlayerService().playingFile!.path;
 
-    var currentState = config.playbackStates.firstWhere((value) => value.path == PlayerService().playingFile!.path);
-    if (currentState.position == PlayerService().position.inMicroseconds) {
-      return; 
+    if (config.playbackStates.any(
+      (value) => value.path == PlayerService().playingFile!.path,
+    )) {
+      BookPlaybackState currentState = config.playbackStates.firstWhere(
+        (value) => value.path == PlayerService().playingFile!.path,
+      );
+      if (currentState.position == PlayerService().position.inMicroseconds) {
+        return;
+      }
     }
 
     final state = BookPlaybackState(
@@ -97,10 +105,13 @@ class ConfigProvider {
       title: PlayerService().tags["title"],
       position: PlayerService().position.inMicroseconds,
       duration: PlayerService().duration.inMicroseconds,
-      lastPlayed: DateTime.now(), author: PlayerService().tags["artist"],
+      lastPlayed: DateTime.now(),
+      author: PlayerService().tags["artist"],
     );
-    
-    config.playbackStates.removeWhere((value) => value.path == PlayerService().playingFile!.path);
+
+    config.playbackStates.removeWhere(
+      (value) => value.path == PlayerService().playingFile!.path,
+    );
 
     config.playbackStates.insert(0, state);
 
@@ -112,7 +123,6 @@ class ConfigProvider {
     config.playbackStates.removeWhere((value) => value.path == path);
     SaveConfig();
     notify();
-
   }
 }
 
@@ -158,7 +168,8 @@ class BookPlaybackState {
     required this.lastPlayed,
     required this.duration,
     required this.path,
-    required this.title, required this.author,
+    required this.title,
+    required this.author,
   });
 
   BookPlaybackState.fromJson(Map<String, dynamic> json)
