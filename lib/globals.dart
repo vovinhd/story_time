@@ -14,6 +14,8 @@ const String APP_DIR = "fl_audiobookplayer";
 
 MediaPlayer2 mediaPlayer2 = MediaPlayer2();
 
+PlayerService playerService = PlayerService(); 
+
 BookFile? playingFile;
 
 int resumedPosition = 0;

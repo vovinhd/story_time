@@ -153,7 +153,7 @@ class MediaPlayer2 extends DBusObject {
     return DBusMethodSuccessResponse([DBusVariant(DBusDouble(1.0))]);
   }
 
-  Map<DBusString, DBusVariant>? buildMetadata() {
+  Future<Map<DBusString, DBusVariant>?> buildMetadata() async{
     if (globals.playingFile == null) {
       return null;
     }
@@ -167,7 +167,7 @@ class MediaPlayer2 extends DBusObject {
 
     final length = currentChapterInfo.duration.inMicroseconds; 
     final fileUrl = "file://${globals.playingFile!.path}";
-    final artUrl = "file://${globals.playingFile!.coverImage!.path}";
+    final artUrl = "file://${(await globals.playingFile!.coverImage)?.path}";
 
     Map<DBusString, DBusVariant> metadata = {
       // idk
@@ -203,7 +203,7 @@ class MediaPlayer2 extends DBusObject {
   }
 
   Future<DBusMethodResponse> getMetadata() async {
-    final metadata = buildMetadata();
+    final metadata = await buildMetadata();
 
     if (metadata == null) {
       return DBusMethodSuccessResponse([

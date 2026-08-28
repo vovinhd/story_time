@@ -96,13 +96,13 @@ class BookSelectPageState extends State<BookSelectPage> {
 
     globals.tags = temp2; 
 
-    var coverFile = file.coverImage;
+    var coverFile = await file.coverImage;
 
     if (coverFile == null) {
       final coverPath = "${dataHome.path}/${globals.APP_DIR}/${file.name}.jpg";
 
-      final coverSess = FFmpegKit.execute(
-        "-y -i $canonicalPath -an -vcodec copy \"$coverPath\"",
+      final coverSess = await FFmpegKit.execute(
+        "-y -v error -hide_banner -i $canonicalPath -an -vcodec copy \"$coverPath\"",
       );
 
       coverFile = File(coverPath);
@@ -145,7 +145,7 @@ class BookSelectPageState extends State<BookSelectPage> {
         "Metadata": DBusDict(
           DBusSignature.string,
           DBusSignature.variant,
-          globals.mediaPlayer2.buildMetadata()!,
+          (await globals.mediaPlayer2.buildMetadata())!,
         ),
         "PlaybackStatus": DBusString("Playing"),
         "Position": DBusInt64(globals.player.state.position.inMicroseconds),
@@ -468,9 +468,17 @@ class BookSelectPageState extends State<BookSelectPage> {
                                 crossAxisAlignment: .center,
                                 spacing: 8,
                                 children: [
-                                  coverfile == null
-                                      ? globals.defaultCoverImage
-                                      : Image.file(coverfile),
+                                  FutureBuilder(
+                                        future: coverfile,
+                                        builder: (context, asyncSnapshot) {
+                                          if(asyncSnapshot.data != null) {
+
+                                          return Image.file(asyncSnapshot.data!);
+                                          }
+                                      return  globals.defaultCoverImage;
+                                      
+                                        }
+                                      ),
 
                                   Expanded(
                                     child: Padding(

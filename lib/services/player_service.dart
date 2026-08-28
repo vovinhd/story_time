@@ -2,8 +2,13 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:dbus/dbus.dart';
 import 'package:ffmpeg_kit_next_flutter/chapter.dart';
+import 'package:ffmpeg_kit_next_flutter/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_next_flutter/ffprobe_kit.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
+import 'package:fl_audiobook/globals.dart';
+import 'package:fl_audiobook/services/config.dart';
 import 'package:flutter/widgets.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:xdg_directories/xdg_directories.dart';
@@ -13,21 +18,30 @@ final class BookFile {
   final String path;
 
   new({required this.name, required this.path});
-  File? get coverImage {
+  Future<File?> get coverImage async {
     final coverPath = "${dataHome.path}/${globals.APP_DIR}/${name}.jpg";
     var coverFile = File(coverPath);
     if (coverFile.existsSync()) {
       return coverFile;
     }
 
+    // todo convert to executeWithArguments
+    final coverSession = FFmpegKit.execute(
+      "-y -v error -hide_banner -i \"$path\" -an -vcodec copy \"$coverPath\"",
+    );
+
     return null;
   }
 }
 
 class AudiobookChapter {
-
   // ignore: non_constant_identifier_names
-  static AudiobookChapter EMPTY = AudiobookChapter._(title: "", start: Duration(seconds: 0), end: Duration(seconds: 1), duration: Duration(seconds: 1));  
+  static AudiobookChapter EMPTY = AudiobookChapter._(
+    title: "",
+    start: Duration(seconds: 0),
+    end: Duration(seconds: 1),
+    duration: Duration(seconds: 1),
+  );
 
   Duration start;
   Duration end;
@@ -78,6 +92,7 @@ class AudiobookChapter {
 
 class PlayerService {
   bool ready = false;
+  bool loading = false;
 
   StreamController<BookFile> selectedBookStream =
       StreamController<BookFile>.broadcast();
@@ -91,6 +106,14 @@ class PlayerService {
       title: "fl_audiobook",
     ),
   );
+
+  static int chapterInfoTimeToMicros(String timestamp) {
+    try {
+      return (double.parse(timestamp) * 1_000_000).round();
+    } catch (error) {
+      return 0;
+    }
+  }
 
   Image coverImage = (Image.asset(
     "images/cover_default.png",
@@ -113,6 +136,7 @@ class PlayerService {
   bool get isPlaying {
     return _player.state.playing;
   }
+
   Stream<bool> get isPlayingStream {
     return _player.stream.playing;
   }
@@ -144,34 +168,93 @@ class PlayerService {
   }
 
   Future<void> openFile(BookFile file, {int position = 0}) async {
-    // // TODO finish this tmr
-    // print("opening ${file.name} at ${position}");
+    print("opening ${file.name} at ${position}");
 
-    // resumedPosition = position;
-    // playingFile = file;
+    loading = true;
 
-    // final canonicalPath = "\"${file.path}\"";
-    // final session = FFprobeKit.getMediaInformation(canonicalPath);
+    // open file with mpv
+    final media = Media(file.path, start: Duration(microseconds: position));
 
-    // final media = Media(file.path, start: Duration(microseconds: position));
-    // final info = session.getMediaInformation();
+    final mediaSessionCommandArgs = [
+      "-v",
+      "error",
+      "-hide_banner",
+      "-print_format",
+      "json",
+      "-show_format",
+      "-show_streams",
+      "-show_chapters",
+      "-show_entries",
+      "format",
+      "-i",
+      file.path,
+    ];
 
-    // if (info != null) {
-    //   chapters = info.chapters.map(AudiobookChapter.fromChapterInfo).toList();
-    //   if (info.tags != null) {
-    //     tags = info.tags!; 
-    //   }
-    // } else {
-    //   chapters = [
-    //     AudiobookChapter._(
-    //       title: "title",
-    //       start: Duration(microseconds: 0),
-    //       end: media.end!,
-    //       duration: media.end!,
-    //     ),
-    //   ];
-    // }
-    // return;
+    // get metadata
+    final mediaInformationSession =
+        await FFprobeKit.getMediaInformationFromCommandArguments(
+          mediaSessionCommandArgs,
+        );
+    final mediaInformation = mediaInformationSession.getMediaInformation();
+    if (mediaInformation == null) {
+      throw ArgumentError(["could not get media info from ${file.path}!"]);
+    }
+
+    // chapter info
+    var ffprobeChapters = mediaInformation.getChapters();
+    if (ffprobeChapters.isEmpty) {
+      if (mediaInformation.getDuration() == null) {
+        throw ArgumentError(["could not get duration for ${file.path}"]);
+      }
+      var startTimeStr = mediaInformation.getStartTime() ?? "0.0";
+      var durationStr = mediaInformation.getDuration()!;
+      var startTime = chapterInfoTimeToMicros(startTimeStr);
+      var duration = chapterInfoTimeToMicros(durationStr);
+      chapters = [
+        AudiobookChapter._(
+          title: "",
+          start: Duration(microseconds: startTime),
+          end: Duration(microseconds: startTime + duration),
+          duration: Duration(microseconds: duration),
+        ),
+      ];
+    } else {
+      chapters = mediaInformation
+          .getChapters()
+          .map(
+            (ffprobeChapter) =>
+                AudiobookChapter.fromChapterInfo(ffprobeChapter),
+          )
+          .toList();
+    }
+
+    // tags
+    var ffprobeTags = mediaInformation.getTags();
+    if (ffprobeTags == null || ffprobeTags.isEmpty) {
+      tags = {"title": file.name};
+    } else {
+      tags = ffprobeTags.map(
+        (key, value) => MapEntry(key.toString(), value.toString()),
+      );
+    }
+
+    // cover image
+    var coverfile = await file.coverImage;
+    if (coverfile == null) {
+      print("didn't find a cover for ${file.path}");
+      coverImage = Image.asset("images/cover_default.png", key: UniqueKey());
+    }
+
+    // start playing
+    await _player.open(media, play: true);
+
+    // tell everyone about it
+    selectedBookStream.add(file);
+    loading = false;
+    ready = true;
+
+    // start updating config with play state
+    initTimer(); 
   }
 
   void seek(Duration duration) {
@@ -231,5 +314,28 @@ class PlayerService {
   Duration timeLeftInChapter(Duration position) {
     var currentChapter = getChapterFor(position);
     return currentChapter!.end - position;
+  }
+
+  Timer? timer;
+
+  void initTimer() {
+    if (timer != null && timer!.isActive) return;
+
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      
+      // todo factor out into its own thing and make it smarter
+      ConfigProvider().updatePlaybackState();
+
+
+      if (player.state.playing) {
+        mediaPlayer2.emitPropertiesChanged(
+          "org.mpris.MediaPlayer2.Player",
+          changedProperties: {
+            "Position": DBusInt64(player.state.position.inMicroseconds),
+          },
+          invalidatedProperties: ["Position"],
+        );
+      }
+    });
   }
 }
