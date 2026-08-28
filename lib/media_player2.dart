@@ -93,6 +93,9 @@ class MediaPlayer2 extends DBusObject {
   }
 
   Future<DBusMethodResponse> getPosition() async {
+    if (!globals.playerService.ready) {
+      return DBusMethodSuccessResponse([DBusVariant(DBusInt64(0))]); 
+    }
     final time = timeInChapter(globals.playerService.position).inMicroseconds;
 
     return DBusMethodSuccessResponse([DBusVariant(DBusInt64(time))]);

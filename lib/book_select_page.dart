@@ -79,22 +79,22 @@ class BookSelectPageState extends State<BookSelectPage> {
     // emit the dbus state change
 
     // TODO factor into media_player2 
-    globals.mediaPlayer2.emitPropertiesChanged(
-      "org.mpris.MediaPlayer2.Player",
-      changedProperties: {
-        "Metadata": DBusDict(
-          DBusSignature.string,
-          DBusSignature.variant,
-          (await globals.mediaPlayer2.buildMetadata())!,
-        ),
-        "PlaybackStatus": DBusString("Playing"),
-        "Position": DBusInt64(globals.playerService.position.inMicroseconds),
-      },
-      invalidatedProperties: ["PlaybackStatus", "MetaData", "Position"],
-    );
-    globals.mediaPlayer2.emitSeeked(
-      globals.playerService.position.inMicroseconds,
-    );
+    // globals.mediaPlayer2.emitPropertiesChanged(
+    //   "org.mpris.MediaPlayer2.Player",
+    //   changedProperties: {
+    //     "Metadata": DBusDict(
+    //       DBusSignature.string,
+    //       DBusSignature.variant,
+    //       (await globals.mediaPlayer2.buildMetadata())!,
+    //     ),
+    //     "PlaybackStatus": DBusString("Playing"),
+    //     "Position": DBusInt64(globals.playerService.position.inMicroseconds),
+    //   },
+    //   invalidatedProperties: ["PlaybackStatus", "MetaData", "Position"],
+    // );
+    // globals.mediaPlayer2.emitSeeked(
+    //   globals.playerService.position.inMicroseconds,
+    // );
   }
 
   var offset = 0.0;
@@ -366,6 +366,7 @@ class BookSelectPageState extends State<BookSelectPage> {
                       return true;
                     },
                     child: ListView.builder(
+                      primary: true,
                       padding: EdgeInsets.only(
                         top: 16,
                         left: 16,
@@ -432,12 +433,15 @@ class BookSelectPageState extends State<BookSelectPage> {
                                   FutureBuilder(
                                     future: coverfile,
                                     builder: (context, asyncSnapshot) {
-                                      if (asyncSnapshot.data != null) {
-                                        return Image.file(asyncSnapshot.data!);
+                                      if(asyncSnapshot.hasData) {
+                                        if (asyncSnapshot.data == null) {
+                                          return globals.defaultCoverImage; 
+                                        }
+                                        return Image.file(asyncSnapshot.data!);   
                                       }
-                                      return globals.defaultCoverImage;
-                                    },
-                                  ),
+                                      return globals.defaultCoverImage; 
+                                    }
+                                  ), 
 
                                   Expanded(
                                     child: Padding(

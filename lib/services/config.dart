@@ -85,6 +85,11 @@ class ConfigProvider {
     final filename = globals.playerService.playingFile!.name;
     final filepath = globals.playerService.playingFile!.path;
 
+    var currentState = config.playbackStates.firstWhere((value) => value.path == globals.playerService.playingFile!.path);
+    if (currentState.position == globals.playerService.position.inMicroseconds) {
+      return; 
+    }
+
     final state = BookPlaybackState(
       file: filename,
       path: filepath,
@@ -93,6 +98,7 @@ class ConfigProvider {
       duration: globals.playerService.duration.inMicroseconds,
       lastPlayed: DateTime.now(), author: globals.playerService.tags["artist"],
     );
+    
     config.playbackStates.removeWhere((value) => value.path == globals.playerService.playingFile!.path);
 
     config.playbackStates.insert(0, state);

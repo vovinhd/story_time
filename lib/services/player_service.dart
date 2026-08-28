@@ -18,6 +18,17 @@ final class BookFile {
   final String path;
 
   new({required this.name, required this.path});
+
+  File? get coverImageSync {
+    final coverPath = "${dataHome.path}/${globals.APP_DIR}/$name.jpg";
+    var coverFile = File(coverPath);
+    if (coverFile.existsSync()) {
+      return coverFile;
+    }
+    return null;
+
+  }
+
   Future<File?> get coverImage async {
     final coverPath = "${dataHome.path}/${globals.APP_DIR}/$name.jpg";
     var coverFile = File(coverPath);
@@ -26,10 +37,12 @@ final class BookFile {
     }
 
     // todo convert to executeWithArguments
-    final coverSession = FFmpegKit.execute(
+    var session = await FFmpegKit.execute(
       "-y -v error -hide_banner -i \"$path\" -an -vcodec copy \"$coverPath\"",
     );
-
+    if (coverFile.existsSync()) {
+      return coverFile;
+    }
     return null;
   }
 }
@@ -98,6 +111,8 @@ class PlayerService {
       StreamController<BookFile>.broadcast();
   StreamController<Duration> seekStream =
       StreamController<Duration>.broadcast();
+
+  StreamController<Image> coverStream = StreamController.broadcast(); 
 
   final _player = Player(
     configuration: PlayerConfiguration(
@@ -267,16 +282,20 @@ class PlayerService {
       coverImage = Image.file(coverfile, key: UniqueKey()); 
     }
 
+    coverStream.sink.add(coverImage); 
+
+
     // start playing
     await _player.open(media, play: true);
 
     // tell everyone about it
+    playingFile = file; 
     selectedBookStream.add(file);
     loading = false;
     ready = true;
 
     // start updating config with play state
-    initTimer(); 
+    _initTimer(); 
   }
 
   //-------------------------------
@@ -379,7 +398,7 @@ class PlayerService {
   Timer? timer;
 
 
-  void initTimer() {
+  void _initTimer() {
     if (timer != null && timer!.isActive) return;
 
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {

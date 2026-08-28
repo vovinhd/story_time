@@ -6,6 +6,7 @@ import 'package:fl_audiobook/playback_position_slider.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/time_display.dart';
 import 'package:fl_audiobook/tray.dart' as tray;
+import 'package:fl_audiobook/widgets/cover_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -136,7 +137,7 @@ class _PlayerPageState extends State<PlayerPage> {
                                   constraints: BoxConstraints.expand(),
                                   child: Hero(
                                     tag: globals.playerService.playingFile?.name.hashCode ?? "",
-                                    child: globals.playerService.coverImage,
+                                    child: CoverImage(),
                                   ),
                                 ),
               
