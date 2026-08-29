@@ -10,11 +10,10 @@ String printDuration(Duration duration) {
   String twoDigits(int n) => n.toString().padLeft(2, "0");
   String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60).abs());
   String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60).abs());
-  String twoDigitHours = twoDigits(duration.inHours); 
+  String twoDigitHours = twoDigits(duration.inHours);
   if (duration.inMinutes.abs() < 60) {
-      return "$negativeSign$twoDigitMinutes:$twoDigitSeconds";
-
-  } 
+    return "$negativeSign$twoDigitMinutes:$twoDigitSeconds";
+  }
   return "$negativeSign$twoDigitHours:$twoDigitMinutes:$twoDigitSeconds";
 }
 
@@ -25,37 +24,59 @@ String printDuration(Duration duration) {
 //   return Duration(microseconds: (position.inMicroseconds - chapterStartTime));
 // }
 
-
 // Duration timeLeftInChapter(Duration position) {
 //   var currentChapter = PlayerService().getChapterFor(position)!;
-//   final int chapterEndTime = currentChapter.end.inMicroseconds; 
+//   final int chapterEndTime = currentChapter.end.inMicroseconds;
 //   return Duration(microseconds: (position.inMicroseconds - chapterEndTime));
 // }
-
 
 class CurrentPositionLabel extends StatelessWidget {
   const new({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Row (children: [StreamBuilder(
-      stream: PlayerService().positionStream,
-      builder: (context, asyncSnapshot) {
-        if (asyncSnapshot.hasData) {
-          return Text(printDuration(asyncSnapshot.data!)); 
-        }
-        
-        return Text(printDuration(PlayerService().position));
-      }
-    ),Text("/"), StreamBuilder(
-      stream: PlayerService().durationStream,
-      builder: (context, asyncSnapshot) {
-        if (asyncSnapshot.hasData) {
-          return Text(printDuration(asyncSnapshot.data!)); 
-        }
-        return Text(printDuration(PlayerService().duration));
-      }
-    )]);
+    return Row(
+      children: [
+        StreamBuilder(
+          stream: PlayerService().positionStream,
+          builder: (context, asyncSnapshot) {
+            if (asyncSnapshot.hasData) {
+              return Text(printDuration(asyncSnapshot.data!));
+            }
+
+            return Text(printDuration(PlayerService().position));
+          },
+        ),
+        Text("/"),
+        StreamBuilder(
+          stream: PlayerService().durationStream,
+          builder: (context, asyncSnapshot) {
+            if (asyncSnapshot.hasData) {
+              return Text(printDuration(asyncSnapshot.data!));
+            }
+            return Text(printDuration(PlayerService().duration));
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class PositonLabel extends StatelessWidget {
+  const new({super.key, required this.position});
+  final Duration position;
+
+  @override
+  Widget build(BuildContext context) {
+    print("PositonLabel: ${position.inMilliseconds} ${printDuration(position)}");
+
+    return Row(
+      children: [
+        Text(printDuration(position)),
+        Text("/"),
+        Text(printDuration(PlayerService().duration)),
+      ],
+    );
   }
 }
 
@@ -67,24 +88,50 @@ class CurrentPositionInChapterLabel extends StatelessWidget {
     return StreamBuilder(
       stream: PlayerService().positionStream,
       builder: (context, asyncSnapshot) {
-          return Text(printDuration(PlayerService().timeInChapter)); 
-      }
+        return Text(printDuration(PlayerService().timeInChapter));
+      },
     );
   }
 }
 
+class PositionInChapterLabel extends StatelessWidget {
+  const new({super.key, required this.position});
+  final Duration position;
 
+  @override
+  Widget build(BuildContext context) {
+    print("PositionInChapterLabel: ${position.inMilliseconds} ${printDuration(position)}");
+    return Text(
+      printDuration(PlayerService().timeInChapterForPosition(position)),
+    );
+  }
+}
+
+class PositionEndLabel extends StatelessWidget {
+  const new({super.key, required this.position});
+  final Duration position;
+
+  @override
+  Widget build(BuildContext context) {
+
+    var ch = PlayerService().getChapterFor(position); 
+    var timeleft = ch == null ? PlayerService().duration - position : (ch.end - position); 
+    print("PositionEndLabel: ${position.inMilliseconds} ${printDuration(timeleft)}");
+
+    return Text(printDuration(-timeleft));
+  }
+}
 
 class EndLabel extends StatelessWidget {
   const new({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: PlayerService().positionStream,
       builder: (context, asyncSnapshot) {
-
         return Text(printDuration(-PlayerService().timeLeftInChapter));
-      }
+      },
     );
-  }}
+  }
+}

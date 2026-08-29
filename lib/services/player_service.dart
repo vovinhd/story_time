@@ -26,7 +26,6 @@ final class BookFile {
       return coverFile;
     }
     return null;
-
   }
 
   Future<File?> get coverImage async {
@@ -112,7 +111,7 @@ class PlayerService {
   StreamController<Duration> seekStream =
       StreamController<Duration>.broadcast();
 
-  StreamController<Image> coverStream = StreamController.broadcast(); 
+  StreamController<Image> coverStream = StreamController.broadcast();
 
   final _player = Player(
     configuration: PlayerConfiguration(
@@ -129,7 +128,7 @@ class PlayerService {
       return 0;
     }
   }
-  
+
   Image coverImage = (Image.asset(
     "images/cover_default.png",
     key: UniqueKey(),
@@ -145,7 +144,7 @@ class PlayerService {
   List<AudiobookChapter> chapters = [];
 
   PlayerService._privateConstructor();
-  static final PlayerService _instance = PlayerService._privateConstructor(); 
+  static final PlayerService _instance = PlayerService._privateConstructor();
 
   factory PlayerService() {
     return _instance;
@@ -171,14 +170,33 @@ class PlayerService {
     return _player.stream.duration;
   }
 
-
   Duration get duration {
     return _player.state.duration;
   }
 
-
   Stream<Duration> get positionStream {
     return _player.stream.position;
+  }
+
+  void ensureInitialized() {
+    syncTimer = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
+      if (isPlaying) {
+        syncedPositionStreamController.add(_player.state.position);
+      }
+    });
+    seekStream.stream.listen((seekDuration){
+      syncedPositionStreamController.add(seekDuration);
+
+    });
+  }
+
+  StreamController<Duration> syncedPositionStreamController =
+      StreamController.broadcast();
+
+  late var syncTimer;
+
+  Stream<Duration> get syncedPositionStream {
+    return syncedPositionStreamController.stream;
   }
 
   AudiobookChapter? getChapterFor(Duration position) {
@@ -277,7 +295,6 @@ class PlayerService {
       if (!tags.containsKey("artist")) {
         tags = {"artist": ""};
       }
-
     }
 
     // cover image
@@ -286,23 +303,22 @@ class PlayerService {
       print("didn't find a cover for ${file.path}");
       coverImage = Image.asset("images/cover_default.png", key: UniqueKey());
     } else {
-      coverImage = Image.file(coverfile, key: UniqueKey()); 
+      coverImage = Image.file(coverfile, key: UniqueKey());
     }
 
-    coverStream.sink.add(coverImage); 
-
+    coverStream.sink.add(coverImage);
 
     // start playing
     await _player.open(media, play: true);
 
     // tell everyone about it
-    playingFile = file; 
+    playingFile = file;
     selectedBookStream.add(file);
     loading = false;
     ready = true;
 
     // start updating config with play state
-    _initTimer(); 
+    _initTimer();
   }
 
   //-------------------------------
@@ -313,13 +329,12 @@ class PlayerService {
     await _player.play();
   }
 
-  Future<void> pause()async {
-   await _player.pause();
-
+  Future<void> pause() async {
+    await _player.pause();
   }
 
-  Future<void> playOrPause()async {
-   await _player.playOrPause();
+  Future<void> playOrPause() async {
+    await _player.playOrPause();
   }
 
   void seek(Duration duration) {
@@ -341,13 +356,12 @@ class PlayerService {
   }
 
   void seekLastChapter() async {
-
     var pos = _player.state.position;
 
     if (timeInChapter.inSeconds < skipbackTime) {
       //await player.seek(player.state.position - Duration(seconds: skipbackTime));
 
-      var timeIn = timeInChapter - Duration(seconds: skipbackTime); 
+      var timeIn = timeInChapter - Duration(seconds: skipbackTime);
       seek(pos - timeIn - Duration(seconds: skipbackTime));
     } else {
       seek(pos - timeInChapter + Duration(milliseconds: 1));
@@ -367,52 +381,48 @@ class PlayerService {
     seek(Duration(seconds: max(0, newPos)));
   }
 
-
-
   Duration get timeLeftInChapter {
     var currentChapter = getChapterFor(position);
     return currentChapter!.end - position;
   }
 
-
   Duration get timeInChapter {
     var currentChapter = getChapterFor(position);
     return position - currentChapter!.start;
+  }
 
+  Duration timeInChapterForPosition(Duration position) {
+    return currentChapter != null ? position - currentChapter!.start : position;
   }
 
   Stream<double> get rateStream => _player.stream.rate;
 
   double get rate {
-    return _player.state.rate; 
-  } 
-
-  set rate(double rate) {
-    _player.setRate(rate); 
+    return _player.state.rate;
   }
 
-  
+  set rate(double rate) {
+    _player.setRate(rate);
+  }
+
   Stream<double> get volumeStream => _player.stream.volume;
 
   double get volume {
-    return _player.state.volume; 
-  } 
+    return _player.state.volume;
+  }
 
   set volume(double volume) {
-    _player.setVolume(volume); 
+    _player.setVolume(volume);
   }
 
   Timer? timer;
-
 
   void _initTimer() {
     if (timer != null && timer!.isActive) return;
 
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      
       // todo factor out into its own thing and make it smarter
       ConfigProvider().updatePlaybackState();
-
 
       if (_player.state.playing) {
         mediaPlayer2.emitPropertiesChanged(
@@ -427,6 +437,6 @@ class PlayerService {
   }
 
   void dispose() {
-    _player.dispose(); 
+    _player.dispose();
   }
 }

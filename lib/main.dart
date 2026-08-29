@@ -22,6 +22,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 
 Future<void> main() async {
   MediaKit.ensureInitialized();
+  PlayerService().ensureInitialized(); 
   await YaruWindowTitleBar.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   SemanticsBinding.instance.ensureSemantics();

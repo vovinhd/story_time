@@ -39,14 +39,23 @@ class _PlaybackControlsState extends State<PlaybackControls> {
         mainAxisAlignment: .center,
         children: [
           PlaybackPositionSlider(),
-          Row(
-            spacing: 8,
-            mainAxisAlignment: .spaceBetween,
-            children: [
-              CurrentPositionInChapterLabel(),
-              CurrentPositionLabel(),
-              EndLabel(),
-            ],
+          StreamBuilder(
+            stream: PlayerService().syncedPositionStream,
+            builder: (context, asyncSnapshot) {
+              var position = PlayerService().position; 
+              if (asyncSnapshot.hasData) { 
+                position = asyncSnapshot.data!;
+              }
+              return Row(
+                spacing: 8,
+                mainAxisAlignment: .spaceBetween,
+                children: [
+                  PositionInChapterLabel(position: position),
+                  PositonLabel(position: position,),
+                  PositionEndLabel(position: position,),
+                ],
+              );
+            }
           ),
           Row(
             mainAxisAlignment: .spaceBetween,
