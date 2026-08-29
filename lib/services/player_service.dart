@@ -193,7 +193,7 @@ class PlayerService {
   StreamController<Duration> syncedPositionStreamController =
       StreamController.broadcast();
 
-  late var syncTimer;
+  late Timer syncTimer;
 
   Stream<Duration> get syncedPositionStream {
     return syncedPositionStreamController.stream;
@@ -250,33 +250,6 @@ class PlayerService {
       throw ArgumentError(["could not get media info from ${file.path}!"]);
     }
 
-    // chapter info
-    var ffprobeChapters = mediaInformation.getChapters();
-    if (ffprobeChapters.isEmpty) {
-      if (mediaInformation.getDuration() == null) {
-        throw ArgumentError(["could not get duration for ${file.path}"]);
-      }
-      var startTimeStr = mediaInformation.getStartTime() ?? "0.0";
-      var durationStr = mediaInformation.getDuration()!;
-      var startTime = chapterInfoTimeToMicros(startTimeStr);
-      var duration = chapterInfoTimeToMicros(durationStr);
-      chapters = [
-        AudiobookChapter._(
-          title: "",
-          start: Duration(microseconds: startTime),
-          end: Duration(microseconds: startTime + duration),
-          duration: Duration(microseconds: duration),
-        ),
-      ];
-    } else {
-      chapters = mediaInformation
-          .getChapters()
-          .map(
-            (ffprobeChapter) =>
-                AudiobookChapter.fromChapterInfo(ffprobeChapter),
-          )
-          .toList();
-    }
 
     // tags
     var ffprobeTags = mediaInformation.getTags();
@@ -296,6 +269,36 @@ class PlayerService {
         tags = {"artist": ""};
       }
     }
+
+
+    // chapter info
+    var ffprobeChapters = mediaInformation.getChapters();
+    if (ffprobeChapters.isEmpty) {
+      if (mediaInformation.getDuration() == null) {
+        throw ArgumentError(["could not get duration for ${file.path}"]);
+      }
+      var startTimeStr = mediaInformation.getStartTime() ?? "0.0";
+      var durationStr = mediaInformation.getDuration()!;
+      var startTime = chapterInfoTimeToMicros(startTimeStr);
+      var duration = chapterInfoTimeToMicros(durationStr);
+      chapters = [
+        AudiobookChapter._(
+          title: tags["title"],
+          start: Duration(microseconds: startTime),
+          end: Duration(microseconds: startTime + duration),
+          duration: Duration(microseconds: duration),
+        ),
+      ];
+    } else {
+      chapters = mediaInformation
+          .getChapters()
+          .map(
+            (ffprobeChapter) =>
+                AudiobookChapter.fromChapterInfo(ffprobeChapter),
+          )
+          .toList();
+    }
+
 
     // cover image
     var coverfile = await file.coverImage;
@@ -320,6 +323,16 @@ class PlayerService {
     // start updating config with play state
     _initTimer();
   }
+
+  String get title { 
+    return tags["title"]; 
+  } 
+
+  String get author { 
+    return tags["author"]; 
+  } 
+
+
 
   //-------------------------------
   //---------player controls-------
@@ -383,12 +396,15 @@ class PlayerService {
 
   Duration get timeLeftInChapter {
     var currentChapter = getChapterFor(position);
-    return currentChapter!.end - position;
+    if (currentChapter == null) return position; 
+
+    return duration - position;
   }
 
   Duration get timeInChapter {
     var currentChapter = getChapterFor(position);
-    return position - currentChapter!.start;
+    if (currentChapter == null) return position; 
+    return position - currentChapter.start;
   }
 
   Duration timeInChapterForPosition(Duration position) {

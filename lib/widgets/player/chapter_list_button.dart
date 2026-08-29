@@ -8,28 +8,27 @@ import 'package:yaru/yaru.dart';
 class ChapterListButton extends StatefulWidget {
   const ChapterListButton({
     super.key,
-    required this.chapters,
-    required this.currentChapter,
   });
 
     // todo factor out!
-  final List<AudiobookChapter> chapters;
-  final AudiobookChapter currentChapter;
   @override
   State<ChapterListButton> createState() => _ChapterListButtonState();
 
-  void _seekChapter(AudiobookChapter chapterInformation) {
-    final micros = (Duration(
-      microseconds:chapterInformation.start.inMicroseconds,
-    ));
+  // void _seekChapter(AudiobookChapter chapterInformation) {
+  //   final micros = (Duration(
+  //     microseconds:chapterInformation.start.inMicroseconds,
+  //   ));
 
-    PlayerService().seek(micros + Duration(milliseconds: 1));
-  }
+  //   PlayerService().seek(micros + Duration(milliseconds: 1));
+  // }
 }
 
 class _ChapterListButtonState extends State<ChapterListButton> {
   @override
   Widget build(BuildContext context) {
+    if (PlayerService().chapters.length < 2) {
+      return SizedBox();
+    }
     return OutlinedButton(
       style: ButtonStyle(alignment: .centerLeft),
       child: Row(
@@ -44,68 +43,77 @@ class _ChapterListButtonState extends State<ChapterListButton> {
               } else {
                 pos = PlayerService().position;
               }
-              return Text(PlayerService().getChapterFor(pos)!.title);
+
+              var ch = PlayerService().getChapterFor(pos); 
+              if (ch == null) {
+                return Text(PlayerService().title);
+              }
+              return Text(ch.title);
             },
           ),
         ],
       ),
       onPressed: () {
-        showModalBottomSheet<void>(
-          isScrollControlled: true,
-          context: context,
-          useSafeArea: true,
+        showChapterSheet(context);
+      },
+    );
+  }
 
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.sizeOf(context).height * 0.9,
-            maxWidth: 650,
-          ),
-          builder: (BuildContext context) {
-            return SizedBox(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: .center,
-                  mainAxisSize: .min,
-                  children: <Widget>[
-                    SizedBox(
-                      height: MediaQuery.sizeOf(context).height * 0.9,
-                      child: ListView.builder(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 16,
-                          horizontal: 4,
-                        ),
-                        itemCount: widget.chapters.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return ListTile(
-                            title: Text(widget.chapters[index].title),
-                            trailing: Text(
-                              printDuration(
-                                Duration(
-                                  microseconds: (
-                                    widget.chapters[index].start.inMicroseconds
-                                  ),
+  Future<void> showChapterSheet(BuildContext context) {
+    return showModalBottomSheet<void>(
+        isScrollControlled: true,
+        context: context,
+        useSafeArea: true,
+
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * 0.9,
+          maxWidth: 650,
+        ),
+        builder: (BuildContext context) {
+          return SizedBox(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: .center,
+                mainAxisSize: .min,
+                children: <Widget>[
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * 0.9,
+                    child: ListView.builder(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 4,
+                      ),
+                      itemCount: PlayerService().chapters.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ListTile(
+                          title: Text(PlayerService().chapters[index].title),
+                          trailing: Text(
+                            printDuration(
+                              Duration(
+                                microseconds: (
+                                  PlayerService().chapters[index].start.inMicroseconds
                                 ),
                               ),
                             ),
-                            onTap: () {
-                              widget._seekChapter(widget.chapters[index]);
-                              Navigator.pop(context);
-                            },
-                          );
-                        },
-                      ),
+                          ),
+                          onTap: () {
+                            PlayerService().seekChapter(PlayerService().chapters[index]);
+                            Navigator.pop(context);
+                          },
+                        );
+                      },
                     ),
+                  ),
 
-                    // ElevatedButton(
-                    //   child: const Text('Close BottomSheet'),
-                    //   onPressed: () => Navigator.pop(context),
-                    // ),
-                  ],
-                ),
+                  // ElevatedButton(
+                  //   child: const Text('Close BottomSheet'),
+                  //   onPressed: () => Navigator.pop(context),
+                  // ),
+                ],
               ),
-            );
-          },
-        );
-      },
-    );
+            ),
+          );
+        },
+      );
   }
 }

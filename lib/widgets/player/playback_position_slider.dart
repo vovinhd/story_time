@@ -27,8 +27,12 @@ class _PlaybackPositionSliderState extends State<PlaybackPositionSlider> {
   }
 
   double _getPlayheadPosition(Duration duration) {
-    if (!PlayerService().isPlaying) {
-      return lastPos;
+    // if (!PlayerService().isPlaying) {
+    //   return lastPos;
+    // }
+
+    if (PlayerService().currentChapter == null) {
+      return 0.0; 
     }
     var currentChapter = PlayerService().currentChapter!;
 

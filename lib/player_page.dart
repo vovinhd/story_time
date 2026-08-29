@@ -248,8 +248,6 @@ class _PlayerPageState extends State<PlayerPage> {
                           crossAxisAlignment: .start,
                           children: [
                             ChapterListButton(
-                              chapters: PlayerService().chapters,
-                              currentChapter: PlayerService().currentChapter!,
                             ),
 
                             PlaybackControls(),

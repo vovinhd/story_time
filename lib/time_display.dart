@@ -68,7 +68,7 @@ class PositonLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("PositonLabel: ${position.inMilliseconds} ${printDuration(position)}");
+    // print("PositonLabel: ${position.inMilliseconds} ${printDuration(position)}");
 
     return Row(
       children: [
@@ -100,7 +100,7 @@ class PositionInChapterLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("PositionInChapterLabel: ${position.inMilliseconds} ${printDuration(position)}");
+    // print("PositionInChapterLabel: ${position.inMilliseconds} ${printDuration(position)}");
     return Text(
       printDuration(PlayerService().timeInChapterForPosition(position)),
     );
@@ -116,7 +116,7 @@ class PositionEndLabel extends StatelessWidget {
 
     var ch = PlayerService().getChapterFor(position); 
     var timeleft = ch == null ? PlayerService().duration - position : (ch.end - position); 
-    print("PositionEndLabel: ${position.inMilliseconds} ${printDuration(timeleft)}");
+    // print("PositionEndLabel: ${position.inMilliseconds} ${printDuration(timeleft)}");
 
     return Text(printDuration(-timeleft));
   }
