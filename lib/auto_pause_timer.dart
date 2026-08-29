@@ -76,7 +76,7 @@ class TimerOptions extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    AutoPauseTimer.startTimer(-timeLeftInChapter(PlayerService().position), true); 
+                    AutoPauseTimer.startTimer(-PlayerService().timeLeftInChapter, true); 
                   },
                   child: Align(
                     alignment: .centerStart,

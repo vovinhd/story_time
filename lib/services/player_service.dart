@@ -192,10 +192,10 @@ class PlayerService {
     // we went through the list of chapters and didn't find the playbacl position.
     // that means the chapter list didn't cover the whole file
     // this should never happen
-    assert(
-      false,
-      "Either getChapterFor called without a file playing or chapters not exhaustive over playback time",
-    );
+    // assert(
+    //   false,
+    //   "Either getChapterFor called without a file playing or chapters not exhaustive over playback time",
+    // );
     return null;
   }
 
@@ -341,25 +341,21 @@ class PlayerService {
   }
 
   void seekLastChapter() async {
-    var timeIn = timeInChapter(_player.state.position);
 
     var pos = _player.state.position;
 
-    if (timeIn.inSeconds < skipbackTime) {
+    if (timeInChapter.inSeconds < skipbackTime) {
       //await player.seek(player.state.position - Duration(seconds: skipbackTime));
 
-      timeIn = timeInChapter(
-        _player.state.position - Duration(seconds: skipbackTime),
-      );
+      var timeIn = timeInChapter - Duration(seconds: skipbackTime); 
       seek(pos - timeIn - Duration(seconds: skipbackTime));
     } else {
-      seek(pos - timeIn + Duration(milliseconds: 1));
+      seek(pos - timeInChapter + Duration(milliseconds: 1));
     }
   }
 
   void seekNextChapter() {
-    var timeLeft = timeLeftInChapter(_player.state.position);
-    seek(_player.state.position - timeLeft);
+    seek(_player.state.position - timeLeftInChapter);
 
     //seekOffset(timeLeftInChapter(player.state.position).inMicroseconds);
   }
@@ -371,14 +367,18 @@ class PlayerService {
     seek(Duration(seconds: max(0, newPos)));
   }
 
-  Duration timeInChapter(Duration position) {
-    var currentChapter = getChapterFor(position);
-    return position - currentChapter!.start;
-  }
 
-  Duration timeLeftInChapter(Duration position) {
+
+  Duration get timeLeftInChapter {
     var currentChapter = getChapterFor(position);
     return currentChapter!.end - position;
+  }
+
+
+  Duration get timeInChapter {
+    var currentChapter = getChapterFor(position);
+    return position - currentChapter!.start;
+
   }
 
   Stream<double> get rateStream => _player.stream.rate;

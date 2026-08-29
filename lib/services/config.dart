@@ -82,8 +82,9 @@ class ConfigProvider {
 
   void updatePlaybackState() async {
     if (PlayerService().playingFile == null ||
-        PlayerService().duration.inMicroseconds == 0)
+        PlayerService().duration.inMicroseconds == 0) {
       return;
+    }
     await Future.delayed(Duration(milliseconds: 100));
     final filename = PlayerService().playingFile!.name;
     final filepath = PlayerService().playingFile!.path;

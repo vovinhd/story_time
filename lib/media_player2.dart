@@ -96,7 +96,7 @@ class MediaPlayer2 extends DBusObject {
     if (!PlayerService().ready) {
       return DBusMethodSuccessResponse([DBusVariant(DBusInt64(0))]); 
     }
-    final time = timeInChapter(PlayerService().position).inMicroseconds;
+    final time = PlayerService().timeInChapter.inMicroseconds;
 
     return DBusMethodSuccessResponse([DBusVariant(DBusInt64(time))]);
   }
