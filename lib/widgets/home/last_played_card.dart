@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:fl_audiobook/globals.dart' as globals;
-import 'package:fl_audiobook/player_page.dart';
+import 'package:fl_audiobook/routes/player_page.dart';
 import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/widgets/home/last_played_list.dart';

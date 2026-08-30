@@ -8,7 +8,7 @@ import 'package:watch_it/watch_it.dart';
 import 'package:yaru/yaru.dart';
 
 //import 'example.dart';
-import 'index_page.dart';
+import 'routes/index_page.dart';
 import 'model.dart';
 
 class ExampleHome extends StatelessWidget with WatchItMixin {

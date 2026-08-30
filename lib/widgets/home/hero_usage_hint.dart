@@ -29,7 +29,7 @@ class HeroUsageHint extends StatelessWidget {
             style: .new(fontSize: 32, fontWeight: .bold),
           ),
           Text(
-            "in .m4b format with metadata because this is programmed like crap",
+            "supported file types: .m4b, .m4a, .mp3",
           ),
     
           Padding(

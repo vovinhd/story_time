@@ -328,8 +328,8 @@ class PlayerService {
     return tags["title"]; 
   } 
 
-  String get author { 
-    return tags["author"]; 
+  String? get author { 
+    return tags["artist"]; 
   } 
 
 

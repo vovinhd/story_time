@@ -1,4 +1,4 @@
-import 'package:fl_audiobook/player_page.dart';
+import 'package:fl_audiobook/routes/player_page.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/time_display.dart';
 import 'package:fl_audiobook/widgets/player/chapter_list_button.dart';

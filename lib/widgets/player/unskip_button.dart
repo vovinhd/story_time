@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'dart:ui';
 
-import 'package:fl_audiobook/player_page.dart';
+import 'package:fl_audiobook/routes/player_page.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/widgets/player/unskip_button.dart';
 import 'package:flutter/material.dart';

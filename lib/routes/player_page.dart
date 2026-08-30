@@ -51,7 +51,6 @@ class _PlayerPageState extends State<PlayerPage> {
       },
       child: Scaffold(
         appBar: YaruWindowTitleBar(
-          heroTag: "appbar",
 
           onClose: (p0) {
             tray.hideOrClose();
@@ -60,7 +59,13 @@ class _PlayerPageState extends State<PlayerPage> {
           onShowMenu: (p0) => {},
           border: BorderSide.none,
           leading: YaruBackButton(),
-          title: Text("Player"),
+          title: PlayerService().author == null ? Text(PlayerService().title) : Column(
+            children: [
+              Text(PlayerService().title, style: .new(fontWeight: .bold),),
+              Text("by ${PlayerService().author ?? ""}", style: .new(fontSize: 10),),
+
+            ],
+          ),
           actions: [
             PortalTarget(
               visible: showBookInfo,

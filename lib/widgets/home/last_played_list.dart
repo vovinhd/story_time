@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:fl_audiobook/book_select_page.dart';
 import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/time_display.dart';

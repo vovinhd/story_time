@@ -1,4 +1,4 @@
-import 'package:fl_audiobook/player_page.dart';
+import 'package:fl_audiobook/routes/player_page.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/widgets/player/volume_control.dart';
 import 'package:flutter/material.dart';
