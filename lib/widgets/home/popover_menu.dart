@@ -34,6 +34,7 @@ class _PopoverMenuState extends State<PopoverMenu> {
                     print("check mounted");
 
                     // TODO known problem: if the menu is closed before a book is selected the widget is unmounted and navigation is blocked
+                    // TODO resume playback if user picked an audiobook they already have played
                     if (mounted) {
                       print("navigating to player");
                       Navigator.of(context).push(
