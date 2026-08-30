@@ -1,3 +1,4 @@
+import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/tray.dart' as tray;
 import 'package:flutter/material.dart';
 import 'package:yaru/yaru.dart';
@@ -8,17 +9,9 @@ class SettingsPage extends StatefulWidget {
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
+
 // TODO hook up to things
 class _SettingsPageState extends State<SettingsPage> {
-  Duration skipAmountSelection = Duration(seconds: 10);
-  Duration unskipTimeoutSelection = Duration(seconds: 3);
-
-  String systemTraySelection = "Always";
-
-  bool enableDBus = true;
-  bool reduceAnimations = true;
-  bool reduceBlur = true;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,21 +26,13 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Container(
           width: 800,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal:  8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: LayoutBuilder(
               builder: (context, constraints) {
                 var multiline = constraints.maxWidth < 500;
                 // print(constraints);
                 return ListView(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(
-                        "Warning: not implemented!",
-                        style: .new(color: Colors.redAccent),
-                      ),
-                    ),
-
                     SettingsSection(
                       title: "Player Settings",
                       children: [
@@ -72,10 +57,13 @@ class _SettingsPageState extends State<SettingsPage> {
                                 child: Text("1 min"),
                               ),
                             ],
-                            value: skipAmountSelection,
+                            value: ConfigProvider().config.skipDuration,
                             onChanged: (newSelection) {
                               setState(() {
-                                skipAmountSelection = newSelection!;
+                                ConfigProvider().config.skipDuration =
+                                    newSelection!;
+                                ConfigProvider().SaveConfig();
+                                ConfigProvider().notify();
                               });
                             },
                           ),
@@ -100,10 +88,13 @@ class _SettingsPageState extends State<SettingsPage> {
                                 child: Text("10 sec"),
                               ),
                             ],
-                            value: unskipTimeoutSelection,
+                            value: ConfigProvider().config.unksipTimeout,
                             onChanged: (newSelection) {
                               setState(() {
-                                unskipTimeoutSelection = newSelection!;
+                                ConfigProvider().config.unksipTimeout =
+                                    newSelection!;
+                                ConfigProvider().SaveConfig();
+                                ConfigProvider().notify();
                               });
                             },
                           ),
@@ -121,18 +112,20 @@ class _SettingsPageState extends State<SettingsPage> {
                         //   ),
                         // ),
 
-                        LabeledSettinsRow(
-                          label: "Performance mode",
-                          sublabel: "Make the app less pretty for more fast",
-                          actionWidget: Switch(
-                            value: reduceBlur,
-                            onChanged: (value) {
-                              setState(() {
-                                reduceBlur = value;
-                              });
-                            },
-                          ),
-                        ),
+                        // LabeledSettinsRow(
+                        //   label: "Performance mode",
+                        //   sublabel: "Make the app less pretty for more fast",
+                        //   actionWidget: Switch(
+                        //     value: ConfigProvider().config.performanceMode,
+                        //     onChanged: (value) {
+                        //       setState(() {
+                        //         ConfigProvider().config.performanceMode = value;
+                        //         ConfigProvider().SaveConfig();
+                        //         ConfigProvider().notify();
+                        //       });
+                        //     },
+                        //   ),
+                        // ),
                       ],
                     ),
                     SettingsSection(
@@ -142,43 +135,48 @@ class _SettingsPageState extends State<SettingsPage> {
                         LabeledSettinsRow(
                           label: "Minimize to systemtray",
                           sublabel: "Keep player in system tray instead of quitting when main window is closed",
-                          actionWidget: DropdownButton<String>(
+                          actionWidget: DropdownButton<SystemTrayUsage>(
                             items: [
                               DropdownMenuItem(
-                                value: "Always",
+                                value: SystemTrayUsage.always,
                                 child: Text("Always"),
                               ),
 
                               DropdownMenuItem(
-                                value: "When Playing",
+                                value: SystemTrayUsage.whenPlaying,
                                 child: Text("When Playing"),
                               ),
 
                               DropdownMenuItem(
-                                value: "Never",
+                                value: SystemTrayUsage.never,
                                 child: Text("Never"),
                               ),
                             ],
-                            value: systemTraySelection,
+                            value: ConfigProvider().config.systemTrayUsage,
                             onChanged: (newSelection) {
                               setState(() {
-                                systemTraySelection = newSelection!;
+                                ConfigProvider().config.systemTrayUsage =
+                                    newSelection!;
+                                ConfigProvider().SaveConfig();
+                                ConfigProvider().notify();
                               });
                             },
                           ),
                         ),
-                        LabeledSettinsRow(
-                          label: "Enable DBus integration",
-                          sublabel: "Show player status on lock screen etc.",
-                          actionWidget: Switch(
-                            value: enableDBus,
-                            onChanged: (value) {
-                              setState(() {
-                                enableDBus = value;
-                              });
-                            },
-                          ),
-                        ),
+                        // LabeledSettinsRow(
+                        //   label: "Enable DBus integration",
+                        //   sublabel: "Show player status on lock screen etc.",
+                        //   actionWidget: Switch(
+                        //     value: ConfigProvider().config.enableDBus,
+                        //     onChanged: (value) {
+                        //       setState(() {
+                        //         ConfigProvider().config.enableDBus = value;
+                        //         ConfigProvider().SaveConfig();
+                        //         ConfigProvider().notify();
+                        //       });
+                        //     },
+                        //   ),
+                        // ),
                       ],
                     ),
 
@@ -205,8 +203,11 @@ class _SettingsPageState extends State<SettingsPage> {
                                     child: Text("Cancel"),
                                   ),
                                   TextButton(
-                                    onPressed: () =>
-                                        Navigator.pop(context, 'OK'),
+                                    onPressed: () {
+                                                                            ConfigProvider().deleteCache(); 
+
+                                      Navigator.pop(context, 'OK');
+                                    },
                                     child: Text("Do it"),
                                   ),
                                 ],
@@ -235,8 +236,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                     child: Text("Cancel"),
                                   ),
                                   TextButton(
-                                    onPressed: () =>
-                                        Navigator.pop(context, 'OK'),
+                                    onPressed: () {
+                                      ConfigProvider().deleteHistory();
+                                      Navigator.pop(context, 'OK');
+                                    },
                                     child: Text("Do it"),
                                   ),
                                 ],
@@ -374,18 +377,23 @@ class LabeledSettinsRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         mainAxisAlignment: .spaceBetween,
+        spacing: 8,
         children: [
-          Column(
-            crossAxisAlignment: .start,
-            children: [
-              Text(label, style: .new(fontWeight: .bold)),
-              sublabel != null
-                  ? Text(
-                      sublabel!,
-                      style: .new(fontSize: 14, color: YaruColors.warmGrey),
-                    )
-                  : SizedBox(),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                Text(label, style: .new(fontWeight: .bold)),
+                if (sublabel != null)
+                  Text(
+                    sublabel!,
+                    style: .new(fontSize: 14, color: YaruColors.warmGrey),
+                    softWrap: true,
+                  )
+                else
+                  SizedBox(),
+              ],
+            ),
           ),
           actionWidget,
         ],

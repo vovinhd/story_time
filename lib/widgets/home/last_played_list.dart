@@ -55,20 +55,9 @@ class _LastPlayedListState extends State<LastPlayedList> {
                     right: 16,
                     bottom: 100,
                   ),
-                  itemCount: books.length + 1,
+                  itemCount: books.length,
                   itemBuilder: (BuildContext context, int index) {
-                    if (index >= books.length) {
-                      return Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Center(
-                          child: YaruSplitButton(
-                            items: null,
-                            child: Text("Open Audiobook"),
-                            onPressed: widget.onPickFile,
-                          ),
-                        ),
-                      );
-                    }
+
                     final state = books[index];
                     final bookFile = BookFile(
                       name: state.file,

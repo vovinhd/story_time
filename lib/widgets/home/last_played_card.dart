@@ -224,7 +224,7 @@ class BookMenu extends StatelessWidget {
 
             TextButton(
               onLongPress: () => {
-                ConfigProvider().removePlaybackState(bookPlayebackState.path),
+                ConfigProvider().removePlaybackState(bookPlayebackState.file),
               },
               onPressed: () => [],
               child: Row(

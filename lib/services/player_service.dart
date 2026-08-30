@@ -357,7 +357,8 @@ class PlayerService {
   }
 
   void seekBack() {
-    seekOffset(-10);
+    var skipDuration = ConfigProvider().config.skipDuration.inSeconds; 
+    seekOffset(-skipDuration);
   }
 
   void seekChapter(AudiobookChapter ch) {
@@ -365,7 +366,8 @@ class PlayerService {
   }
 
   void seekForward() {
-    seekOffset(10);
+    var skipDuration = ConfigProvider().config.skipDuration.inSeconds; 
+    seekOffset(skipDuration);
   }
 
   void seekLastChapter() async {

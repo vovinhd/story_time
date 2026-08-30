@@ -167,13 +167,13 @@ class _IndexPageState extends State<IndexPage> {
                 return HeroPlayer(file: asyncSnapshot.data!);
               },
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8.0,
-                horizontal: 20,
-              ),
-              child: Text("Last played"),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(
+            //     vertical: 8.0,
+            //     horizontal: 20,
+            //   ),
+            //   child: Text("Last played"),
+            // ),
 
             LastPlayedList(onPickFile: pickFile, onTransition: _transition),
           ],

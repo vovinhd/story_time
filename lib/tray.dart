@@ -1,17 +1,24 @@
 import 'dart:io';
 
+import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:system_tray/system_tray.dart';
-
 
 final AppWindow appWindow = AppWindow();
 final SystemTray systemTray = SystemTray();
 
 void hideOrClose() {
-  if (PlayerService().playingFile != null && PlayerService().isPlaying) {
+  if (ConfigProvider().config.systemTrayUsage == SystemTrayUsage.never) {
+    appWindow.close();
+  } else if (ConfigProvider().config.systemTrayUsage ==
+      SystemTrayUsage.always) {
     appWindow.hide();
   } else {
-    appWindow.close();
+    if (PlayerService().playingFile != null && PlayerService().isPlaying) {
+      appWindow.hide();
+    } else {
+      appWindow.close();
+    }
   }
 }
 
