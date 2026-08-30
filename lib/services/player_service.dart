@@ -225,7 +225,7 @@ class PlayerService {
       position = storedPlaybackState.position; 
     }
 
-    print("opening ${file.name} at $position");
+    print("opening ${file.name} at $position, stored ${storedPlaybackState?.lastPlayed.toLocal()}");
 
     loading = true;
 

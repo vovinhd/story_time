@@ -54,10 +54,10 @@ class ConfigProvider {
 
   BookPlaybackState? getPlaybackStateForFile(String filename) {
     if (config.playbackStates.any(
-      (value) => value.file == PlayerService().playingFile!.name,
+      (value) => value.file == filename,
     )) {
       BookPlaybackState currentState = config.playbackStates.firstWhere(
-        (value) => value.file == PlayerService().playingFile!.name,
+        (value) => value.file == filename,
       );
       return currentState;
     } else {

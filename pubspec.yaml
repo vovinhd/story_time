@@ -58,6 +58,7 @@ dependencies:
   ffmpeg_kit_next_flutter:
     path: ../../ffmpeg-kit-next/flutter/flutter
   text_scroll: ^0.2.1
+  marquee: ^2.3.0
 
 dev_dependencies:
   flutter_test:

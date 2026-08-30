@@ -49,52 +49,61 @@ class _PlayerPageState extends State<PlayerPage> {
         const SingleActivator(LogicalKeyboardKey.space): () {
           PlayerService().playOrPause();
         },
+        const SingleActivator(LogicalKeyboardKey.backspace): () {
+          Navigator.of(context).pop(); 
+        },
+        const SingleActivator(LogicalKeyboardKey.arrowRight): () {
+          PlayerService().seekForward(); 
+        },
+        const SingleActivator(LogicalKeyboardKey.arrowLeft): () {
+          PlayerService().seekBack(); 
+        },
       },
-      child: Scaffold(
-        appBar: YaruWindowTitleBar(
-
-          onClose: (p0) {
-            tray.hideOrClose();
-          },
-          backgroundColor: Colors.transparent,
-          onShowMenu: (p0) => {},
-          border: BorderSide.none,
-          leading: YaruBackButton(),
-          title: PlayerService().author == null ? Text(PlayerService().title) : Column(
-            children: [
-              Text(PlayerService().title, style: .new(fontWeight: .bold),),
-              Text("by ${PlayerService().author ?? ""}", style: .new(fontSize: 10),),
-
-            ],
-          ),
-          actions: [
-            PortalTarget(
-              visible: showBookInfo,
-              anchor: const Aligned(
-                follower: Alignment.topRight,
-                target: Alignment.bottomRight,
-                offset: Offset(0, 8),
-              ),
-              portalFollower: TagInfo(),
-
-              child: Tooltip(
-                message: "playback speed",
-                child: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      showBookInfo = true;
-                    });
-                  },
-                  icon: Icon(YaruIcons.information),
+      child: Focus(
+        autofocus: true,
+        child: Scaffold(
+          appBar: YaruWindowTitleBar(
+        
+            onClose: (p0) {
+              tray.hideOrClose();
+            },
+            backgroundColor: Colors.transparent,
+            onShowMenu: (p0) => {},
+            border: BorderSide.none,
+            leading: YaruBackButton(),
+            title: PlayerService().author == null ? Text(PlayerService().title) : Column(
+              children: [
+                Text(PlayerService().title, style: .new(fontWeight: .bold),),
+                Text("by ${PlayerService().author ?? ""}", style: .new(fontSize: 10),),
+        
+              ],
+            ),
+            actions: [
+              PortalTarget(
+                visible: showBookInfo,
+                anchor: const Aligned(
+                  follower: Alignment.topRight,
+                  target: Alignment.bottomRight,
+                  offset: Offset(0, 8),
+                ),
+                portalFollower: TagInfo(),
+        
+                child: Tooltip(
+                  message: "playback speed",
+                  child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        showBookInfo = true;
+                      });
+                    },
+                    icon: Icon(YaruIcons.information),
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-
-        body: Focus(
-          autofocus: true,
-          child: PortalTarget(
+            ],
+          ),
+        
+          body: PortalTarget(
             visible: showBookInfo,
             portalFollower: GestureDetector(
               behavior: HitTestBehavior.opaque,
@@ -104,7 +113,7 @@ class _PlayerPageState extends State<PlayerPage> {
                 });
               },
             ),
-
+          
             child: Stack(
               fit: StackFit.expand,
               children: [
@@ -117,14 +126,14 @@ class _PlayerPageState extends State<PlayerPage> {
                     repeat: .noRepeat,
                   ),
                 ),
-
+          
                 if (ConfigProvider().config.performanceMode) SizedBox() else Positioned.fill(
                   child: Opacity(
                     opacity: 0.8,
                     child: Container(color: const Color(0xFF000000)),
                   ),
                 ),
-
+          
                 if (ConfigProvider().config.performanceMode) PlayerUi() else BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
                   child: PlayerUi(),

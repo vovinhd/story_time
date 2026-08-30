@@ -116,8 +116,14 @@ class _IndexPageState extends State<IndexPage> {
         },
         const SingleActivator(LogicalKeyboardKey.space): () {
           PlayerService().playOrPause();
-        }
-          
+        },
+        const SingleActivator(LogicalKeyboardKey.enter): () {
+          if (PlayerService().playingFile != null) {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute<void>(builder: (context) => PlayerPage()));
+          }
+        },
       },
       child: Focus(
         autofocus: true,
