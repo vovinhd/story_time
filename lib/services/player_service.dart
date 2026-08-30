@@ -218,6 +218,13 @@ class PlayerService {
   }
 
   Future<void> openFile(BookFile file, {int position = 0}) async {
+
+    var storedPlaybackState = ConfigProvider().getPlaybackStateForFile(file.name); 
+
+    if(storedPlaybackState != null) {
+      position = storedPlaybackState.position; 
+    }
+
     print("opening ${file.name} at $position");
 
     loading = true;

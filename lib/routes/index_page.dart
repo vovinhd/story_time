@@ -1,12 +1,16 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:fl_audiobook/my_route_transition.dart';
 import 'package:fl_audiobook/routes/player_page.dart';
+import 'package:fl_audiobook/routes/settings_page.dart';
 import 'package:fl_audiobook/services/config.dart';
+import 'package:fl_audiobook/services/files.dart' as files;
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/widgets/home/hero_player.dart';
 import 'package:fl_audiobook/widgets/home/hero_usage_hint.dart';
 import 'package:fl_audiobook/widgets/home/last_played_list.dart';
 import 'package:fl_audiobook/widgets/home/popover_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:yaru/yaru.dart';
 
@@ -87,96 +91,163 @@ class _IndexPageState extends State<IndexPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: YaruWindowTitleBar(
-        backgroundColor: Colors.transparent,
-        onClose: (p0) {
-          tray.hideOrClose();
+    return CallbackShortcuts(
+      bindings: <ShortcutActivator, VoidCallback>{
+        const SingleActivator(LogicalKeyboardKey.comma, control: true): () {
+          print("nav setting from shortcut");
+          Navigator.of(context).push(SettingsTransition(child: SettingsPage()));
         },
-        onShowMenu: (p0) => {},
-        border: BorderSide.none,
-        leading: Center(
-          child: Image.asset("images/app_icon.png", height: 24, width: 24),
-        ),
-        // leading: IconButton(
-        //   onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-        //   icon: Icon(YaruIcons.menu),
-        // ),
-        title: Text("fl_audiobook"),
-        actions: [
-          PortalTarget(
-            visible: showHamburgerMenu,
-            anchor: const Aligned(
-              follower: Alignment.topCenter,
-              target: Alignment.bottomCenter,
-              offset: Offset(0, 8),
+        const SingleActivator(
+          LogicalKeyboardKey.keyO,
+          control: true,
+        ): () async {
+          if (await files.pickFile()) {
+            print("check mounted");
+
+            // TODO known problem: if the menu is closed before a book is selected the widget is unmounted and navigation is blocked
+            // TODO resume playback if user picked an audiobook they already have played
+            if (mounted) {
+              print("navigating to player");
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (context) => PlayerPage()),
+              );
+            }
+          }
+        },
+        const SingleActivator(LogicalKeyboardKey.space): () {
+          PlayerService().playOrPause();
+        }
+          
+      },
+      child: Focus(
+        autofocus: true,
+        child: Scaffold(
+          key: _scaffoldKey,
+          appBar: YaruWindowTitleBar(
+            backgroundColor: Colors.transparent,
+            onClose: (p0) {
+              tray.hideOrClose();
+            },
+            onShowMenu: (p0) => {},
+            border: BorderSide.none,
+            leading: Center(
+              child: Image.asset("images/app_icon.png", height: 24, width: 24),
             ),
-            portalFollower: PopoverMenu(
-              close: () {
+            // leading: IconButton(
+            //   onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+            //   icon: Icon(YaruIcons.menu),
+            // ),
+            title: Text("fl_audiobook"),
+            actions: [
+              PortalTarget(
+                visible: showHamburgerMenu,
+                anchor: const Aligned(
+                  follower: Alignment.topCenter,
+                  target: Alignment.bottomCenter,
+                  offset: Offset(0, 8),
+                ),
+                portalFollower: PopoverMenu(
+                  close: () {
+                    setState(() {
+                      showHamburgerMenu = false;
+                    });
+                  },
+                ),
+
+                child: Tooltip(
+                  message: "App Menu",
+                  child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        showHamburgerMenu = true;
+                      });
+                    },
+                    icon: Icon(YaruIcons.menu),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          drawer: Drawer(
+            width: 200,
+            shape: RoundedRectangleBorder(
+              borderRadius: .only(
+                topLeft: Radius.circular(8),
+                bottomLeft: Radius.circular(8),
+              ),
+            ),
+            child: DrawerContents(),
+          ),
+          body: PortalTarget(
+            visible: showHamburgerMenu,
+            portalFollower: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
                 setState(() {
                   showHamburgerMenu = false;
                 });
               },
             ),
-
-            child: Tooltip(
-              message: "App Menu",
-              child: IconButton(
-                onPressed: () {
-                  setState(() {
-                    showHamburgerMenu = true;
-                  });
-                },
-                icon: Icon(YaruIcons.menu),
-              ),
-            ),
-          ),
-        ],
-      ),
-      drawer: Drawer(
-        width: 200,
-        shape: RoundedRectangleBorder(
-          borderRadius: .only(
-            topLeft: Radius.circular(8),
-            bottomLeft: Radius.circular(8),
-          ),
-        ),
-        child: DrawerContents(),
-      ),
-      body: PortalTarget(
-        visible: showHamburgerMenu,
-        portalFollower: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            setState(() {
-              showHamburgerMenu = false;
-            });
-          },
-        ),
-        child: Column(
-          mainAxisAlignment: .spaceAround,
-          crossAxisAlignment: .start,
-          children: [
-            StreamBuilder(
-              stream: PlayerService().selectedBookStream.stream,
+            child: StreamBuilder(
+              stream: ConfigProvider().configStreamController.stream,
               builder: (context, asyncSnapshot) {
-                if (!asyncSnapshot.hasData || asyncSnapshot.data == null) {
+                var books = ConfigProvider().playbackStates;
+                var config = ConfigProvider().config;
+                if (asyncSnapshot.hasData) {
+                  books = asyncSnapshot.data!.playbackStates;
+                  config = asyncSnapshot.data!;
+                }
+
+                if (books.isEmpty) {
                   return HeroUsageHint(onClick: pickFile);
                 }
-                return HeroPlayer(file: asyncSnapshot.data!);
+
+                return Column(
+                  mainAxisAlignment: .spaceAround,
+                  crossAxisAlignment: .start,
+                  children: [
+                    StreamBuilder(
+                      stream: PlayerService().selectedBookStream.stream,
+                      builder: (context, asyncSnapshot) {
+                        var file = PlayerService().playingFile;
+
+                        if (file == null && !asyncSnapshot.hasData) {
+                          return HeroUsageHint(onClick: pickFile);
+                        }
+
+                        if (asyncSnapshot.hasData &&
+                            asyncSnapshot.data != null) {
+                          file = asyncSnapshot.data!;
+                        }
+
+                        if (file == null) {
+                          return HeroUsageHint(onClick: pickFile);
+                        }
+                        return HeroPlayer(file: file);
+                      },
+                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(
+                    //     vertical: 8.0,
+                    //     horizontal: 20,
+                    //   ),
+                    //   child: Text("Last played"),
+                    // ),
+
+                    if (config.playbackStates.length < 2 &&
+                        PlayerService().playingFile != null)
+                      Expanded(child: SizedBox())
+                    else
+                      LastPlayedList(
+                        onPickFile: pickFile,
+                        onTransition: _transition,
+                        config: config,
+                      ),
+                  ],
+                );
               },
             ),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(
-            //     vertical: 8.0,
-            //     horizontal: 20,
-            //   ),
-            //   child: Text("Last played"),
-            // ),
-
-            LastPlayedList(onPickFile: pickFile, onTransition: _transition),
-          ],
+          ),
         ),
       ),
     );

@@ -10,11 +10,11 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:yaru/yaru.dart';
 
 class LastPlayedList extends StatefulWidget {
-  const new({super.key, required this.onPickFile, required this.onTransition});
+  const new({super.key, required this.onPickFile, required this.onTransition, required this.config});
 
   final VoidCallback onPickFile;
   final VoidCallback onTransition;
-
+  final Config config; 
   @override
   State<LastPlayedList> createState() => _LastPlayedListState();
 }
@@ -29,15 +29,7 @@ class _LastPlayedListState extends State<LastPlayedList> {
       child: Stack(
         children: [
           offset > 18 ? Container(color: YaruColors.jet) : SizedBox(),
-          StreamBuilder(
-            stream: ConfigProvider().streamController.stream,
-            builder: (context, asyncSnapshot) {
-              var books = ConfigProvider().playbackStates;
-
-              if (asyncSnapshot.hasData) {
-                books = asyncSnapshot.data!.playbackStates;
-              }
-              return NotificationListener<ScrollUpdateNotification>(
+           NotificationListener<ScrollUpdateNotification>(
                 onNotification: (notification) {
                   //How many pixels scrolled from pervious frame
                   // print(notification.scrollDelta);
@@ -55,10 +47,12 @@ class _LastPlayedListState extends State<LastPlayedList> {
                     right: 16,
                     bottom: 100,
                   ),
-                  itemCount: books.length,
+                  itemCount: widget.config.playbackStates.length + 1,
                   itemBuilder: (BuildContext context, int index) {
-
-                    final state = books[index];
+                    if (index == 0) {
+                      return Text("Last Played"); 
+                    }
+                    final state = widget.config.playbackStates[index -1];
                     final bookFile = BookFile(
                       name: state.file,
                       path: state.path,
@@ -92,8 +86,8 @@ class _LastPlayedListState extends State<LastPlayedList> {
                     );
                   },
                 ),
-              );
-            },
+              
+            
           ),
           Container(
             // fake a shadow the hard way

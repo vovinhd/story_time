@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:fl_audiobook/auto_pause_timer.dart';
+import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/time_display.dart';
 import 'package:fl_audiobook/tray.dart' as tray;
@@ -107,7 +108,7 @@ class _PlayerPageState extends State<PlayerPage> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Positioned.fill(
+                 if (ConfigProvider().config.performanceMode) SizedBox() else Positioned.fill(
                   child: Image(
                     fit: .fill,
                     image: PlayerService().coverImage.image,
@@ -117,155 +118,166 @@ class _PlayerPageState extends State<PlayerPage> {
                   ),
                 ),
 
-                Positioned.fill(
+                if (ConfigProvider().config.performanceMode) SizedBox() else Positioned.fill(
                   child: Opacity(
                     opacity: 0.8,
                     child: Container(color: const Color(0xFF000000)),
                   ),
                 ),
 
-                BackdropFilter(
+                if (ConfigProvider().config.performanceMode) PlayerUi() else BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
-                  child: Container(
-                    padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      mainAxisAlignment: .spaceAround,
-                      spacing: 16.0,
-                      children: [
-                        Expanded(
-                          child: Stack(
-                            children: [
-                              Container(
-                                key: UniqueKey(),
-                                padding: EdgeInsets.all(16.0),
-                                margin: EdgeInsets.all(16.0),
-                                constraints: BoxConstraints.expand(),
-                                child: Hero(
-                                  tag:
-                                      PlayerService()
-                                          .playingFile
-                                          ?.name
-                                          .hashCode ??
-                                      "",
-                                  child: CoverImage(),
-                                ),
-                              ),
-
-                              StreamBuilder(
-                                stream: AutoPauseTimer.autoPauseRunnningStream,
-                                builder: (context, asyncSnapshot) {
-                                  bool show = false;
-                                  if (asyncSnapshot.hasData &&
-                                      asyncSnapshot.data!) {
-                                    show = true;
-                                  }
-                                  return AnimatedOpacity(
-                                    opacity: show ? 1 : 0,
-                                    duration: Duration(milliseconds: 400),
-                                    child: Align(
-                                      alignment: AlignmentGeometry.topCenter,
-                                      child: Container(
-                                        constraints: BoxConstraints.loose(
-                                          Size(200, 100),
-                                        ),
-                                        margin: EdgeInsets.symmetric(
-                                          vertical: 0,
-                                          horizontal: 32,
-                                        ),
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 0,
-                                          vertical: 8,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: YaruColors.coolGrey,
-                                          borderRadius: BorderRadius.circular(
-                                            1000,
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withValues(
-                                                alpha: 0.1,
-                                              ),
-                                              spreadRadius: 1,
-                                              blurRadius: 7,
-                                              offset: Offset(
-                                                0,
-                                                3,
-                                              ), // changes position of shadow
-                                            ),
-                                          ],
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment: .center,
-                                          spacing: 8,
-                                          children: [
-                                            // Icon(YaruIcons.stopwatch, size: 30,weight: 4,),
-                                            Icon(
-                                              YaruIcons.clear_night,
-                                              size: 30,
-                                              weight: 4,
-                                            ),
-
-                                            StreamBuilder(
-                                              stream: AutoPauseTimer
-                                                  .remainingStream,
-                                              builder:
-                                                  (context, asyncSnapshot) {
-                                                    if (!asyncSnapshot
-                                                        .hasData) {
-                                                      return Text(
-                                                        ":00",
-                                                        style: TextStyle(
-                                                          fontWeight: .bold,
-                                                          fontSize: 20,
-                                                        ),
-                                                      );
-                                                    }
-                                                    final label = printDuration(
-                                                      asyncSnapshot.data!,
-                                                    );
-                                                    return Text(
-                                                      label,
-                                                      style: TextStyle(
-                                                        fontWeight: .bold,
-                                                        fontSize: 20,
-                                                      ),
-                                                    );
-                                                  },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-
-                              Align(
-                                alignment: AlignmentGeometry.bottomCenter,
-                                child: UnskipButton(),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Column(
-                          spacing: 8.0,
-                          crossAxisAlignment: .start,
-                          children: [
-                            ChapterListButton(
-                            ),
-
-                            PlaybackControls(),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+                  child: PlayerUi(),
                 ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class PlayerUi extends StatelessWidget {
+  const new({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: .spaceAround,
+        spacing: 16.0,
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                Container(
+                  key: UniqueKey(),
+                  padding: EdgeInsets.all(16.0),
+                  margin: EdgeInsets.all(16.0),
+                  constraints: BoxConstraints.expand(),
+                  child: Hero(
+                    tag:
+                        PlayerService()
+                            .playingFile
+                            ?.name
+                            .hashCode ??
+                        "",
+                    child: CoverImage(),
+                  ),
+                ),
+    
+                StreamBuilder(
+                  stream: AutoPauseTimer.autoPauseRunnningStream,
+                  builder: (context, asyncSnapshot) {
+                    bool show = false;
+                    if (asyncSnapshot.hasData &&
+                        asyncSnapshot.data!) {
+                      show = true;
+                    }
+                    return AnimatedOpacity(
+                      opacity: show ? 1 : 0,
+                      duration: Duration(milliseconds: 400),
+                      child: Align(
+                        alignment: AlignmentGeometry.topCenter,
+                        child: Container(
+                          constraints: BoxConstraints.loose(
+                            Size(200, 100),
+                          ),
+                          margin: EdgeInsets.symmetric(
+                            vertical: 0,
+                            horizontal: 32,
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 0,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: YaruColors.coolGrey,
+                            borderRadius: BorderRadius.circular(
+                              1000,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(
+                                  alpha: 0.1,
+                                ),
+                                spreadRadius: 1,
+                                blurRadius: 7,
+                                offset: Offset(
+                                  0,
+                                  3,
+                                ), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: .center,
+                            spacing: 8,
+                            children: [
+                              // Icon(YaruIcons.stopwatch, size: 30,weight: 4,),
+                              Icon(
+                                YaruIcons.clear_night,
+                                size: 30,
+                                weight: 4,
+                              ),
+    
+                              StreamBuilder(
+                                stream: AutoPauseTimer
+                                    .remainingStream,
+                                builder:
+                                    (context, asyncSnapshot) {
+                                      if (!asyncSnapshot
+                                          .hasData) {
+                                        return Text(
+                                          ":00",
+                                          style: TextStyle(
+                                            fontWeight: .bold,
+                                            fontSize: 20,
+                                          ),
+                                        );
+                                      }
+                                      final label = printDuration(
+                                        asyncSnapshot.data!,
+                                      );
+                                      return Text(
+                                        label,
+                                        style: TextStyle(
+                                          fontWeight: .bold,
+                                          fontSize: 20,
+                                        ),
+                                      );
+                                    },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+    
+                Align(
+                  alignment: AlignmentGeometry.bottomCenter,
+                  child: UnskipButton(),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            spacing: 8.0,
+            crossAxisAlignment: .start,
+            children: [
+              ChapterListButton(
+              ),
+    
+              PlaybackControls(),
+            ],
+          ),
+        ],
       ),
     );
   }

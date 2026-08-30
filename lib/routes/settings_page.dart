@@ -112,20 +112,20 @@ class _SettingsPageState extends State<SettingsPage> {
                         //   ),
                         // ),
 
-                        // LabeledSettinsRow(
-                        //   label: "Performance mode",
-                        //   sublabel: "Make the app less pretty for more fast",
-                        //   actionWidget: Switch(
-                        //     value: ConfigProvider().config.performanceMode,
-                        //     onChanged: (value) {
-                        //       setState(() {
-                        //         ConfigProvider().config.performanceMode = value;
-                        //         ConfigProvider().SaveConfig();
-                        //         ConfigProvider().notify();
-                        //       });
-                        //     },
-                        //   ),
-                        // ),
+                        LabeledSettinsRow(
+                          label: "Performance mode",
+                          sublabel: "Make the app less pretty for more fast",
+                          actionWidget: Switch(
+                            value: ConfigProvider().config.performanceMode,
+                            onChanged: (value) {
+                              setState(() {
+                                ConfigProvider().config.performanceMode = value;
+                                ConfigProvider().SaveConfig();
+                                ConfigProvider().notify();
+                              });
+                            },
+                          ),
+                        ),
                       ],
                     ),
                     SettingsSection(

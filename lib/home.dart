@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:fl_audiobook/my_route_transition.dart';
+import 'package:fl_audiobook/routes/settings_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:watch_it/watch_it.dart';
 import 'package:yaru/yaru.dart';
@@ -69,24 +72,26 @@ class _ExampleHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Portal( child: MaterialApp(
-      title: 'fl_audiobook',
-      debugShowCheckedModeBanner: false,
-      theme: lightTheme,
-      themeMode: themeMode,
-      darkTheme: darkTheme,
-      highContrastTheme: highContrastDarkTheme,
-      highContrastDarkTheme: highContrastDarkTheme,
-      home: IndexPage(),
-      scrollBehavior: const MaterialScrollBehavior().copyWith(
-        dragDevices: {
-          PointerDeviceKind.mouse,
-          PointerDeviceKind.touch,
-          PointerDeviceKind.stylus,
-          PointerDeviceKind.unknown,
-          PointerDeviceKind.trackpad,
-        },
+    return Portal(
+      child: MaterialApp(
+        title: 'fl_audiobook',
+        debugShowCheckedModeBanner: false,
+        theme: lightTheme,
+        themeMode: themeMode,
+        darkTheme: darkTheme,
+        highContrastTheme: highContrastDarkTheme,
+        highContrastDarkTheme: highContrastDarkTheme,
+        home: IndexPage(),
+        scrollBehavior: const MaterialScrollBehavior().copyWith(
+          dragDevices: {
+            PointerDeviceKind.mouse,
+            PointerDeviceKind.touch,
+            PointerDeviceKind.stylus,
+            PointerDeviceKind.unknown,
+            PointerDeviceKind.trackpad,
+          },
+        ),
       ),
-    ));
+    );
   }
 }
