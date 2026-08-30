@@ -78,7 +78,7 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
                     crossAxisAlignment: .start,
                     mainAxisAlignment: .spaceBetween,
                     children: [
-                      Row(
+                      Wrap(
                         spacing: 8,
 
                         children: [

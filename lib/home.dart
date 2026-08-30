@@ -76,7 +76,8 @@ class _ExampleHome extends StatelessWidget {
       child: MaterialApp(
         title: 'fl_audiobook',
         debugShowCheckedModeBanner: false,
-        theme: lightTheme,
+        // theme: lightTheme,
+        theme: darkTheme, // TODO reenable light theme when visual glitches are fixed
         themeMode: themeMode,
         darkTheme: darkTheme,
         highContrastTheme: highContrastDarkTheme,

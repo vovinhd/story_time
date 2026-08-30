@@ -146,30 +146,7 @@ class HeroPlayerMain extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: PlayerService().playOrPause,
-                        icon: StreamBuilder(
-                          stream: PlayerService().isPlayingStream,
-                          builder: (context, asyncSnapshot) {
-                            var playing = PlayerService().isPlaying;
-                            if (asyncSnapshot.hasData) {
-                              playing = asyncSnapshot.data!;
-                            }
-                            return Icon(
-                              playing
-                                  ? YaruIcons.media_pause
-                                  : YaruIcons.media_play,
-                            );
-                          },
-                        ),
-                      ),
-                      CurrentPositionInChapterLabel(),
-                      Expanded(child: PlaybackPositionSlider()),
-                      EndLabel(),
-                    ],
-                  ),
+                  _PlayStatus(),
                 ],
               ),
             ),
@@ -185,6 +162,43 @@ class HeroPlayerMain extends StatelessWidget {
           // ),
         ],
       ),
+    );
+  }
+}
+
+class _PlayStatus extends StatelessWidget {
+  const new({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      
+      children: [
+        IconButton(
+          onPressed: PlayerService().playOrPause,
+          icon: StreamBuilder(
+            stream: PlayerService().isPlayingStream,
+            builder: (context, asyncSnapshot) {
+              var playing = PlayerService().isPlaying;
+              if (asyncSnapshot.hasData) {
+                playing = asyncSnapshot.data!;
+              }
+              return Icon(
+                playing
+                    ? YaruIcons.media_pause
+                    : YaruIcons.media_play,
+              );
+            },
+          ),
+        ),
+        Expanded(child: LinearProgressIndicator(value: PlayerService().position.inMicroseconds / PlayerService().duration.inMicroseconds,)),
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: CurrentPositionLabel(),
+        ),
+      ],
     );
   }
 }
