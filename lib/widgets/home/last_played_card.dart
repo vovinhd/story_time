@@ -52,23 +52,26 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
         clipBehavior: .antiAlias,
         child: Container(
           padding: EdgeInsets.only(right: 8),
-          height: 100,
+          // height: 100,
           child: Row(
             mainAxisAlignment: .start,
             crossAxisAlignment: .center,
             spacing: 8,
             children: [
-              FutureBuilder(
-                future: widget.coverfile,
-                builder: (context, asyncSnapshot) {
-                  if (asyncSnapshot.hasData) {
-                    if (asyncSnapshot.data == null) {
-                      return globals.defaultCoverImage;
+              SizedBox(
+                width: 100,
+                child: FutureBuilder(
+                  future: widget.coverfile,
+                  builder: (context, asyncSnapshot) {
+                    if (asyncSnapshot.hasData) {
+                      if (asyncSnapshot.data == null) {
+                        return globals.defaultCoverImage;
+                      }
+                      return Image.file(asyncSnapshot.data!);
                     }
-                    return Image.file(asyncSnapshot.data!);
-                  }
-                  return globals.defaultCoverImage;
-                },
+                    return globals.defaultCoverImage;
+                  },
+                ),
               ),
 
               Expanded(
@@ -77,6 +80,7 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
                   child: Column(
                     crossAxisAlignment: .start,
                     mainAxisAlignment: .spaceBetween,
+                    mainAxisSize: .min,
                     children: [
                       Wrap(
                         spacing: 8,
@@ -94,18 +98,16 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
                       ),
                       Text("last played ${widget.dateTimeLabel}"),
 
-                      Expanded(
-                        child: Row(
-                          spacing: 8,
-                          children: [
-                            Flexible(
-                              child: LinearProgressIndicator(
-                                value: widget.listeningProgress,
-                              ),
+                      Row(
+                        spacing: 8,
+                        children: [
+                          Flexible(
+                            child: LinearProgressIndicator(
+                              value: widget.listeningProgress,
                             ),
-                            Text("${widget.timeRemainingLabel} remaining"),
-                          ],
-                        ),
+                          ),
+                          Text("${widget.timeRemainingLabel} remaining"),
+                        ],
                       ),
                     ],
                   ),

@@ -21,8 +21,21 @@ class _PlaybackControlsState extends State<PlaybackControls> {
   var showRateOptions = false;
   var showTimerOptions = false;
 
+  void setShowRateOptions() {
+    showRateOptions = true;
+  }
+
+  void setShowVolumeOptions() {
+    showVolumeOptions = true;
+  }
+
+  void setshowTimerOptions() {
+    showTimerOptions = true;
+  }
+
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return PortalTarget(
       visible: showVolumeOptions || showRateOptions || showTimerOptions,
       portalFollower: GestureDetector(
@@ -42,8 +55,8 @@ class _PlaybackControlsState extends State<PlaybackControls> {
           StreamBuilder(
             stream: PlayerService().syncedPositionStream,
             builder: (context, asyncSnapshot) {
-              var position = PlayerService().position; 
-              if (asyncSnapshot.hasData) { 
+              var position = PlayerService().position;
+              if (asyncSnapshot.hasData) {
                 position = asyncSnapshot.data!;
               }
               return Row(
@@ -51,107 +64,160 @@ class _PlaybackControlsState extends State<PlaybackControls> {
                 mainAxisAlignment: .spaceBetween,
                 children: [
                   PositionInChapterLabel(position: position),
-                  PositonLabel(position: position,),
-                  PositionEndLabel(position: position,),
+                  PositonLabel(position: position),
+                  PositionEndLabel(position: position),
                 ],
               );
-            }
+            },
           ),
-          Row(
-            mainAxisAlignment: .spaceBetween,
-
-            children: [
+          if (size.width < 556)
+            Column( children: [
               Row(
-                spacing: 8.0,
+                mainAxisAlignment: .center,
+                children: [TrackControls()]),
+              Row(
+                mainAxisAlignment: .spaceBetween,
                 children: [
-                  PortalTarget(
-                    visible: showVolumeOptions,
-                    anchor: const Aligned(
-                      follower: Alignment.bottomCenter,
-                      target: Alignment.topCenter,
-                      offset: Offset(0, -8),
-                    ),
-                    portalFollower: VolumeSlider(),
-
-                    child: Tooltip(
-                      message: "Volume",
-                      child: YaruOptionButton(
-                        onPressed: () {
-                          setState(() {
-                            showVolumeOptions = true;
-                          });
-                        },
-                        child: VolumeIcon(),
-                      ),
-                    ),
+                  _LeftOptions(
+                    showVolumeOptions: showVolumeOptions,
+                    showRateOptions: showRateOptions,
+                    setShowVolumeOptions: setShowVolumeOptions,
+                    setShowRateOptions: setShowRateOptions,
                   ),
-                  PortalTarget(
-                    visible: showRateOptions,
-                    anchor: const Aligned(
-                      follower: Alignment.bottomLeft,
-                      target: Alignment.topLeft,
-                      offset: Offset(0, -8),
-                    ),
-                    portalFollower: RateOptions(),
-
-                    child: Tooltip(
-                      message: "playback speed",
-                      child: SizedBox(
-                        width: 64,
-                        child: YaruOptionButton(
-                          onPressed: () {
-                            setState(() {
-                              showRateOptions = true;
-                            });
-                          },
-                          child: StreamBuilder(
-                            stream: PlayerService().rateStream,
-                            builder: (context, asyncSnapshot) {
-                              double rate = PlayerService().rate;
-                              if (asyncSnapshot.hasData) {
-                                rate = asyncSnapshot.data!;
-                              }
-
-                              var label = rate.toStringAsFixed(2);
-
-                              return Text("${label}x", softWrap: false);
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
+                  _RightOptions(
+                    showTimerOptions: showTimerOptions,
+                    setshowTimerOptions: setshowTimerOptions,
                   ),
                 ],
               ),
+        ])
+          else
+            Row(
+              mainAxisAlignment: .spaceBetween,
 
-              TrackControls(),
-              Row(
-                children: [
-                  SizedBox(width: 64),
+              children: [
+                _LeftOptions(
+                  showVolumeOptions: showVolumeOptions,
+                  showRateOptions: showRateOptions,
+                  setShowVolumeOptions: setShowVolumeOptions,
+                  setShowRateOptions: setShowRateOptions,
+                ),
 
-                  PortalTarget(
-                    visible: showTimerOptions,
-                    anchor: const Aligned(
-                      follower: Alignment.bottomRight,
-                      target: Alignment.topRight,
-                      offset: Offset(0, -8),
-                    ),
-                    portalFollower: TimerOptions(),
-
-                    child: TimerButton(
-                      onPressed: () {
-                        setState(() {
-                          showTimerOptions = true;
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                TrackControls(),
+                _RightOptions(
+                  showTimerOptions: showTimerOptions,
+                  setshowTimerOptions: setshowTimerOptions,
+                ),
+              ],
+            ),
         ],
       ),
+    );
+  }
+}
+
+class _RightOptions extends StatelessWidget {
+  const new({
+    super.key,
+    required this.showTimerOptions,
+    required this.setshowTimerOptions,
+  });
+
+  final bool showTimerOptions;
+  final VoidCallback setshowTimerOptions;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        SizedBox(width: 64),
+
+        PortalTarget(
+          visible: showTimerOptions,
+          anchor: const Aligned(
+            follower: Alignment.bottomRight,
+            target: Alignment.topRight,
+            offset: Offset(0, -8),
+          ),
+          portalFollower: TimerOptions(),
+
+          child: TimerButton(onPressed: setshowTimerOptions),
+        ),
+      ],
+    );
+  }
+}
+
+class _LeftOptions extends StatelessWidget {
+  const new({
+    super.key,
+    required this.showVolumeOptions,
+    required this.showRateOptions,
+    required this.setShowVolumeOptions,
+    required this.setShowRateOptions,
+  });
+
+  final bool showVolumeOptions;
+  final bool showRateOptions;
+
+  final VoidCallback setShowVolumeOptions;
+  final VoidCallback setShowRateOptions;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      spacing: 8.0,
+      children: [
+        PortalTarget(
+          visible: showVolumeOptions,
+          anchor: const Aligned(
+            follower: Alignment.bottomCenter,
+            target: Alignment.topCenter,
+            offset: Offset(0, -8),
+          ),
+          portalFollower: VolumeSlider(),
+
+          child: Tooltip(
+            message: "Volume",
+            child: YaruOptionButton(
+              onPressed: setShowVolumeOptions,
+              child: VolumeIcon(),
+            ),
+          ),
+        ),
+        PortalTarget(
+          visible: showRateOptions,
+          anchor: const Aligned(
+            follower: Alignment.bottomLeft,
+            target: Alignment.topLeft,
+            offset: Offset(0, -8),
+          ),
+          portalFollower: RateOptions(),
+
+          child: Tooltip(
+            message: "playback speed",
+            child: SizedBox(
+              width: 64,
+              child: YaruOptionButton(
+                onPressed: setShowRateOptions,
+                child: StreamBuilder(
+                  stream: PlayerService().rateStream,
+                  builder: (context, asyncSnapshot) {
+                    double rate = PlayerService().rate;
+                    if (asyncSnapshot.hasData) {
+                      rate = asyncSnapshot.data!;
+                    }
+
+                    var label = rate.toStringAsFixed(2);
+
+                    return Text("${label}x", softWrap: false);
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
