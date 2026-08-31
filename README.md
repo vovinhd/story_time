@@ -32,7 +32,7 @@ vovin@the-red-scare:~/git/fl-audiobook/fl_audiobook$ LD_LIBRARY_PATH="$LD_LIBRAR
   - [ ] abstract theme colors into a service? 
 - [ ] change the hint when play history isn't empty 
 - [ ] pull primary accent from currently playing cover  
-- [ ] rework last played cards
+- [x] rework last played cards
 - [ ] add a theme switcher
  
 ### enhancements 

@@ -76,10 +76,10 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
             child: Row(
               mainAxisAlignment: .start,
               crossAxisAlignment: .center,
-              spacing: 8,
+              spacing: 12,
               children: [
                 SizedBox(
-                  width: 100,
+                  width: 130,
                   child: FutureBuilder(
                     future: widget.coverfile,
                     builder: (context, asyncSnapshot) {
@@ -99,11 +99,13 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Column(
                       crossAxisAlignment: .start,
-                      mainAxisAlignment: .spaceBetween,
+                      mainAxisAlignment: .spaceAround,
                       mainAxisSize: .min,
+                      spacing: 8,
                       children: [
                         Column(
                           spacing: 0,
+                          mainAxisAlignment: .spaceBetween,
                           crossAxisAlignment: .start,
                           children: [
                             FutureBuilder(

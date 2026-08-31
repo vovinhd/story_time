@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/time_display.dart';
@@ -10,11 +11,16 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:yaru/yaru.dart';
 
 class LastPlayedList extends StatefulWidget {
-  const new({super.key, required this.onPickFile, required this.onTransition, required this.config});
+  const new({
+    super.key,
+    required this.onPickFile,
+    required this.onTransition,
+    required this.config,
+  });
 
   final VoidCallback onPickFile;
   final VoidCallback onTransition;
-  final Config config; 
+  final Config config;
   @override
   State<LastPlayedList> createState() => _LastPlayedListState();
 }
@@ -28,69 +34,71 @@ class _LastPlayedListState extends State<LastPlayedList> {
     return Expanded(
       child: Stack(
         children: [
-          offset > 18 ? Container(color: Theme.of(context).brightness == .dark ? YaruColors.jet : YaruColors.porcelain).animate().fade(duration: Duration(milliseconds: 100)) : SizedBox(),
-           NotificationListener<ScrollUpdateNotification>(
-                onNotification: (notification) {
-                  //How many pixels scrolled from pervious frame
-                  // print(notification.scrollDelta);
+          offset > 18
+              ? Container(
+                  color: Theme.of(context).brightness == .dark
+                      ? YaruColors.jet
+                      : YaruColors.porcelain,
+                ).animate().fade(duration: Duration(milliseconds: 100))
+              : SizedBox(),
+          NotificationListener<ScrollUpdateNotification>(
+            onNotification: (notification) {
+              //How many pixels scrolled from pervious frame
+              // print(notification.scrollDelta);
 
-                  //List scroll position
-                  offset = notification.metrics.pixels;
-                  setState(() {});
-                  return true;
-                },
-                child: ListView.builder(
-                  primary: true,
-                  padding: EdgeInsets.only(
-                    top: 16,
-                    left: 16,
-                    right: 16,
-                    bottom: 100,
-                  ),
-                  itemCount: widget.config.playbackStates.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == 0) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Last Played", style: .new(fontWeight: .bold),),
-                      ); 
-                    }
-                    final state = widget.config.playbackStates[index -1];
-                    final bookFile = BookFile(
-                      name: state.file,
-                      path: state.path,
-                    );
-                    if (PlayerService().playingFile != null &&
-                        bookFile.name == PlayerService().playingFile!.name) {
-                      return SizedBox();
-                    }
-                    final coverfile = bookFile.coverImage;
-                    final now = DateTime.now();
-                    final agoDateTime = now.subtract(
-                      now.difference(state.lastPlayed),
-                    );
-                    final dateTimeLabel = timeago.format(agoDateTime);
+              //List scroll position
+              offset = notification.metrics.pixels;
+              setState(() {});
+              return true;
+            },
+            child: ListView.separated(
+              separatorBuilder: (context, index) => SizedBox(height: 10),
+              primary: true,
+              padding: EdgeInsets.only(
+                top: 16,
+                left: 16,
+                right: 16,
+                bottom: 100,
+              ),
+              itemCount: widget.config.playbackStates.length + 1,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == 0) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8.0, left: 8.0),
+                    child: Text("Last Played", style: .new(fontWeight: .bold)),
+                  );
+                }
+                final state = widget.config.playbackStates[index - 1];
+                final bookFile = BookFile(name: state.file, path: state.path);
+                if (PlayerService().playingFile != null &&
+                    bookFile.name == PlayerService().playingFile!.name) {
+                  return SizedBox();
+                }
+                final coverfile = bookFile.coverImage;
+                final now = DateTime.now();
+                final agoDateTime = now.subtract(
+                  now.difference(state.lastPlayed),
+                );
+                final dateTimeLabel = timeago.format(agoDateTime);
 
-                    final timeRemaining =
-                        Duration(microseconds: state.duration) -
-                        Duration(microseconds: state.position);
-                    final timeRemainingLabel = printDuration(timeRemaining);
+                final timeRemaining =
+                    Duration(microseconds: state.duration) -
+                    Duration(microseconds: state.position);
+                final timeRemainingLabel = printDuration(timeRemaining);
 
-                    final listeningProgress = state.position / state.duration;
+                final listeningProgress = state.position / state.duration;
 
-                    return LastPlayedCard(
-                      bookFile: bookFile,
-                      state: state,
-                      widget: widget,
-                      coverfile: coverfile,
-                      dateTimeLabel: dateTimeLabel,
-                      listeningProgress: listeningProgress,
-                      timeRemainingLabel: timeRemainingLabel,
-                    );
-                  },
-                ),
-              
-            
+                return LastPlayedCard(
+                  bookFile: bookFile,
+                  state: state,
+                  widget: widget,
+                  coverfile: coverfile,
+                  dateTimeLabel: dateTimeLabel,
+                  listeningProgress: listeningProgress,
+                  timeRemainingLabel: timeRemainingLabel,
+                );
+              },
+            ),
           ),
           Container(
             // fake a shadow the hard way
