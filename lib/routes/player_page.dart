@@ -104,7 +104,6 @@ class _PlayerPageState extends State<PlayerPage> {
                 width: 34,
                 child: TagInfo(),
               ),
-
             ],
           ),
 
@@ -141,7 +140,11 @@ class _PlayerPageState extends State<PlayerPage> {
                   Positioned.fill(
                     child: Opacity(
                       opacity: 0.8,
-                      child: Container(color: const Color(0xFF000000)),
+                      child: Theme.of(context).brightness == .dark
+                          ? Container(color: const Color(0xFF000000))
+                          : Container(
+                              color: const Color.fromARGB(255, 255, 255, 255),
+                            ),
                     ),
                   ),
 
@@ -280,7 +283,31 @@ class PlayerUi extends StatelessWidget {
   }
 }
 
-var popoverBoxDecoration = BoxDecoration(
+BoxDecoration popoverBoxDecoration(BuildContext context) {
+  return Theme.of(context).brightness == .dark
+      ? popoverBoxDecorationDark
+      : popoverBoxDecorationLight;
+}
+
+var popoverBoxDecorationLight = BoxDecoration(
+  borderRadius: BorderRadius.only(
+    topLeft: Radius.circular(17),
+    topRight: Radius.circular(17),
+    bottomLeft: Radius.circular(17),
+    bottomRight: Radius.circular(17),
+  ),
+  color: YaruColors.porcelain,
+  boxShadow: [
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.1),
+      spreadRadius: 1,
+      blurRadius: 7,
+      offset: Offset(0, 3), // changes position of shadow
+    ),
+  ],
+);
+
+var popoverBoxDecorationDark = BoxDecoration(
   borderRadius: BorderRadius.only(
     topLeft: Radius.circular(17),
     topRight: Radius.circular(17),

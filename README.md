@@ -22,13 +22,13 @@ vovin@the-red-scare:~/git/fl-audiobook/fl_audiobook$ LD_LIBRARY_PATH="$LD_LIBRAR
 - [ ] animations 
   - [ ] fade out the unskip button
   - [ ] animate the time left to unskip 
-  - [ ] animate popover menus/dialogs, at least fade them in a little 
+  - [x] animate popover menus/dialogs, at least fade them in a little 
 - [ ] give popover dialogs the little speech bubble tail they hace in adwaita? 
-- [ ] better chapters list drawer in player
-  - [ ] highlight the currently playing chapter
-  - [ ] maybe display the progress
-  - [ ] larger fonts, at least for the start time label 
-    - [ ] consider swapping start time label for time remaining for currently playing? 
+- [x] better chapters list drawer in player
+  - [x] highlight the currently playing chapter
+  - [x] maybe display the progress
+  - [x] larger fonts, at least for the start time label 
+    - [x] consider swapping start time label for time remaining for currently playing? 
 - [ ] bring back light theme
   - [ ] abstract theme colors into a service? 
 - [ ] change the hint when play history isn't empty 

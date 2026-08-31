@@ -204,7 +204,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                                                            ConfigProvider().deleteCache(); 
+                                      ConfigProvider().deleteCache();
 
                                       Navigator.pop(context, 'OK');
                                     },

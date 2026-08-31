@@ -34,7 +34,7 @@ class RateOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: popoverBoxDecoration,
+      decoration: popoverBoxDecoration(context),
       width: 100,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -67,7 +67,7 @@ class RateOptions extends StatelessWidget {
                   );
                 } else {
                   return TextButton(
-                    style: overlayTextButtonStyle,
+                    style: overlayTextButtonStyle(context),
                     onPressed: () {
                       print("select rate: ${speeds[index]}");
                       PlayerService().rate = speeds[index];

@@ -1,16 +1,13 @@
-import 'package:fl_audiobook/routes/player_page.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/time_display.dart';
-import 'package:fl_audiobook/widgets/player/chapter_list_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:yaru/yaru.dart';
 
 class ChapterListButton extends StatefulWidget {
-  const ChapterListButton({
-    super.key,
-  });
+  const ChapterListButton({super.key});
 
-    // todo factor out!
+  // todo factor out!
   @override
   State<ChapterListButton> createState() => _ChapterListButtonState();
 
@@ -44,7 +41,7 @@ class _ChapterListButtonState extends State<ChapterListButton> {
                 pos = PlayerService().position;
               }
 
-              var ch = PlayerService().getChapterFor(pos); 
+              var ch = PlayerService().getChapterFor(pos);
               if (ch == null) {
                 return Text(PlayerService().title);
               }
@@ -61,59 +58,107 @@ class _ChapterListButtonState extends State<ChapterListButton> {
 
   Future<void> showChapterSheet(BuildContext context) {
     return showModalBottomSheet<void>(
-        isScrollControlled: true,
-        context: context,
-        useSafeArea: true,
-
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(context).height * 0.9,
-          maxWidth: 650,
-        ),
-        builder: (BuildContext context) {
-          return SizedBox(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: .center,
-                mainAxisSize: .min,
-                children: <Widget>[
-                  SizedBox(
-                    height: MediaQuery.sizeOf(context).height * 0.9,
-                    child: ListView.builder(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 16,
-                        horizontal: 4,
-                      ),
-                      itemCount: PlayerService().chapters.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return ListTile(
-                          title: Text(PlayerService().chapters[index].title),
-                          trailing: Text(
-                            printDuration(
-                              Duration(
-                                microseconds: (
-                                  PlayerService().chapters[index].start.inMicroseconds
-                                ),
+      isScrollControlled: true,
+      context: context,
+      useSafeArea: true,
+      
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.9,
+        maxWidth: 650,
+      ),
+      builder: (BuildContext context) {
+        return SizedBox(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: .center,
+              mainAxisSize: .min,
+              children: <Widget>[
+                SizedBox(
+                  height: MediaQuery.sizeOf(context).height * 0.9,
+                  child: StreamBuilder(
+                    stream: PlayerService().positionStream,
+                    builder: (context, asyncSnapshot) {
+                      var position = PlayerService().position;
+                      if (asyncSnapshot.hasData) {
+                        position = asyncSnapshot.data!;
+                      }
+                      return ListView.builder(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 16,
+                          horizontal: 4,
+                        ),
+                        itemCount: PlayerService().chapters.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          var chapter = PlayerService().chapters[index];
+                          var isCurrent = false;
+                          if (chapter.start <= position &&
+                              chapter.end >= position) {
+                            isCurrent = true;
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: ListTile(
+                              shape: RoundedRectangleBorder(borderRadius: .circular(20),side: .new(width: 2,color: Colors.transparent)),
+                              
+                              leading: isCurrent
+                                  ? Icon(PlayerService().isPlaying ? YaruIcons.media_play : YaruIcons.media_pause).animate().fade()
+                                  : SizedBox(
+                                      width: 18,
+                                      child: Icon(Icons.circle, size: 5),
+                                    ),
+                              title: Row(
+                                children: [
+                                  Text(
+                                    chapter.title,
+                                    style: .new(fontSize: 14, fontWeight: .bold),
+                                  ),
+                                  if (isCurrent)
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: LinearProgressIndicator(
+                                          value:
+                                              (position.inMicroseconds -
+                                                  chapter.start.inMicroseconds) /
+                                              (chapter.end.inMicroseconds -
+                                                  chapter.start.inMicroseconds),
+                                        ).animate().fade(),
+                                      ),
+                                    ),
+                                ],
                               ),
+                              trailing: DurationLabel(
+                                duration: isCurrent
+                                    ? position - chapter.end
+                                    : chapter.end -chapter.start,
+                                style: .new(fontSize: 14),
+                              ),
+                            
+                              onTap: () {
+                                if (!isCurrent) {
+                                  PlayerService().seekChapter(
+                                    PlayerService().chapters[index],
+                                  );
+                                }
+                                Navigator.pop(context);
+                              },
                             ),
-                          ),
-                          onTap: () {
-                            PlayerService().seekChapter(PlayerService().chapters[index]);
-                            Navigator.pop(context);
-                          },
-                        );
-                      },
-                    ),
+                          );
+                        },
+                      );
+                    },
                   ),
+                ),
 
-                  // ElevatedButton(
-                  //   child: const Text('Close BottomSheet'),
-                  //   onPressed: () => Navigator.pop(context),
-                  // ),
-                ],
-              ),
+                // ElevatedButton(
+                //   child: const Text('Close BottomSheet'),
+                //   onPressed: () => Navigator.pop(context),
+                // ),
+              ],
             ),
-          );
-        },
-      );
+          ),
+        );
+      },
+    );
   }
 }

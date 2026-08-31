@@ -43,7 +43,7 @@ class VolumeSlider extends StatelessWidget {
       height: 150,
       width: 34,
       child: Container(
-        decoration: popoverBoxDecoration,
+        decoration: popoverBoxDecoration(context),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(

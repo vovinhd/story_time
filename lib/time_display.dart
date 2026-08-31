@@ -135,3 +135,17 @@ class EndLabel extends StatelessWidget {
     );
   }
 }
+
+class DurationLabel extends StatelessWidget { 
+  const new({super.key, required this.duration, this.style});
+
+  final Duration duration;
+  final TextStyle? style; 
+  @override
+  Widget build(BuildContext context) {
+    return Text(printDuration(duration), style: style,); 
+  } 
+
+
+
+}

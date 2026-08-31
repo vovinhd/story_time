@@ -83,8 +83,8 @@ class _HeroPlayerState extends State<HeroPlayer> {
                           else
                             Positioned.fill(
                               child: Opacity(
-                                opacity: hovered ? .38 : .4 ,
-                                child: Container(color: Color(0xFF000000)),
+                                opacity: Theme.of(context).brightness == .dark ? (hovered ? .38 : .4) : (hovered ? .58 : .6),
+                                child: Theme.of(context).brightness == .dark ? Container(color: Color(0xFF000000)) : Container(color: Color.fromARGB(255, 255, 255, 255)) ,
                               ),
                             ),
                           if (performanceMode)

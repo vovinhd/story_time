@@ -217,7 +217,7 @@ class BookMenu extends StatelessWidget {
         width: 200,
 
         clipBehavior: .antiAlias,
-        decoration: popoverBoxDecoration,
+        decoration: popoverBoxDecoration(context),
         child: Column(
           children: [
             TextButton(
@@ -228,10 +228,10 @@ class BookMenu extends StatelessWidget {
               child: Row(
                 spacing: 8,
                 children: [
-                  Icon(YaruIcons.folder_open, color: Colors.white),
+                  Icon(YaruIcons.folder_open, color: Theme.of(context).brightness == .dark ? Colors.white : YaruColors.textGrey ),
                   Text(
                     "Show in file explorer",
-                    style: .new(color: Colors.white),
+                    style: .new(color: Theme.of(context).brightness == .dark ? Colors.white : YaruColors.textGrey),
                   ),
                 ],
               ),

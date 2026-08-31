@@ -5,6 +5,7 @@ import 'package:fl_audiobook/routes/settings_page.dart';
 import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/services/files.dart' as files;
 import 'package:fl_audiobook/services/player_service.dart';
+import 'package:fl_audiobook/widgets/animated_popover.dart';
 import 'package:fl_audiobook/widgets/home/hero_player.dart';
 import 'package:fl_audiobook/widgets/home/hero_usage_hint.dart';
 import 'package:fl_audiobook/widgets/home/last_played_list.dart';
@@ -143,33 +144,59 @@ class _IndexPageState extends State<IndexPage> {
             // ),
             title: Text("fl_audiobook"),
             actions: [
-              PortalTarget(
-                visible: showHamburgerMenu,
-                anchor: const Aligned(
-                  follower: Alignment.topCenter,
-                  target: Alignment.bottomCenter,
-                  offset: Offset(0, 8),
+
+              AnimatedPopover(
+                offset: Offset(0, 8),
+                follower: Alignment.topRight,
+                target: Alignment.bottomRight,
+                tooltip: "app menu",
+                icon: Icon(YaruIcons.menu),
+                buttonStyleOverride: ButtonStyle(
+                  shape: WidgetStatePropertyAll(
+                    RoundedRectangleBorder(
+                      borderRadius: .circular(50),
+                      side: .none,
+                    ),
+                  ),
                 ),
-                portalFollower: PopoverMenu(
+                noBorder: true,
+                width: 34,
+                child: PopoverMenu(
                   close: () {
                     setState(() {
-                      showHamburgerMenu = false;
                     });
                   },
                 ),
-
-                child: Tooltip(
-                  message: "App Menu",
-                  child: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        showHamburgerMenu = true;
-                      });
-                    },
-                    icon: Icon(YaruIcons.menu),
-                  ),
-                ),
               ),
+ 
+
+              // PortalTarget(
+              //   visible: showHamburgerMenu,
+              //   anchor: const Aligned(
+              //     follower: Alignment.topCenter,
+              //     target: Alignment.bottomCenter,
+              //     offset: Offset(0, 8),
+              //   ),
+              //   portalFollower: PopoverMenu(
+              //     close: () {
+              //       setState(() {
+              //         showHamburgerMenu = false;
+              //       });
+              //     },
+              //   ),
+
+              //   child: Tooltip(
+              //     message: "App Menu",
+              //     child: IconButton(
+              //       onPressed: () {
+              //         setState(() {
+              //           showHamburgerMenu = true;
+              //         });
+              //       },
+              //       icon: Icon(YaruIcons.menu),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
           drawer: Drawer(

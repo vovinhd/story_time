@@ -28,7 +28,7 @@ class _LastPlayedListState extends State<LastPlayedList> {
     return Expanded(
       child: Stack(
         children: [
-          offset > 18 ? Container(color: YaruColors.jet).animate().fade(duration: Duration(milliseconds: 100)) : SizedBox(),
+          offset > 18 ? Container(color: Theme.of(context).brightness == .dark ? YaruColors.jet : YaruColors.porcelain).animate().fade(duration: Duration(milliseconds: 100)) : SizedBox(),
            NotificationListener<ScrollUpdateNotification>(
                 onNotification: (notification) {
                   //How many pixels scrolled from pervious frame

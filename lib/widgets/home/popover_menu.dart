@@ -22,14 +22,14 @@ class _PopoverMenuState extends State<PopoverMenu> {
     return SizedBox(
       width: 180,
       child: Container(
-        decoration: menuBoxDecoration,
+        decoration: menuBoxDecoration(context),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListView(
             shrinkWrap: true,
             children: [
               TextButton(
-                style: menuButtonStyle,
+                style: menuButtonStyle(context),
 
                 onPressed: () async {
                   if (await pickFile()) {
@@ -50,19 +50,16 @@ class _PopoverMenuState extends State<PopoverMenu> {
                 child: Row(
                   mainAxisAlignment: .spaceBetween,
                   children: [
-                    Text(
-                      "Open",
-                      style: Theme.of(context).primaryTextTheme.bodyMedium,
-                    ),
+                    Text("Open", style: menuButtonTextStyle(context)),
                     Text(
                       "Ctrl+O",
-                      style: Theme.of(context).primaryTextTheme.bodySmall,
+                      style: menuButtonAcceleratorTextStyle(context),
                     ),
                   ],
                 ),
               ),
               TextButton(
-                style: menuButtonStyle,
+                style: menuButtonStyle(context),
 
                 onPressed: () {
                   Navigator.of(context).push(
@@ -79,19 +76,16 @@ class _PopoverMenuState extends State<PopoverMenu> {
                 child: Row(
                   mainAxisAlignment: .spaceBetween,
                   children: [
-                    Text(
-                      "Settings",
-                      style: Theme.of(context).primaryTextTheme.bodyMedium,
-                    ),
+                    Text("Settings", style: menuButtonTextStyle(context)),
                     Text(
                       "Ctrl+,",
-                      style: Theme.of(context).primaryTextTheme.bodySmall,
+                      style: menuButtonAcceleratorTextStyle(context),
                     ),
                   ],
                 ),
               ),
               TextButton(
-                style: menuButtonStyle,
+                style: menuButtonStyle(context),
                 onPressed: () {
                   widget.close();
                   showAboutDialog(
@@ -108,7 +102,7 @@ class _PopoverMenuState extends State<PopoverMenu> {
                   children: [
                     Text(
                       "About fl_audiobook",
-                      style: Theme.of(context).primaryTextTheme.bodyMedium,
+                      style: menuButtonTextStyle(context),
                     ),
                   ],
                 ),
@@ -121,7 +115,26 @@ class _PopoverMenuState extends State<PopoverMenu> {
   }
 }
 
-var menuBoxDecoration = BoxDecoration(
+BoxDecoration menuBoxDecoration(BuildContext context) {
+  return Theme.of(context).brightness == .dark
+      ? menuBoxDecorationDark
+      : menuBoxDecorationLight;
+}
+
+var menuBoxDecorationLight = BoxDecoration(
+  borderRadius: BorderRadius.all(Radius.circular(8)),
+  color: YaruColors.porcelain,
+  boxShadow: [
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.1),
+      spreadRadius: 1,
+      blurRadius: 7,
+      offset: Offset(0, 3), // changes position of shadow
+    ),
+  ],
+);
+
+var menuBoxDecorationDark = BoxDecoration(
   borderRadius: BorderRadius.all(Radius.circular(8)),
   color: YaruColors.inkstone,
   boxShadow: [
@@ -134,6 +147,20 @@ var menuBoxDecoration = BoxDecoration(
   ],
 );
 
-var menuButtonStyle = ButtonStyle(
-  overlayColor: WidgetStatePropertyAll(Colors.white10),
-);
+ButtonStyle menuButtonStyle(context) {
+  return Theme.of(context).brightness == .dark
+      ? ButtonStyle(overlayColor: WidgetStatePropertyAll(Colors.white10))
+      : ButtonStyle(overlayColor: WidgetStatePropertyAll(Colors.black12));
+}
+
+TextStyle menuButtonTextStyle(context) {
+  return Theme.of(context).brightness == .dark
+      ? TextStyle(color: YaruColors.porcelain, fontSize: 14)
+      : TextStyle(color: YaruColors.textGrey, fontSize: 14);
+}
+
+TextStyle menuButtonAcceleratorTextStyle(context) {
+  return Theme.of(context).brightness == .dark
+      ? TextStyle(color: YaruColors.warmGrey, fontSize: 12)
+      : TextStyle(color: YaruColors.adwaitaSlate, fontSize: 12);
+}

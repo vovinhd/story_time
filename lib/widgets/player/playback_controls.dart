@@ -193,8 +193,24 @@ class _LeftOptions extends StatelessWidget {
 }
 
 
-ButtonStyle overlayTextButtonStyle = .new(
-  foregroundColor: WidgetStatePropertyAll(Colors.white),
+ButtonStyle overlayTextButtonStyle(BuildContext context) {
+    return Theme.of(context).brightness == .dark
+      ? overlayTextButtonStyleDark
+      : overlayTextButtonStyleLight;
+}
+
+ButtonStyle overlayTextButtonStyleLight = .new(
+  foregroundColor: WidgetStatePropertyAll(YaruColors.textGrey),
+  overlayColor: WidgetStatePropertyAll(const Color.fromARGB(12, 255, 255, 255)),
+  shape: WidgetStatePropertyAll(
+    RoundedRectangleBorder(borderRadius: .circular(0)),
+  ),
+);
+
+
+
+ButtonStyle overlayTextButtonStyleDark = .new(
+  foregroundColor: WidgetStatePropertyAll(YaruColors.porcelain),
   overlayColor: WidgetStatePropertyAll(const Color.fromARGB(12, 255, 255, 255)),
   shape: WidgetStatePropertyAll(
     RoundedRectangleBorder(borderRadius: .circular(0)),

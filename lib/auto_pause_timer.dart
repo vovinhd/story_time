@@ -10,7 +10,7 @@ class TimerOptions extends StatelessWidget {
   const new({super.key});
 
   final List<Duration> timerOffsets = const <Duration>[
-    Duration(seconds: 5), 
+    Duration(seconds: 5),
     Duration(minutes: 10),
     Duration(minutes: 15),
     Duration(minutes: 30),
@@ -28,13 +28,13 @@ class TimerOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: popoverBoxDecoration,
+      decoration: popoverBoxDecoration(context),
       width: 200,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: StreamBuilder(
-          stream: AutoPauseTimer.remainingStream, 
-          
+          stream: AutoPauseTimer.remainingStream,
+
           builder: (context, asyncSnapshot) {
             Duration? currentRemaining;
             if (asyncSnapshot.hasData) {
@@ -47,14 +47,19 @@ class TimerOptions extends StatelessWidget {
 
               children: [
                 TextButton(
-                                                            style: overlayTextButtonStyle,
+                  style: overlayTextButtonStyle(context),
 
                   onPressed: () {
-                    AutoPauseTimer.cancel(); 
+                    AutoPauseTimer.cancel();
                   },
                   child: Align(
                     alignment: .centerStart,
-                    child: Text(asyncSnapshot.hasData && currentRemaining!.inSeconds > 0 ? "Off ${printDuration(currentRemaining)}" : "Off", textAlign: .start),
+                    child: Text(
+                      asyncSnapshot.hasData && currentRemaining!.inSeconds > 0
+                          ? "Off ${printDuration(currentRemaining)}"
+                          : "Off",
+                      textAlign: .start,
+                    ),
                   ),
                 ),
 
@@ -64,10 +69,10 @@ class TimerOptions extends StatelessWidget {
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return TextButton(
-                                          style: overlayTextButtonStyle,
+                      style: overlayTextButtonStyle(context),
 
                       onPressed: () {
-                        AutoPauseTimer.startTimer(timerOffsets[index], false); 
+                        AutoPauseTimer.startTimer(timerOffsets[index], false);
                       },
                       child: Align(
                         alignment: .centerStart,
@@ -80,10 +85,13 @@ class TimerOptions extends StatelessWidget {
                   },
                 ),
                 TextButton(
-                                                            style: overlayTextButtonStyle,
+                  style: overlayTextButtonStyle(context),
 
                   onPressed: () {
-                    AutoPauseTimer.startTimer(-PlayerService().timeLeftInChapter, true); 
+                    AutoPauseTimer.startTimer(
+                      -PlayerService().timeLeftInChapter,
+                      true,
+                    );
                   },
                   child: Align(
                     alignment: .centerStart,
@@ -103,48 +111,46 @@ class AutoPauseTimer {
   Timer? autoPauseTimer;
   Stopwatch autoPauseStopwatch = Stopwatch();
   Duration currentDuration = Duration(microseconds: 0);
-  bool chapterMode = false; 
+  bool chapterMode = false;
   StreamSubscription<bool> playingState;
 
   StreamSubscription<BookFile> playerState;
 
-
   Timer tick = Timer.periodic(const Duration(milliseconds: 200), (timer) {
     if (_instance.currentDuration.inSeconds > 0) {
-      _instance._remainingStreamController.sink.add(remaining); 
-    } 
-  }); 
+      _instance._remainingStreamController.sink.add(remaining);
+    }
+  });
 
   void onPlaybackStateChanged(bool playing) {
-    if (!chapterMode) return; 
-    if (!willAutoPause) return; 
+    if (!chapterMode) return;
+    if (!willAutoPause) return;
     if (playing) {
-      autoPauseStopwatch.start(); 
-      autoPauseTimer = Timer(currentDuration, _timerCallback); 
+      autoPauseStopwatch.start();
+      autoPauseTimer = Timer(currentDuration, _timerCallback);
     } else {
-      var remainingDuration = remaining; 
-      autoPauseStopwatch.stop(); 
-      autoPauseTimer!.cancel(); 
-      currentDuration = remainingDuration; 
+      var remainingDuration = remaining;
+      autoPauseStopwatch.stop();
+      autoPauseTimer!.cancel();
+      currentDuration = remainingDuration;
     }
   }
 
   void onBookChanged(BookFile file) {
-    cancel(); 
+    cancel();
   }
 
-  AutoPauseTimer._privateConstructor():
-      playingState = PlayerService().isPlayingStream.listen((data) {
+  AutoPauseTimer._privateConstructor()
+    : playingState = PlayerService().isPlayingStream.listen((data) {
         _instance.onPlaybackStateChanged(data);
       }),
       playerState = PlayerService().selectedBookStream.stream.listen((data) {
-        _instance.onBookChanged(data); 
-      }); 
-  
+        _instance.onBookChanged(data);
+      });
 
-  final _remainingStreamController = StreamController<Duration>.broadcast(); 
-  final _autoPauseEmittedController = StreamController<Duration>.broadcast(); 
-  final _autoPauseRunningController = StreamController<bool>.broadcast(); 
+  final _remainingStreamController = StreamController<Duration>.broadcast();
+  final _autoPauseEmittedController = StreamController<Duration>.broadcast();
+  final _autoPauseRunningController = StreamController<bool>.broadcast();
 
   static final AutoPauseTimer _instance = AutoPauseTimer._privateConstructor();
 
@@ -163,15 +169,15 @@ class AutoPauseTimer {
   }
 
   static Stream<Duration> get remainingStream {
-    return _instance._remainingStreamController.stream; 
+    return _instance._remainingStreamController.stream;
   }
 
   static Stream<Duration> get autoPauseStream {
-    return _instance._autoPauseEmittedController.stream; 
+    return _instance._autoPauseEmittedController.stream;
   }
 
   static Stream<bool> get autoPauseRunnningStream {
-    return _instance._autoPauseRunningController.stream; 
+    return _instance._autoPauseRunningController.stream;
   }
 
   static bool get isChapterMode {
@@ -179,10 +185,9 @@ class AutoPauseTimer {
   }
 
   static void _timerCallback() {
+    PlayerService().pause();
 
-    PlayerService().pause(); 
-
-    _instance._autoPauseEmittedController.sink.add(_instance.currentDuration); 
+    _instance._autoPauseEmittedController.sink.add(_instance.currentDuration);
     _instance._autoPauseRunningController.sink.add(false);
     _instance._remainingStreamController.sink.add(Duration());
 
@@ -198,7 +203,7 @@ class AutoPauseTimer {
       cancel();
     }
 
-    _instance.chapterMode = chapterMode; 
+    _instance.chapterMode = chapterMode;
 
     _instance.currentDuration = duration;
 
@@ -207,9 +212,8 @@ class AutoPauseTimer {
     _instance._autoPauseRunningController.sink.add(true);
 
     if (!PlayerService().isPlaying) {
-      _instance.onPlaybackStateChanged(false); 
+      _instance.onPlaybackStateChanged(false);
     }
-
   }
 
   static void cancel() {
@@ -230,6 +234,5 @@ class AutoPauseTimer {
     _instance.currentDuration = Duration();
     _instance._autoPauseRunningController.sink.add(false);
     _instance._remainingStreamController.sink.add(Duration());
-
   }
 }

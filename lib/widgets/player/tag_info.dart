@@ -11,7 +11,7 @@ class TagInfo extends StatelessWidget {
     final size = MediaQuery.of(context).size;
 
     return Container(
-              decoration: popoverBoxDecoration,
+              decoration: popoverBoxDecoration(context),
               width: max(size.width * 0.5, 200),
               height: size.height * .8,
       child: ListView.builder(
