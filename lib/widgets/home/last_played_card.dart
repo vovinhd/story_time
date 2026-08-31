@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/routes/player_page.dart';
 import 'package:fl_audiobook/services/config.dart';
+import 'package:fl_audiobook/services/files.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/widgets/home/last_played_list.dart';
 import 'package:flutter/material.dart';
@@ -37,9 +38,10 @@ class LastPlayedCard extends StatefulWidget {
 
 class _LastPlayedCardState extends State<LastPlayedCard> {
   String showBookMenu = "";
-  bool hovered = false; 
+  bool hovered = false;
   @override
   Widget build(BuildContext context) {
+    Future<bool> fileExists = File(widget.bookFile.path).exists();
     return MouseRegion(
       onHover: (event) {
         setState(() {
@@ -60,9 +62,15 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
           widget.widget.onTransition();
         },
         child: Card(
-          surfaceTintColor: hovered ? Colors.white : Colors.transparent,
+          surfaceTintColor: hovered
+              ? (Theme.of(context).brightness == .dark
+                    ? Colors.white
+                    : Colors.black)
+              : Colors.transparent,
           clipBehavior: .antiAlias,
           child: Container(
+            // color: Colors.red ,
+
             padding: EdgeInsets.only(right: 8),
             // height: 100,
             child: Row(
@@ -85,7 +93,7 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
                     },
                   ),
                 ),
-      
+
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8.0),
@@ -98,18 +106,49 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
                           spacing: 0,
                           crossAxisAlignment: .start,
                           children: [
-                            Text(widget.state.title, style: .new(fontSize: 20)),
-                            Text(
-                              "by ${widget.state.author}",
-                              style: .new(
-                                fontSize: 14,
-                                color: YaruColors.warmGrey,
-                              ),
+                            FutureBuilder(
+                              future: fileExists,
+                              builder: (context, asyncSnapshot) {
+                                if (asyncSnapshot.hasData &&
+                                    !asyncSnapshot.data!) {
+                                  return Container(
+                                    // color: Colors.red,
+                                    decoration: BoxDecoration(
+                                      // borderRadius: .circular(20),
+                                      // border: Border.all(color: Colors.red),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: .center,
+                                      spacing: 8,
+                                      children: [
+                                        Icon(YaruIcons.error),
+                                        Text(
+                                          "File not available, make sure to mount the device it's on!",
+                                          style: .new(
+                                            fontWeight: .bold,
+                                            fontSize: 10,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                return SizedBox();
+                              },
                             ),
+                            Text(widget.state.title, style: .new(fontSize: 20)),
+                            if (widget.state.author != "")
+                              Text(
+                                "by ${widget.state.author}",
+                                style: .new(
+                                  fontSize: 14,
+                                  color: YaruColors.warmGrey,
+                                ),
+                              ),
                           ],
                         ),
                         Text("last played ${widget.dateTimeLabel}"),
-      
+
                         Row(
                           spacing: 8,
                           children: [
@@ -125,72 +164,131 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
                     ),
                   ),
                 ),
-                Row(
-                  children: [
-                    IconButton(
-                      tooltip: "play ${widget.state.title}",
-      
-                      padding: EdgeInsets.all(
-                        0,
-                      ), // Adjust padding to center the icon
-                      icon: Icon(
-                        YaruIcons.media_play,
-                        size: 30,
-                      ), // Larger icon to fill the space
-                      onPressed: () async {
-                        await PlayerService().openFile(
-                          widget.bookFile,
-                          position: widget.state.position,
-                        );
-                        widget.widget.onTransition();
-                      },
-                    ),
-      
-                    PortalTarget(
-                      visible: showBookMenu != "",
-                      // portalFollower: Container(color: Colors.amber,),
-                      portalFollower: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          setState(() {
-                            showBookMenu = "";
-                          });
-                        },
-                      ),
-      
-                      child: PortalTarget(
-                        visible: showBookMenu == widget.state.file,
-                        anchor: const Aligned(
-                          follower: Alignment.centerRight,
-                          target: Alignment.centerLeft,
-                          offset: Offset(-8, 0),
-                        ),
-                        portalFollower: BookMenu(
-                          bookPlayebackState: widget.state,
-                          close: () {
-                          setState(() {
-                            showBookMenu = "";
-                          });                        },
-                        ),
-                        child: IconButton(
-                          tooltip: "options for ${widget.state.title}",
-      
+                FutureBuilder(
+                  future: fileExists,
+                  builder: (context, asyncSnapshot) {
+                    if (!asyncSnapshot.hasData) {
+                      return SizedBox();
+                    }
+
+                    // file doesnt exist menu
+                    if (!asyncSnapshot.data!) {
+                      return Row(
+                        children: [
+                          IconButton(
+                            tooltip: "locate ${widget.state.title}",
+
+                            padding: EdgeInsets.all(
+                              0,
+                            ), // Adjust padding to center the icon
+                            icon: Icon(
+                              YaruIcons.folder,
+                              size: 30,
+                            ), // Larger icon to fill the space
+                            onPressed: () => showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: Text("Locate ${widget.state.title}"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, 'Cancel'),
+                                    child: Text("Cancel"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      pickFile(); 
+                                      Navigator.pop(context, 'OK');
+                                    },
+                                    child: Text("OK"),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () => showDeleteDialog(context),
+
+                            icon: Icon(
+                              YaruIcons.trash,
+                              color: Colors.red,
+                              size: 30,
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                    // file exists menu
+                    return Row(
+                      children: [
+                        IconButton(
+                          tooltip: "play ${widget.state.title}",
+
                           padding: EdgeInsets.all(
                             0,
                           ), // Adjust padding to center the icon
                           icon: Icon(
-                            YaruIcons.view_more_horizontal,
+                            YaruIcons.media_play,
                             size: 30,
                           ), // Larger icon to fill the space
-                          onPressed: () {
-                            setState(() {
-                              showBookMenu = widget.state.file;
-                            });
+                          onPressed: () async {
+                            await PlayerService().openFile(
+                              widget.bookFile,
+                              position: widget.state.position,
+                            );
+                            widget.widget.onTransition();
                           },
                         ),
-                      ),
-                    ),
-                  ],
+
+                        PortalTarget(
+                          visible: showBookMenu != "",
+                          // portalFollower: Container(color: Colors.amber,),
+                          portalFollower: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              setState(() {
+                                showBookMenu = "";
+                              });
+                            },
+                          ),
+
+                          child: PortalTarget(
+                            visible: showBookMenu == widget.state.file,
+                            anchor: const Aligned(
+                              follower: Alignment.centerRight,
+                              target: Alignment.centerLeft,
+                              offset: Offset(-8, 0),
+                            ),
+                            portalFollower: BookMenu(
+                              bookPlayebackState: widget.state,
+                              delete: () => showDeleteDialog(context),
+                              close: () {
+                                setState(() {
+                                  showBookMenu = "";
+                                });
+                              },
+                            ),
+                            child: IconButton(
+                              tooltip: "options for ${widget.state.title}",
+
+                              padding: EdgeInsets.all(
+                                0,
+                              ), // Adjust padding to center the icon
+                              icon: Icon(
+                                YaruIcons.view_more_horizontal,
+                                size: 30,
+                              ), // Larger icon to fill the space
+                              onPressed: () {
+                                setState(() {
+                                  showBookMenu = widget.state.file;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
@@ -199,12 +297,40 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
       ),
     );
   }
+
+  Future<String?> showDeleteDialog(BuildContext context) {
+    return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text("Forget ${widget.state.title}"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Cancel'),
+            child: Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              ConfigProvider().removePlaybackState(widget.bookFile.name);
+              Navigator.pop(context, 'OK');
+            },
+            child: Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class BookMenu extends StatelessWidget {
   final BookPlaybackState bookPlayebackState;
-  final VoidCallback close; 
-  const new({super.key, required this.bookPlayebackState,required this.close});
+  final VoidCallback close;
+  final VoidCallback delete;
+  const new({
+    super.key,
+    required this.bookPlayebackState,
+    required this.close,
+    required this.delete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -221,27 +347,39 @@ class BookMenu extends StatelessWidget {
         child: Column(
           children: [
             TextButton(
-              onPressed: ()  { 
+              onPressed: () {
                 openBookDirectory(bookPlayebackState.path);
                 close();
-                },
+              },
               child: Row(
                 spacing: 8,
                 children: [
-                  Icon(YaruIcons.folder_open, color: Theme.of(context).brightness == .dark ? Colors.white : YaruColors.textGrey ),
+                  Icon(
+                    YaruIcons.folder_open,
+                    color: Theme.of(context).brightness == .dark
+                        ? Colors.white
+                        : YaruColors.textGrey,
+                  ),
                   Text(
                     "Show in file explorer",
-                    style: .new(color: Theme.of(context).brightness == .dark ? Colors.white : YaruColors.textGrey),
+                    style: .new(
+                      color: Theme.of(context).brightness == .dark
+                          ? Colors.white
+                          : YaruColors.textGrey,
+                    ),
                   ),
                 ],
               ),
             ),
 
             TextButton(
-              onLongPress: () => {
-                ConfigProvider().removePlaybackState(bookPlayebackState.file),
+              // onLongPress: () => {
+              //   ConfigProvider().removePlaybackState(bookPlayebackState.file),
+              // },
+              onPressed: () {
+                close();
+                delete();
               },
-              onPressed: () => [],
               child: Row(
                 spacing: 8,
 

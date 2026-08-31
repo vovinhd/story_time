@@ -185,9 +185,8 @@ class PlayerService {
         syncedPositionStreamController.add(_player.state.position);
       }
     });
-    seekStream.stream.listen((seekDuration){
+    seekStream.stream.listen((seekDuration) {
       syncedPositionStreamController.add(seekDuration);
-
     });
   }
 
@@ -219,128 +218,133 @@ class PlayerService {
   }
 
   Future<void> openFile(BookFile file, {int position = 0}) async {
+    var storedPlaybackState = ConfigProvider().getPlaybackStateForFile(
+      file.name,
+    );
 
-    var storedPlaybackState = ConfigProvider().getPlaybackStateForFile(file.name); 
-
-    if(storedPlaybackState != null) {
-      position = storedPlaybackState.position; 
+    if (storedPlaybackState != null) {
+      position = storedPlaybackState.position;
     }
 
-    print("opening ${file.name} at $position, stored ${storedPlaybackState?.lastPlayed.toLocal()}");
+    print(
+      "opening ${file.name} at $position, stored ${storedPlaybackState?.lastPlayed.toLocal()}",
+    );
 
-    loading = true;
+    try {
+      loading = true;
 
-    // open file with mpv
-    final media = Media(file.path, start: Duration(microseconds: position));
+      // open file with mpv
+      final media = Media(file.path, start: Duration(microseconds: position));
 
-    final mediaSessionCommandArgs = [
-      "-v",
-      "error",
-      "-hide_banner",
-      "-print_format",
-      "json",
-      "-show_format",
-      "-show_streams",
-      "-show_chapters",
-      "-show_entries",
-      "format",
-      "-i",
-      file.path,
-    ];
-
-    // get metadata
-    final mediaInformationSession =
-        await FFprobeKit.getMediaInformationFromCommandArguments(
-          mediaSessionCommandArgs,
-        );
-    final mediaInformation = mediaInformationSession.getMediaInformation();
-    if (mediaInformation == null) {
-      throw ArgumentError(["could not get media info from ${file.path}!"]);
-    }
-
-
-    // tags
-    var ffprobeTags = mediaInformation.getTags();
-    if (ffprobeTags == null || ffprobeTags.isEmpty) {
-      tags = {"title": file.name, "artist": ""};
-    } else {
-      tags = ffprobeTags.map(
-        (key, value) => MapEntry(key.toString(), value.toString()),
-      );
-
-      //  ensure title, artist is always set
-      if (!tags.containsKey("title")) {
-        tags = {"title": file.name};
-      }
-
-      if (!tags.containsKey("artist")) {
-        tags = {"artist": ""};
-      }
-    }
-
-
-    // chapter info
-    var ffprobeChapters = mediaInformation.getChapters();
-    if (ffprobeChapters.isEmpty) {
-      if (mediaInformation.getDuration() == null) {
-        throw ArgumentError(["could not get duration for ${file.path}"]);
-      }
-      var startTimeStr = mediaInformation.getStartTime() ?? "0.0";
-      var durationStr = mediaInformation.getDuration()!;
-      var startTime = chapterInfoTimeToMicros(startTimeStr);
-      var duration = chapterInfoTimeToMicros(durationStr);
-      chapters = [
-        AudiobookChapter._(
-          title: tags["title"],
-          start: Duration(microseconds: startTime),
-          end: Duration(microseconds: startTime + duration),
-          duration: Duration(microseconds: duration),
-        ),
+      final mediaSessionCommandArgs = [
+        "-v",
+        "error",
+        "-hide_banner",
+        "-print_format",
+        "json",
+        "-show_format",
+        "-show_streams",
+        "-show_chapters",
+        "-show_entries",
+        "format",
+        "-i",
+        file.path,
       ];
-    } else {
-      chapters = mediaInformation
-          .getChapters()
-          .map(
-            (ffprobeChapter) =>
-                AudiobookChapter.fromChapterInfo(ffprobeChapter),
-          )
-          .toList();
+
+      // get metadata
+      final mediaInformationSession =
+          await FFprobeKit.getMediaInformationFromCommandArguments(
+            mediaSessionCommandArgs,
+          );
+      final mediaInformation = mediaInformationSession.getMediaInformation();
+      if (mediaInformation == null) {
+        throw ArgumentError(["could not get media info from ${file.path}!"]);
+      }
+
+      // tags
+      var ffprobeTags = mediaInformation.getTags();
+      if (ffprobeTags == null || ffprobeTags.isEmpty) {
+        tags = {"title": file.name, "artist": ""};
+      } else {
+        tags = ffprobeTags.map(
+          (key, value) => MapEntry(key.toString(), value.toString()),
+        );
+
+        //  ensure title, artist is always set
+        if (!tags.containsKey("title")) {
+          tags.addAll({"title": file.name});
+        }
+
+        if (!tags.containsKey("artist")) {
+          tags.addAll({"artist": ""});
+        }
+      }
+
+      // chapter info
+      var ffprobeChapters = mediaInformation.getChapters();
+      if (ffprobeChapters.isEmpty) {
+        if (mediaInformation.getDuration() == null) {
+          loading = false;
+          throw ArgumentError(["could not get duration for ${file.path}"]);
+        }
+        var startTimeStr = mediaInformation.getStartTime() ?? "0.0";
+        var durationStr = mediaInformation.getDuration()!;
+        var startTime = chapterInfoTimeToMicros(startTimeStr);
+        var duration = chapterInfoTimeToMicros(durationStr);
+        chapters = [
+          AudiobookChapter._(
+            title: tags["title"],
+            start: Duration(microseconds: startTime),
+            end: Duration(microseconds: startTime + duration),
+            duration: Duration(microseconds: duration),
+          ),
+        ];
+      } else {
+        chapters = mediaInformation
+            .getChapters()
+            .map(
+              (ffprobeChapter) =>
+                  AudiobookChapter.fromChapterInfo(ffprobeChapter),
+            )
+            .toList();
+      }
+
+      // cover image
+      var coverfile = await file.coverImage;
+      if (coverfile == null) {
+        print("didn't find a cover for ${file.path}");
+        coverImage = Image.asset("images/cover_default.png", key: UniqueKey());
+      } else {
+        coverImage = Image.file(coverfile, key: UniqueKey());
+      }
+
+      coverStream.sink.add(coverImage);
+
+      // start playing
+      await _player.open(media, play: true);
+
+      // tell everyone about it
+      playingFile = file;
+      selectedBookStream.add(file);
+      loading = false;
+      ready = true;
+
+      // start updating config with play state
+      _initTimer();
+    } catch (e) {
+      rethrow;
+    } finally {
+      loading = false;
     }
-
-
-    // cover image
-    var coverfile = await file.coverImage;
-    if (coverfile == null) {
-      print("didn't find a cover for ${file.path}");
-      coverImage = Image.asset("images/cover_default.png", key: UniqueKey());
-    } else {
-      coverImage = Image.file(coverfile, key: UniqueKey());
-    }
-
-    coverStream.sink.add(coverImage);
-
-    // start playing
-    await _player.open(media, play: true);
-
-    // tell everyone about it
-    playingFile = file;
-    selectedBookStream.add(file);
-    loading = false;
-    ready = true;
-
-    // start updating config with play state
-    _initTimer();
   }
 
-  String get title { 
-    return tags["title"]; 
-  } 
+  String get title {
+    return tags["title"];
+  }
 
-  String? get author { 
-    return tags["artist"]; 
-  } 
-
-
+  String? get author {
+    return tags["artist"];
+  }
 
   //-------------------------------
   //---------player controls-------
@@ -365,7 +369,7 @@ class PlayerService {
   }
 
   void seekBack() {
-    var skipDuration = ConfigProvider().config.skipDuration.inSeconds; 
+    var skipDuration = ConfigProvider().config.skipDuration.inSeconds;
     seekOffset(-skipDuration);
   }
 
@@ -374,7 +378,7 @@ class PlayerService {
   }
 
   void seekForward() {
-    var skipDuration = ConfigProvider().config.skipDuration.inSeconds; 
+    var skipDuration = ConfigProvider().config.skipDuration.inSeconds;
     seekOffset(skipDuration);
   }
 
@@ -406,14 +410,14 @@ class PlayerService {
 
   Duration get timeLeftInChapter {
     var currentChapter = getChapterFor(position);
-    if (currentChapter == null) return position; 
+    if (currentChapter == null) return position;
 
     return duration - position;
   }
 
   Duration get timeInChapter {
     var currentChapter = getChapterFor(position);
-    if (currentChapter == null) return position; 
+    if (currentChapter == null) return position;
     return position - currentChapter.start;
   }
 

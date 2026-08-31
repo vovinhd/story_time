@@ -144,7 +144,6 @@ class _IndexPageState extends State<IndexPage> {
             // ),
             title: Text("fl_audiobook"),
             actions: [
-
               // AnimatedPopover(
               //   offset: Offset(0, 8),
               //   follower: Alignment.topRight,
@@ -168,20 +167,37 @@ class _IndexPageState extends State<IndexPage> {
               //     },
               //   ),
               // ),
- 
 
               PortalTarget(
                 visible: showHamburgerMenu,
                 anchor: const Aligned(
                   follower: Alignment.topCenter,
                   target: Alignment.bottomCenter,
-                  offset: Offset(0, 8),
+                  offset: Offset(0, 0),
                 ),
-                portalFollower: PopoverMenu(
-                  close: () {
-                    setState(() {
-                      showHamburgerMenu = false;
-                    });
+                portalFollower: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: showHamburgerMenu ? 1 : 0),
+                  duration: Duration(milliseconds: 150),
+
+                  builder: (context, progress, child) {
+                    return Container(
+                      transform: Matrix4.translationValues(
+                        0 * progress,
+                        8 * progress,
+                        0,
+                      ),
+
+                      child: Opacity(
+                        opacity: progress,
+                        child: PopoverMenu(
+                          close: () {
+                            setState(() {
+                              showHamburgerMenu = false;
+                            });
+                          },
+                        ),
+                      ),
+                    );
                   },
                 ),
 
@@ -219,64 +235,115 @@ class _IndexPageState extends State<IndexPage> {
                 });
               },
             ),
-            child: StreamBuilder(
-              stream: ConfigProvider().configStreamController.stream,
-              builder: (context, asyncSnapshot) {
-                var books = ConfigProvider().playbackStates;
-                var config = ConfigProvider().config;
-                if (asyncSnapshot.hasData) {
-                  books = asyncSnapshot.data!.playbackStates;
-                  config = asyncSnapshot.data!;
-                }
+            child: Stack(
+              children: [
+                StreamBuilder(
+                  stream: ConfigProvider().configStreamController.stream,
+                  builder: (context, asyncSnapshot) {
+                    var books = ConfigProvider().playbackStates;
+                    var config = ConfigProvider().config;
+                    if (asyncSnapshot.hasData) {
+                      books = asyncSnapshot.data!.playbackStates;
+                      config = asyncSnapshot.data!;
+                    }
 
-                if (books.isEmpty) {
-                  return HeroUsageHint(onClick: pickFile);
-                }
+                    if (books.isEmpty) {
+                      return HeroUsageHint(onClick: pickFile);
+                    }
 
-                return Column(
-                  mainAxisAlignment: .spaceAround,
-                  crossAxisAlignment: .start,
-                  children: [
-                    StreamBuilder(
-                      stream: PlayerService().selectedBookStream.stream,
-                      builder: (context, asyncSnapshot) {
-                        var file = PlayerService().playingFile;
+                    return Column(
+                      mainAxisAlignment: .spaceAround,
+                      crossAxisAlignment: .start,
+                      children: [
+                        StreamBuilder(
+                          stream: PlayerService().selectedBookStream.stream,
+                          builder: (context, asyncSnapshot) {
+                            var file = PlayerService().playingFile;
 
-                        if (file == null && !asyncSnapshot.hasData) {
-                          return HeroUsageHint(onClick: pickFile);
-                        }
+                            if (file == null && !asyncSnapshot.hasData) {
+                              return HeroUsageHint(onClick: pickFile);
+                            }
 
-                        if (asyncSnapshot.hasData &&
-                            asyncSnapshot.data != null) {
-                          file = asyncSnapshot.data!;
-                        }
+                            if (asyncSnapshot.hasData &&
+                                asyncSnapshot.data != null) {
+                              file = asyncSnapshot.data!;
+                            }
 
-                        if (file == null) {
-                          return HeroUsageHint(onClick: pickFile);
-                        }
-                        return HeroPlayer(file: file);
-                      },
-                    ),
-                    // Padding(
-                    //   padding: const EdgeInsets.symmetric(
-                    //     vertical: 8.0,
-                    //     horizontal: 20,
-                    //   ),
-                    //   child: Text("Last played"),
-                    // ),
+                            if (file == null) {
+                              return HeroUsageHint(onClick: pickFile);
+                            }
+                            return HeroPlayer(file: file);
+                          },
+                        ),
+                        // Padding(
+                        //   padding: const EdgeInsets.symmetric(
+                        //     vertical: 8.0,
+                        //     horizontal: 20,
+                        //   ),
+                        //   child: Text("Last played"),
+                        // ),
 
-                    if (config.playbackStates.length < 2 &&
-                        PlayerService().playingFile != null)
-                      Expanded(child: SizedBox())
-                    else
-                      LastPlayedList(
-                        onPickFile: pickFile,
-                        onTransition: _transition,
-                        config: config,
+                        if (config.playbackStates.length < 2 &&
+                            PlayerService().playingFile != null)
+                          Expanded(child: SizedBox())
+                        else
+                          LastPlayedList(
+                            onPickFile: pickFile,
+                            onTransition: _transition,
+                            config: config,
+                          ),
+                      ],
+                    );
+                  },
+                ),
+                Align(
+                  alignment: .topCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.all(32.0),
+                    child: AnimatedOpacity(
+                      opacity: PlayerService().loading ? 1 : 0,
+                      // opacity: 1,
+                      duration: Duration(milliseconds: 1000),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).brightness == .dark
+                              ? YaruColors.coolGrey
+                              : YaruColors.porcelain,
+                          borderRadius: BorderRadius.circular(1000),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              spreadRadius: 1,
+                              blurRadius: 7,
+                              offset: Offset(
+                                0,
+                                3,
+                              ), // changes position of shadow
+                            ),
+                          ],
+                        ),
+
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16,horizontal: 32.0),
+                          child: Row(
+                              mainAxisAlignment: .center,
+                              mainAxisSize: .min,
+                              spacing: 16,
+                            children: [
+                              CircularProgressIndicator(),
+                          
+                              Text(
+                                "loading",
+                                style: TextStyle(fontWeight: .bold, fontSize: 20),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                  ],
-                );
-              },
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

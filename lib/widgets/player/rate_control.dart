@@ -2,6 +2,7 @@ import 'package:fl_audiobook/routes/player_page.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/widgets/player/playback_controls.dart';
 import 'package:flutter/material.dart';
+import 'package:yaru/theme.dart';
 
 class RateOptions extends StatelessWidget {
   const new({super.key});
@@ -59,10 +60,23 @@ class RateOptions extends StatelessWidget {
                       vertical: 8.0,
                       horizontal: 16,
                     ),
-                    child: Text(
-                      speedLabels[index],
-                      textAlign: .start,
-                      style: TextStyle(fontWeight: .bold),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          left: BorderSide(
+                            color: Theme.of(context).brightness == .dark ? YaruColors.adwaitaYellow : YaruColors.adwaitaBlue,
+                            width: 2,
+                          )
+                        ), 
+                      ), 
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          speedLabels[index],
+                          textAlign: .start,
+                          style: TextStyle(fontWeight: .bold, fontSize: 16),
+                        ),
+                      ),
                     ),
                   );
                 } else {

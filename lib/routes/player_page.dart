@@ -79,10 +79,10 @@ class _PlayerPageState extends State<PlayerPage> {
                         PlayerService().title,
                         style: .new(fontWeight: .bold),
                       ),
-                      Text(
+                      PlayerService().author != null && PlayerService().author != "" ?  Text(
                         "by ${PlayerService().author ?? ""}",
                         style: .new(fontSize: 10),
-                      ),
+                      ) : SizedBox(),
                     ],
                   ),
             actions: [
@@ -192,7 +192,7 @@ class PlayerUi extends StatelessWidget {
                 StreamBuilder(
                   stream: AutoPauseTimer.autoPauseRunnningStream,
                   builder: (context, asyncSnapshot) {
-                    bool show = false;
+                    bool show = AutoPauseTimer.willAutoPause;
                     if (asyncSnapshot.hasData && asyncSnapshot.data!) {
                       show = true;
                     }
@@ -212,7 +212,7 @@ class PlayerUi extends StatelessWidget {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: YaruColors.coolGrey,
+                            color: Theme.of(context).brightness == .dark ? YaruColors.coolGrey : YaruColors.warmGrey,
                             borderRadius: BorderRadius.circular(1000),
                             boxShadow: [
                               BoxShadow(

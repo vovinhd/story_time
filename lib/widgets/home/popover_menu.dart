@@ -32,20 +32,32 @@ class _PopoverMenuState extends State<PopoverMenu> {
                 style: menuButtonStyle(context),
 
                 onPressed: () async {
-                  if (await pickFile()) {
-                    print("check mounted");
+                  try {
+                    if (await pickFile()) {
+                      print("check mounted");
 
-                    // TODO known problem: if the menu is closed before a book is selected the widget is unmounted and navigation is blocked
-                    if (mounted) {
-                      print("navigating to player");
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (context) => PlayerPage(),
-                        ),
-                      );
+                      // TODO known problem: if the menu is closed before a book is selected the widget is unmounted and navigation is blocked
+                      if (mounted) {
+                        print("navigating to player");
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (context) => PlayerPage(),
+                          ),
+                        );
+                      }
                     }
+                  } on Exception catch (e) {
+                    
+                    var errorMsg = e.toString();
+                    print("hiiii" + errorMsg);
+                    var snackBar = SnackBar(content: Text(errorMsg));
+
+                    // Find the ScaffoldMessenger in the widget tree
+                    // and use it to show a SnackBar.
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  } finally {
+                    widget.close();
                   }
-                  widget.close();
                 },
                 child: Row(
                   mainAxisAlignment: .spaceBetween,

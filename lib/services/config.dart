@@ -135,7 +135,7 @@ class ConfigProvider {
     );
 
     config.playbackStates.removeWhere(
-      (value) => value.path == PlayerService().playingFile!.path,
+      (value) => value.file == PlayerService().playingFile!.name,
     );
 
     config.playbackStates.insert(0, state);
