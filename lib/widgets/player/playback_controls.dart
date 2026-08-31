@@ -258,3 +258,11 @@ class TimerButton extends StatelessWidget {
     );
   }
 }
+
+ButtonStyle overlayTextButtonStyle = .new(
+  foregroundColor: WidgetStatePropertyAll(Colors.white),
+  overlayColor: WidgetStatePropertyAll(const Color.fromARGB(12, 255, 255, 255)),
+  shape: WidgetStatePropertyAll(
+    RoundedRectangleBorder(borderRadius: .circular(0)),
+  ),
+);

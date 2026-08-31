@@ -1,11 +1,8 @@
 import 'dart:io';
 
-import 'package:fl_audiobook/my_route_transition.dart';
-import 'package:fl_audiobook/routes/settings_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:watch_it/watch_it.dart';
 import 'package:yaru/yaru.dart';
@@ -41,14 +38,34 @@ class ExampleHome extends StatelessWidget with WatchItMixin {
       );
     }
 
+    var darkTheme = forceHighContrast
+        ? yaruHighContrastDark
+        : yaruVariant?.darkTheme ?? yaruDark;
+
+    // darkTheme = darkTheme.copyWith(
+    //   iconButtonTheme: IconButtonThemeData(
+    //     style: .new(
+    //       mouseCursor: WidgetStatePropertyAll(SystemMouseCursors.click),
+    //     ),
+    //   ),
+    //   textButtonTheme: TextButtonThemeData(
+    //     style: .new(
+    //       mouseCursor: WidgetStatePropertyAll(SystemMouseCursors.click),
+    //     ),
+    //   ),
+    //         menuButtonTheme: MenuButtonThemeData(
+    //     style: .new(
+    //       mouseCursor: WidgetStatePropertyAll(SystemMouseCursors.click),
+    //     ),
+    //   ),
+    // );
+
     return _ExampleHome(
       themeMode: themeMode,
       lightTheme: forceHighContrast
           ? yaruHighContrastLight
           : yaruVariant?.theme ?? yaruLight,
-      darkTheme: forceHighContrast
-          ? yaruHighContrastDark
-          : yaruVariant?.darkTheme ?? yaruDark,
+      darkTheme: darkTheme,
       highContrastTheme: yaruHighContrastLight,
       highContrastDarkTheme: yaruHighContrastDark,
     );

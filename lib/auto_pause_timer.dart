@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/routes/player_page.dart';
 import 'package:fl_audiobook/time_display.dart';
+import 'package:fl_audiobook/widgets/player/playback_controls.dart';
 import 'package:flutter/material.dart';
 
 class TimerOptions extends StatelessWidget {
@@ -46,6 +47,8 @@ class TimerOptions extends StatelessWidget {
 
               children: [
                 TextButton(
+                                                            style: overlayTextButtonStyle,
+
                   onPressed: () {
                     AutoPauseTimer.cancel(); 
                   },
@@ -61,6 +64,8 @@ class TimerOptions extends StatelessWidget {
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return TextButton(
+                                          style: overlayTextButtonStyle,
+
                       onPressed: () {
                         AutoPauseTimer.startTimer(timerOffsets[index], false); 
                       },
@@ -75,6 +80,8 @@ class TimerOptions extends StatelessWidget {
                   },
                 ),
                 TextButton(
+                                                            style: overlayTextButtonStyle,
+
                   onPressed: () {
                     AutoPauseTimer.startTimer(-PlayerService().timeLeftInChapter, true); 
                   },

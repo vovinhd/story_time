@@ -61,19 +61,23 @@ class _HintContent extends StatelessWidget {
           child: Column(
             children: [
               Center(
-                child: TextButton(
+                child: FilledButton(
                   onPressed: onClick,
                   style: .new(
+                    shape: WidgetStatePropertyAll(RoundedRectangleBorder(
+                      borderRadius: BorderRadiusGeometry.circular(40)
+                    )),
                     backgroundColor: WidgetStatePropertyAll(
                       YaruColors.adwaitaYellow,
                     ),
                     foregroundColor: WidgetStatePropertyAll(
                       YaruColors.porcelain,
                     ),
+                    // mouseCursor: WidgetStatePropertyAll(SystemMouseCursors.click)
                   ),
                   child: Text(
                     "Open Audiobook",
-                    style: .new(fontWeight: .bold),
+                    style: .new(fontWeight: .bold, fontSize: 16),
                   ),
                 ),
               ),

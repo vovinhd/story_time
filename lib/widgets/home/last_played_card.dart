@@ -37,150 +37,163 @@ class LastPlayedCard extends StatefulWidget {
 
 class _LastPlayedCardState extends State<LastPlayedCard> {
   String showBookMenu = "";
-
+  bool hovered = false; 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        await PlayerService().openFile(
-          widget.bookFile,
-          position: widget.state.position,
-        );
-        widget.widget.onTransition();
+    return MouseRegion(
+      onHover: (event) {
+        setState(() {
+          hovered = true;
+        });
       },
-      child: Card(
-        clipBehavior: .antiAlias,
-        child: Container(
-          padding: EdgeInsets.only(right: 8),
-          // height: 100,
-          child: Row(
-            mainAxisAlignment: .start,
-            crossAxisAlignment: .center,
-            spacing: 8,
-            children: [
-              SizedBox(
-                width: 100,
-                child: FutureBuilder(
-                  future: widget.coverfile,
-                  builder: (context, asyncSnapshot) {
-                    if (asyncSnapshot.hasData) {
-                      if (asyncSnapshot.data == null) {
-                        return globals.defaultCoverImage;
+      onExit: (event) {
+        setState(() {
+          hovered = false;
+        });
+      },
+      child: GestureDetector(
+        onTap: () async {
+          await PlayerService().openFile(
+            widget.bookFile,
+            position: widget.state.position,
+          );
+          widget.widget.onTransition();
+        },
+        child: Card(
+          surfaceTintColor: hovered ? Colors.white : Colors.transparent,
+          clipBehavior: .antiAlias,
+          child: Container(
+            padding: EdgeInsets.only(right: 8),
+            // height: 100,
+            child: Row(
+              mainAxisAlignment: .start,
+              crossAxisAlignment: .center,
+              spacing: 8,
+              children: [
+                SizedBox(
+                  width: 100,
+                  child: FutureBuilder(
+                    future: widget.coverfile,
+                    builder: (context, asyncSnapshot) {
+                      if (asyncSnapshot.hasData) {
+                        if (asyncSnapshot.data == null) {
+                          return globals.defaultCoverImage;
+                        }
+                        return Image.file(asyncSnapshot.data!);
                       }
-                      return Image.file(asyncSnapshot.data!);
-                    }
-                    return globals.defaultCoverImage;
-                  },
-                ),
-              ),
-
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    mainAxisAlignment: .spaceBetween,
-                    mainAxisSize: .min,
-                    children: [
-                      Wrap(
-                        spacing: 8,
-
-                        children: [
-                          Text(widget.state.title, style: .new(fontSize: 20)),
-                          Text(
-                            "by ${widget.state.author}",
-                            style: .new(
-                              fontSize: 14,
-                              color: YaruColors.warmGrey,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text("last played ${widget.dateTimeLabel}"),
-
-                      Row(
-                        spacing: 8,
-                        children: [
-                          Flexible(
-                            child: LinearProgressIndicator(
-                              value: widget.listeningProgress,
-                            ),
-                          ),
-                          Text("${widget.timeRemainingLabel} remaining"),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    tooltip: "play ${widget.state.title}",
-
-                    padding: EdgeInsets.all(
-                      0,
-                    ), // Adjust padding to center the icon
-                    icon: Icon(
-                      YaruIcons.media_play,
-                      size: 30,
-                    ), // Larger icon to fill the space
-                    onPressed: () async {
-                      await PlayerService().openFile(
-                        widget.bookFile,
-                        position: widget.state.position,
-                      );
-                      widget.widget.onTransition();
+                      return globals.defaultCoverImage;
                     },
                   ),
-
-                  PortalTarget(
-                    visible: showBookMenu != "",
-                    // portalFollower: Container(color: Colors.amber,),
-                    portalFollower: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        setState(() {
-                          showBookMenu = "";
-                        });
+                ),
+      
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Column(
+                      crossAxisAlignment: .start,
+                      mainAxisAlignment: .spaceBetween,
+                      mainAxisSize: .min,
+                      children: [
+                        Column(
+                          spacing: 0,
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text(widget.state.title, style: .new(fontSize: 20)),
+                            Text(
+                              "by ${widget.state.author}",
+                              style: .new(
+                                fontSize: 14,
+                                color: YaruColors.warmGrey,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text("last played ${widget.dateTimeLabel}"),
+      
+                        Row(
+                          spacing: 8,
+                          children: [
+                            Flexible(
+                              child: LinearProgressIndicator(
+                                value: widget.listeningProgress,
+                              ),
+                            ),
+                            Text("${widget.timeRemainingLabel} remaining"),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      tooltip: "play ${widget.state.title}",
+      
+                      padding: EdgeInsets.all(
+                        0,
+                      ), // Adjust padding to center the icon
+                      icon: Icon(
+                        YaruIcons.media_play,
+                        size: 30,
+                      ), // Larger icon to fill the space
+                      onPressed: () async {
+                        await PlayerService().openFile(
+                          widget.bookFile,
+                          position: widget.state.position,
+                        );
+                        widget.widget.onTransition();
                       },
                     ),
-
-                    child: PortalTarget(
-                      visible: showBookMenu == widget.state.file,
-                      anchor: const Aligned(
-                        follower: Alignment.centerRight,
-                        target: Alignment.centerLeft,
-                        offset: Offset(-8, 0),
-                      ),
-                      portalFollower: BookMenu(
-                        bookPlayebackState: widget.state,
-                        close: () {
-                        setState(() {
-                          showBookMenu = "";
-                        });                        },
-                      ),
-                      child: IconButton(
-                        tooltip: "options for ${widget.state.title}",
-
-                        padding: EdgeInsets.all(
-                          0,
-                        ), // Adjust padding to center the icon
-                        icon: Icon(
-                          YaruIcons.view_more_horizontal,
-                          size: 30,
-                        ), // Larger icon to fill the space
-                        onPressed: () {
+      
+                    PortalTarget(
+                      visible: showBookMenu != "",
+                      // portalFollower: Container(color: Colors.amber,),
+                      portalFollower: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
                           setState(() {
-                            showBookMenu = widget.state.file;
+                            showBookMenu = "";
                           });
                         },
                       ),
+      
+                      child: PortalTarget(
+                        visible: showBookMenu == widget.state.file,
+                        anchor: const Aligned(
+                          follower: Alignment.centerRight,
+                          target: Alignment.centerLeft,
+                          offset: Offset(-8, 0),
+                        ),
+                        portalFollower: BookMenu(
+                          bookPlayebackState: widget.state,
+                          close: () {
+                          setState(() {
+                            showBookMenu = "";
+                          });                        },
+                        ),
+                        child: IconButton(
+                          tooltip: "options for ${widget.state.title}",
+      
+                          padding: EdgeInsets.all(
+                            0,
+                          ), // Adjust padding to center the icon
+                          icon: Icon(
+                            YaruIcons.view_more_horizontal,
+                            size: 30,
+                          ), // Larger icon to fill the space
+                          onPressed: () {
+                            setState(() {
+                              showBookMenu = widget.state.file;
+                            });
+                          },
+                        ),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -29,12 +29,13 @@ class _PopoverMenuState extends State<PopoverMenu> {
             shrinkWrap: true,
             children: [
               TextButton(
+                style: menuButtonStyle,
+
                 onPressed: () async {
                   if (await pickFile()) {
                     print("check mounted");
 
                     // TODO known problem: if the menu is closed before a book is selected the widget is unmounted and navigation is blocked
-                    // TODO resume playback if user picked an audiobook they already have played
                     if (mounted) {
                       print("navigating to player");
                       Navigator.of(context).push(
@@ -61,9 +62,11 @@ class _PopoverMenuState extends State<PopoverMenu> {
                 ),
               ),
               TextButton(
+                style: menuButtonStyle,
+
                 onPressed: () {
                   Navigator.of(context).push(
-                    SettingsTransition(child: SettingsPage())
+                    SettingsTransition(child: SettingsPage()),
                     // MaterialPageRoute<void>(
                     //   builder: (context) => SettingsPage(),
                     //   fullscreenDialog: true,
@@ -88,6 +91,7 @@ class _PopoverMenuState extends State<PopoverMenu> {
                 ),
               ),
               TextButton(
+                style: menuButtonStyle,
                 onPressed: () {
                   widget.close();
                   showAboutDialog(
@@ -95,7 +99,7 @@ class _PopoverMenuState extends State<PopoverMenu> {
                     applicationVersion: "0.1.0",
                     applicationIcon: Image.asset("images/app_icon.png"),
                     applicationLegalese: "This software is very cool.",
-                    useRootNavigator: true
+                    useRootNavigator: true,
                   );
                 },
                 child: Row(
@@ -128,4 +132,8 @@ var menuBoxDecoration = BoxDecoration(
       offset: Offset(0, 3), // changes position of shadow
     ),
   ],
+);
+
+var menuButtonStyle = ButtonStyle(
+  overlayColor: WidgetStatePropertyAll(Colors.white10),
 );

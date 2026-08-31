@@ -28,7 +28,7 @@ class _LastPlayedListState extends State<LastPlayedList> {
     return Expanded(
       child: Stack(
         children: [
-          offset > 18 ? Container(color: YaruColors.jet) : SizedBox(),
+          offset > 18 ? Container(color: YaruColors.jet).animate().fade(duration: Duration(milliseconds: 100)) : SizedBox(),
            NotificationListener<ScrollUpdateNotification>(
                 onNotification: (notification) {
                   //How many pixels scrolled from pervious frame
@@ -50,7 +50,10 @@ class _LastPlayedListState extends State<LastPlayedList> {
                   itemCount: widget.config.playbackStates.length + 1,
                   itemBuilder: (BuildContext context, int index) {
                     if (index == 0) {
-                      return Text("Last Played"); 
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("Last Played", style: .new(fontWeight: .bold),),
+                      ); 
                     }
                     final state = widget.config.playbackStates[index -1];
                     final bookFile = BookFile(

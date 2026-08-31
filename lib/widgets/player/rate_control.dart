@@ -1,5 +1,6 @@
 import 'package:fl_audiobook/routes/player_page.dart';
 import 'package:fl_audiobook/services/player_service.dart';
+import 'package:fl_audiobook/widgets/player/playback_controls.dart';
 import 'package:flutter/material.dart';
 
 class RateOptions extends StatelessWidget {
@@ -66,6 +67,7 @@ class RateOptions extends StatelessWidget {
                   );
                 } else {
                   return TextButton(
+                    style: overlayTextButtonStyle,
                     onPressed: () {
                       print("select rate: ${speeds[index]}");
                       PlayerService().rate = speeds[index];

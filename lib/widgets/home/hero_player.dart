@@ -25,70 +25,83 @@ class _HeroPlayerState extends State<HeroPlayer> {
     }
   }
 
+  bool hovered = false; 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        _pushPlayerRoute();
+    return MouseRegion(
+      onHover: (event) {
+        setState(() {
+          hovered = true;
+        });
       },
-      child: Material(
-        elevation: 2,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            // vertical: 32.0,
-            // horizontal: 16,
-          ),
-          child: Column(
-            crossAxisAlignment: .start,
-            children: [
-              // Text("Now Playing", textAlign: .start),
-              StreamBuilder(
-                stream: ConfigProvider().configStreamController.stream,
-                builder: (context, asyncSnapshot) {
-                  var performanceMode = ConfigProvider().config.performanceMode;
-                  if (asyncSnapshot.hasData) {
-                    performanceMode = asyncSnapshot.data!.performanceMode;
-                  }
-
-                  return SizedBox(
-                    height: 235,
-                    child: Stack(
-                      children: [
-                        if (performanceMode)
-                          SizedBox()
-                        else
-                          Positioned.fill(
-                            child: Image(
-                              fit: .fill,
-                              image: PlayerService().coverImage.image,
-                              height: double.infinity,
-                              width: double.infinity,
-                              repeat: .noRepeat,
-                            ).animate(key: Key(widget.file.name)).fade(),
-                          ),
-                        if (performanceMode)
-                          SizedBox()
-                        else
-                          Positioned.fill(
-                            child: Opacity(
-                              opacity: .4,
-                              child: Container(color: Color(0xFF000000)),
+      onExit:  (event) {
+        setState(() {
+          hovered = false;
+        });
+      },
+      child: GestureDetector(
+        onTap: () {
+          _pushPlayerRoute();
+        },
+        child: Material(
+          elevation: 2,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              // vertical: 32.0,
+              // horizontal: 16,
+            ),
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                // Text("Now Playing", textAlign: .start),
+                StreamBuilder(
+                  stream: ConfigProvider().configStreamController.stream,
+                  builder: (context, asyncSnapshot) {
+                    var performanceMode = ConfigProvider().config.performanceMode;
+                    if (asyncSnapshot.hasData) {
+                      performanceMode = asyncSnapshot.data!.performanceMode;
+                    }
+      
+                    return SizedBox(
+                      height: 235,
+                      child: Stack(
+                        children: [
+                          if (performanceMode)
+                            SizedBox()
+                          else
+                            Positioned.fill(
+                              child: Image(
+                                fit: .fill,
+                                image: PlayerService().coverImage.image,
+                                height: double.infinity,
+                                width: double.infinity,
+                                repeat: .noRepeat,
+                              ).animate(key: Key(widget.file.name)).fade(),
                             ),
-                          ),
-                        if (performanceMode)
-                          HeroPlayerMain(widget: widget)
-                        else
-                          BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
-
-                            child: (HeroPlayerMain(widget: widget)),
-                          ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ],
+                          if (performanceMode)
+                            SizedBox()
+                          else
+                            Positioned.fill(
+                              child: Opacity(
+                                opacity: hovered ? .38 : .4 ,
+                                child: Container(color: Color(0xFF000000)),
+                              ),
+                            ),
+                          if (performanceMode)
+                            HeroPlayerMain(widget: widget)
+                          else
+                            BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
+      
+                              child: (HeroPlayerMain(widget: widget)),
+                            ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

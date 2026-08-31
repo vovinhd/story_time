@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:dbus/dbus.dart';
 import 'package:ffmpeg_kit_next_flutter/chapter.dart';
 import 'package:ffmpeg_kit_next_flutter/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_next_flutter/ffmpeg_kit_output_buffer.dart';
 import 'package:ffmpeg_kit_next_flutter/ffprobe_kit.dart';
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/globals.dart';
