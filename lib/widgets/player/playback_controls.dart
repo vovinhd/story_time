@@ -22,15 +22,21 @@ class _PlaybackControlsState extends State<PlaybackControls> {
   var showTimerOptions = false;
 
   void setShowRateOptions() {
-    showRateOptions = true;
+    setState(() {
+      showRateOptions = true;
+    });
   }
 
   void setShowVolumeOptions() {
-    showVolumeOptions = true;
+    setState(() {
+      showVolumeOptions = true;
+    });
   }
 
   void setshowTimerOptions() {
-    showTimerOptions = true;
+    setState(() {
+      showTimerOptions = true;
+    });
   }
 
   @override
@@ -71,26 +77,26 @@ class _PlaybackControlsState extends State<PlaybackControls> {
             },
           ),
           if (size.width < 556)
-            Column( children: [
-              Row(
-                mainAxisAlignment: .center,
-                children: [TrackControls()]),
-              Row(
-                mainAxisAlignment: .spaceBetween,
-                children: [
-                  _LeftOptions(
-                    showVolumeOptions: showVolumeOptions,
-                    showRateOptions: showRateOptions,
-                    setShowVolumeOptions: setShowVolumeOptions,
-                    setShowRateOptions: setShowRateOptions,
-                  ),
-                  _RightOptions(
-                    showTimerOptions: showTimerOptions,
-                    setshowTimerOptions: setshowTimerOptions,
-                  ),
-                ],
-              ),
-        ])
+            Column(
+              children: [
+                Row(mainAxisAlignment: .center, children: [TrackControls()]),
+                Row(
+                  mainAxisAlignment: .spaceBetween,
+                  children: [
+                    _LeftOptions(
+                      showVolumeOptions: showVolumeOptions,
+                      showRateOptions: showRateOptions,
+                      setShowVolumeOptions: setShowVolumeOptions,
+                      setShowRateOptions: setShowRateOptions,
+                    ),
+                    _RightOptions(
+                      showTimerOptions: showTimerOptions,
+                      setshowTimerOptions: setshowTimerOptions,
+                    ),
+                  ],
+                ),
+              ],
+            )
           else
             Row(
               mainAxisAlignment: .spaceBetween,
