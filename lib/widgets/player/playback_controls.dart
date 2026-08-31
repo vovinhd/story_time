@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:fl_audiobook/auto_pause_timer.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/time_display.dart';
+import 'package:fl_audiobook/widgets/animated_popover.dart';
 import 'package:fl_audiobook/widgets/player/playback_position_slider.dart';
 import 'package:fl_audiobook/widgets/player/rate_control.dart';
 import 'package:fl_audiobook/widgets/player/track_controls.dart';
@@ -17,19 +20,12 @@ class PlaybackControls extends StatefulWidget {
 }
 
 class _PlaybackControlsState extends State<PlaybackControls> {
-  var showVolumeOptions = false;
   var showRateOptions = false;
   var showTimerOptions = false;
 
   void setShowRateOptions() {
     setState(() {
       showRateOptions = true;
-    });
-  }
-
-  void setShowVolumeOptions() {
-    setState(() {
-      showVolumeOptions = true;
     });
   }
 
@@ -43,12 +39,11 @@ class _PlaybackControlsState extends State<PlaybackControls> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return PortalTarget(
-      visible: showVolumeOptions || showRateOptions || showTimerOptions,
+      visible: showRateOptions || showTimerOptions,
       portalFollower: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
           setState(() {
-            showVolumeOptions = false;
             showRateOptions = false;
             showTimerOptions = false;
           });
@@ -83,12 +78,7 @@ class _PlaybackControlsState extends State<PlaybackControls> {
                 Row(
                   mainAxisAlignment: .spaceBetween,
                   children: [
-                    _LeftOptions(
-                      showVolumeOptions: showVolumeOptions,
-                      showRateOptions: showRateOptions,
-                      setShowVolumeOptions: setShowVolumeOptions,
-                      setShowRateOptions: setShowRateOptions,
-                    ),
+                    _LeftOptions(),
                     _RightOptions(
                       showTimerOptions: showTimerOptions,
                       setshowTimerOptions: setshowTimerOptions,
@@ -102,12 +92,7 @@ class _PlaybackControlsState extends State<PlaybackControls> {
               mainAxisAlignment: .spaceBetween,
 
               children: [
-                _LeftOptions(
-                  showVolumeOptions: showVolumeOptions,
-                  showRateOptions: showRateOptions,
-                  setShowVolumeOptions: setShowVolumeOptions,
-                  setShowRateOptions: setShowRateOptions,
-                ),
+                _LeftOptions(),
 
                 TrackControls(),
                 _RightOptions(
@@ -138,16 +123,27 @@ class _RightOptions extends StatelessWidget {
       children: [
         SizedBox(width: 64),
 
-        PortalTarget(
-          visible: showTimerOptions,
-          anchor: const Aligned(
-            follower: Alignment.bottomRight,
-            target: Alignment.topRight,
-            offset: Offset(0, -8),
-          ),
-          portalFollower: TimerOptions(),
 
-          child: TimerButton(onPressed: setshowTimerOptions),
+        StreamBuilder(
+          stream: AutoPauseTimer.autoPauseRunnningStream,
+          builder: (context, asyncSnapshot) {
+            var running = asyncSnapshot.hasData && asyncSnapshot.data!;
+
+            return AnimatedPopover(
+              offset: Offset(0, -8),
+              follower: Alignment.bottomRight,
+              target: Alignment.topRight,
+              tooltip: "timer",
+              icon: Icon(YaruIcons.stopwatch),
+              buttonStyleOverride: running ? ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll<Color>(
+                      YaruColors.adwaitaYellow,
+                    ),
+                    iconColor: WidgetStatePropertyAll<Color>(Colors.black),
+                  ) : ButtonStyle(),
+              child: TimerOptions(),
+            );
+          }
         ),
       ],
     );
@@ -155,109 +151,47 @@ class _RightOptions extends StatelessWidget {
 }
 
 class _LeftOptions extends StatelessWidget {
-  const new({
-    super.key,
-    required this.showVolumeOptions,
-    required this.showRateOptions,
-    required this.setShowVolumeOptions,
-    required this.setShowRateOptions,
-  });
-
-  final bool showVolumeOptions;
-  final bool showRateOptions;
-
-  final VoidCallback setShowVolumeOptions;
-  final VoidCallback setShowRateOptions;
-
-  @override
   Widget build(BuildContext context) {
     return Row(
       spacing: 8.0,
       children: [
-        PortalTarget(
-          visible: showVolumeOptions,
-          anchor: const Aligned(
-            follower: Alignment.bottomCenter,
-            target: Alignment.topCenter,
-            offset: Offset(0, -8),
-          ),
-          portalFollower: VolumeSlider(),
-
-          child: Tooltip(
-            message: "Volume",
-            child: YaruOptionButton(
-              onPressed: setShowVolumeOptions,
-              child: VolumeIcon(),
-            ),
-          ),
+        AnimatedPopover(
+          offset: Offset(0, -8),
+          follower: Alignment.bottomCenter,
+          target: Alignment.topCenter,
+          tooltip: "Volume",
+          icon: VolumeIcon(),
+          child: VolumeSlider(),
         ),
-        PortalTarget(
-          visible: showRateOptions,
-          anchor: const Aligned(
-            follower: Alignment.bottomLeft,
-            target: Alignment.topLeft,
-            offset: Offset(0, -8),
-          ),
-          portalFollower: RateOptions(),
 
-          child: Tooltip(
-            message: "playback speed",
-            child: SizedBox(
-              width: 64,
-              child: YaruOptionButton(
-                onPressed: setShowRateOptions,
-                child: StreamBuilder(
-                  stream: PlayerService().rateStream,
-                  builder: (context, asyncSnapshot) {
-                    double rate = PlayerService().rate;
-                    if (asyncSnapshot.hasData) {
-                      rate = asyncSnapshot.data!;
-                    }
+        AnimatedPopover(
+          offset: Offset(0, -8),
+          follower: Alignment.bottomLeft,
+          target: Alignment.topLeft,
+          tooltip: "playback speed",
+          icon: SizedBox(
+            child: StreamBuilder(
+              stream: PlayerService().rateStream,
+              builder: (context, asyncSnapshot) {
+                double rate = PlayerService().rate;
+                if (asyncSnapshot.hasData) {
+                  rate = asyncSnapshot.data!;
+                }
 
-                    var label = rate.toStringAsFixed(2);
+                var label = rate.toStringAsFixed(2);
 
-                    return Text("${label}x", softWrap: false);
-                  },
-                ),
-              ),
+                return Text("${label}x", softWrap: false);
+              },
             ),
           ),
+          width: 64,
+          child: RateOptions(),
         ),
       ],
     );
   }
 }
 
-class TimerButton extends StatelessWidget {
-  final VoidCallback onPressed;
-
-  const new({super.key, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: "timer",
-      child: StreamBuilder(
-        stream: AutoPauseTimer.autoPauseRunnningStream,
-        builder: (context, asyncSnapshot) {
-          var runnning = asyncSnapshot.hasData && asyncSnapshot.data!;
-          return YaruOptionButton(
-            style: runnning
-                ? ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll<Color>(
-                      YaruColors.adwaitaYellow,
-                    ),
-                    iconColor: WidgetStatePropertyAll<Color>(Colors.black),
-                  )
-                : ButtonStyle(),
-            onPressed: onPressed,
-            child: Icon(YaruIcons.stopwatch),
-          );
-        },
-      ),
-    );
-  }
-}
 
 ButtonStyle overlayTextButtonStyle = .new(
   foregroundColor: WidgetStatePropertyAll(Colors.white),

@@ -17,6 +17,7 @@ vovin@the-red-scare:~/git/fl-audiobook/fl_audiobook$ LD_LIBRARY_PATH="$LD_LIBRAR
   - [ ] and hook it up to the "new" ``PlayerService`` 
 - [ ] write test? lol. no i'm not at work here 
 - [ ] if menu is closed before a book is selected the widget is unmounted and navigation is blocked 
+
 ### ui 
 - [ ] animations 
   - [ ] fade out the unskip button
@@ -30,6 +31,7 @@ vovin@the-red-scare:~/git/fl-audiobook/fl_audiobook$ LD_LIBRARY_PATH="$LD_LIBRAR
     - [ ] consider swapping start time label for time remaining for currently playing? 
 - [ ] bring back light theme
   - [ ] abstract theme colors into a service? 
+- [ ] change the hint when play history isn't empty 
 
 ### enhancements 
 - [ ] error handling 

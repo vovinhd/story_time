@@ -5,6 +5,7 @@ import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/time_display.dart';
 import 'package:fl_audiobook/tray.dart' as tray;
+import 'package:fl_audiobook/widgets/animated_popover.dart';
 import 'package:fl_audiobook/widgets/cover_image.dart';
 import 'package:fl_audiobook/widgets/player/chapter_list_button.dart';
 import 'package:fl_audiobook/widgets/player/playback_controls.dart';
@@ -50,20 +51,19 @@ class _PlayerPageState extends State<PlayerPage> {
           PlayerService().playOrPause();
         },
         const SingleActivator(LogicalKeyboardKey.backspace): () {
-          Navigator.of(context).pop(); 
+          Navigator.of(context).pop();
         },
         const SingleActivator(LogicalKeyboardKey.arrowRight): () {
-          PlayerService().seekForward(); 
+          PlayerService().seekForward();
         },
         const SingleActivator(LogicalKeyboardKey.arrowLeft): () {
-          PlayerService().seekBack(); 
+          PlayerService().seekBack();
         },
       },
       child: Focus(
         autofocus: true,
         child: Scaffold(
           appBar: YaruWindowTitleBar(
-        
             onClose: (p0) {
               tray.hideOrClose();
             },
@@ -71,38 +71,43 @@ class _PlayerPageState extends State<PlayerPage> {
             onShowMenu: (p0) => {},
             border: BorderSide.none,
             leading: YaruBackButton(),
-            title: PlayerService().author == null ? Text(PlayerService().title) : Column(
-              children: [
-                Text(PlayerService().title, style: .new(fontWeight: .bold),),
-                Text("by ${PlayerService().author ?? ""}", style: .new(fontSize: 10),),
-        
-              ],
-            ),
+            title: PlayerService().author == null
+                ? Text(PlayerService().title)
+                : Column(
+                    children: [
+                      Text(
+                        PlayerService().title,
+                        style: .new(fontWeight: .bold),
+                      ),
+                      Text(
+                        "by ${PlayerService().author ?? ""}",
+                        style: .new(fontSize: 10),
+                      ),
+                    ],
+                  ),
             actions: [
-              PortalTarget(
-                visible: showBookInfo,
-                anchor: const Aligned(
-                  follower: Alignment.topRight,
-                  target: Alignment.bottomRight,
-                  offset: Offset(0, 8),
-                ),
-                portalFollower: TagInfo(),
-        
-                child: Tooltip(
-                  message: "playback speed",
-                  child: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        showBookInfo = true;
-                      });
-                    },
-                    icon: Icon(YaruIcons.information),
+              AnimatedPopover(
+                offset: Offset(0, 8),
+                follower: Alignment.topRight,
+                target: Alignment.bottomRight,
+                tooltip: "show media information",
+                icon: Icon(YaruIcons.information),
+                buttonStyleOverride: ButtonStyle(
+                  shape: WidgetStatePropertyAll(
+                    RoundedRectangleBorder(
+                      borderRadius: .circular(50),
+                      side: .none,
+                    ),
                   ),
                 ),
+                noBorder: true,
+                width: 34,
+                child: TagInfo(),
               ),
+
             ],
           ),
-        
+
           body: PortalTarget(
             visible: showBookInfo,
             portalFollower: GestureDetector(
@@ -113,31 +118,40 @@ class _PlayerPageState extends State<PlayerPage> {
                 });
               },
             ),
-          
+
             child: Stack(
               fit: StackFit.expand,
               children: [
-                 if (ConfigProvider().config.performanceMode) SizedBox() else Positioned.fill(
-                  child: Image(
-                    fit: .fill,
-                    image: PlayerService().coverImage.image,
-                    height: double.infinity,
-                    width: double.infinity,
-                    repeat: .noRepeat,
+                if (ConfigProvider().config.performanceMode)
+                  SizedBox()
+                else
+                  Positioned.fill(
+                    child: Image(
+                      fit: .fill,
+                      image: PlayerService().coverImage.image,
+                      height: double.infinity,
+                      width: double.infinity,
+                      repeat: .noRepeat,
+                    ),
                   ),
-                ),
-          
-                if (ConfigProvider().config.performanceMode) SizedBox() else Positioned.fill(
-                  child: Opacity(
-                    opacity: 0.8,
-                    child: Container(color: const Color(0xFF000000)),
+
+                if (ConfigProvider().config.performanceMode)
+                  SizedBox()
+                else
+                  Positioned.fill(
+                    child: Opacity(
+                      opacity: 0.8,
+                      child: Container(color: const Color(0xFF000000)),
+                    ),
                   ),
-                ),
-          
-                if (ConfigProvider().config.performanceMode) PlayerUi() else BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
-                  child: PlayerUi(),
-                ),
+
+                if (ConfigProvider().config.performanceMode)
+                  PlayerUi()
+                else
+                  BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
+                    child: PlayerUi(),
+                  ),
               ],
             ),
           ),
@@ -148,9 +162,7 @@ class _PlayerPageState extends State<PlayerPage> {
 }
 
 class PlayerUi extends StatelessWidget {
-  const new({
-    super.key,
-  });
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -169,22 +181,16 @@ class PlayerUi extends StatelessWidget {
                   margin: EdgeInsets.all(16.0),
                   constraints: BoxConstraints.expand(),
                   child: Hero(
-                    tag:
-                        PlayerService()
-                            .playingFile
-                            ?.name
-                            .hashCode ??
-                        "",
+                    tag: PlayerService().playingFile?.name.hashCode ?? "",
                     child: CoverImage(),
                   ),
                 ),
-    
+
                 StreamBuilder(
                   stream: AutoPauseTimer.autoPauseRunnningStream,
                   builder: (context, asyncSnapshot) {
                     bool show = false;
-                    if (asyncSnapshot.hasData &&
-                        asyncSnapshot.data!) {
+                    if (asyncSnapshot.hasData && asyncSnapshot.data!) {
                       show = true;
                     }
                     return AnimatedOpacity(
@@ -193,9 +199,7 @@ class PlayerUi extends StatelessWidget {
                       child: Align(
                         alignment: AlignmentGeometry.topCenter,
                         child: Container(
-                          constraints: BoxConstraints.loose(
-                            Size(200, 100),
-                          ),
+                          constraints: BoxConstraints.loose(Size(200, 100)),
                           margin: EdgeInsets.symmetric(
                             vertical: 0,
                             horizontal: 32,
@@ -206,14 +210,10 @@ class PlayerUi extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: YaruColors.coolGrey,
-                            borderRadius: BorderRadius.circular(
-                              1000,
-                            ),
+                            borderRadius: BorderRadius.circular(1000),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(
-                                  alpha: 0.1,
-                                ),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 spreadRadius: 1,
                                 blurRadius: 7,
                                 offset: Offset(
@@ -228,38 +228,31 @@ class PlayerUi extends StatelessWidget {
                             spacing: 8,
                             children: [
                               // Icon(YaruIcons.stopwatch, size: 30,weight: 4,),
-                              Icon(
-                                YaruIcons.clear_night,
-                                size: 30,
-                                weight: 4,
-                              ),
-    
+                              Icon(YaruIcons.clear_night, size: 30, weight: 4),
+
                               StreamBuilder(
-                                stream: AutoPauseTimer
-                                    .remainingStream,
-                                builder:
-                                    (context, asyncSnapshot) {
-                                      if (!asyncSnapshot
-                                          .hasData) {
-                                        return Text(
-                                          ":00",
-                                          style: TextStyle(
-                                            fontWeight: .bold,
-                                            fontSize: 20,
-                                          ),
-                                        );
-                                      }
-                                      final label = printDuration(
-                                        asyncSnapshot.data!,
-                                      );
-                                      return Text(
-                                        label,
-                                        style: TextStyle(
-                                          fontWeight: .bold,
-                                          fontSize: 20,
-                                        ),
-                                      );
-                                    },
+                                stream: AutoPauseTimer.remainingStream,
+                                builder: (context, asyncSnapshot) {
+                                  if (!asyncSnapshot.hasData) {
+                                    return Text(
+                                      ":00",
+                                      style: TextStyle(
+                                        fontWeight: .bold,
+                                        fontSize: 20,
+                                      ),
+                                    );
+                                  }
+                                  final label = printDuration(
+                                    asyncSnapshot.data!,
+                                  );
+                                  return Text(
+                                    label,
+                                    style: TextStyle(
+                                      fontWeight: .bold,
+                                      fontSize: 20,
+                                    ),
+                                  );
+                                },
                               ),
                             ],
                           ),
@@ -268,7 +261,7 @@ class PlayerUi extends StatelessWidget {
                     );
                   },
                 ),
-    
+
                 Align(
                   alignment: AlignmentGeometry.bottomCenter,
                   child: UnskipButton(),
@@ -279,12 +272,7 @@ class PlayerUi extends StatelessWidget {
           Column(
             spacing: 8.0,
             crossAxisAlignment: .start,
-            children: [
-              ChapterListButton(
-              ),
-    
-              PlaybackControls(),
-            ],
+            children: [ChapterListButton(), PlaybackControls()],
           ),
         ],
       ),
