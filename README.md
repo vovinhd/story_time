@@ -22,6 +22,7 @@ vovin@the-red-scare:~/git/fl-audiobook/fl_audiobook$ LD_LIBRARY_PATH="$LD_LIBRAR
   - [ ] fade out the unskip button
   - [ ] animate the time left to unskip 
   - [ ] animate popover menus/dialogs, at least fade them in a little 
+- [ ] give popover dialogs the little speech bubble tail they hace in adwaita? 
 - [ ] better chapters list drawer in player
   - [ ] highlight the currently playing chapter
   - [ ] maybe display the progress
