@@ -1,3 +1,4 @@
+import 'package:fl_audiobook/l10n/app_localizations.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:flutter/material.dart';
 import 'package:yaru/yaru.dart';
@@ -15,7 +16,7 @@ class PlayPauseButton extends StatelessWidget {
         builder: (context, asyncSnapshot) {
           if (asyncSnapshot.hasData) {
             return IconButton(
-              tooltip: asyncSnapshot.data! ? "pause" : "play",
+              tooltip: asyncSnapshot.data! ? AppLocalizations.of(context)!.tooltipTransportPause : AppLocalizations.of(context)!.tooltipTransportPlay,
 
               padding: EdgeInsets.all(12), // Adjust padding to center the icon
               icon: Icon(

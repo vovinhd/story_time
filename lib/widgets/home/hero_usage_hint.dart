@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:fl_audiobook/l10n/app_localizations.dart';
 import 'package:fl_audiobook/services/config.dart';
 import 'package:flutter/material.dart';
 import 'package:yaru/yaru.dart';
@@ -49,11 +50,11 @@ class _HintContent extends StatelessWidget {
           ),
         ),
         Text(
-          "Listen to audiobooks",
+          AppLocalizations.of(context)!.heroHintTitle,
           style: .new(fontSize: 32, fontWeight: .bold),
         ),
         Text(
-          "supported file types: .m4b, .m4a, .mp3",
+          AppLocalizations.of(context)!.heroHintSubtitle,
         ),
         
         Padding(
@@ -76,7 +77,7 @@ class _HintContent extends StatelessWidget {
                     // mouseCursor: WidgetStatePropertyAll(SystemMouseCursors.click)
                   ),
                   child: Text(
-                    "Open Audiobook",
+                    AppLocalizations.of(context)!.heroHintButtonLabel,
                     style: .new(fontWeight: .bold, fontSize: 16),
                   ),
                 ),

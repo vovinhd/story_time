@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:fl_audiobook/globals.dart' as globals;
+import 'package:fl_audiobook/l10n/app_localizations.dart';
 import 'package:fl_audiobook/routes/player_page.dart';
 import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/services/files.dart';
@@ -125,7 +126,7 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
                                       children: [
                                         Icon(YaruIcons.error),
                                         Text(
-                                          "File not available, make sure to mount the device it's on!",
+                                           AppLocalizations.of(context)!.fileNotAvailable,
                                           style: .new(
                                             fontWeight: .bold,
                                             fontSize: 10,
@@ -141,7 +142,8 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
                             Text(widget.state.title, style: .new(fontSize: 20)),
                             if (widget.state.author != "")
                               Text(
-                                "by ${widget.state.author}",
+                                AppLocalizations.of(context)!.artistLabel(widget.state.author)
+                                ,
                                 style: .new(
                                   fontSize: 14,
                                   color: YaruColors.warmGrey,
@@ -149,7 +151,7 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
                               ),
                           ],
                         ),
-                        Text("last played ${widget.dateTimeLabel}"),
+                        Text(AppLocalizations.of(context)!.lastPlayedCardLastPlayed(widget.dateTimeLabel)),
 
                         Row(
                           spacing: 8,
@@ -159,7 +161,7 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
                                 value: widget.listeningProgress,
                               ),
                             ),
-                            Text("${widget.timeRemainingLabel} remaining"),
+                            Text(AppLocalizations.of(context)!.lastPlayedCardRemaining(widget.timeRemainingLabel)),
                           ],
                         ),
                       ],
@@ -178,7 +180,7 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
                       return Row(
                         children: [
                           IconButton(
-                            tooltip: "locate ${widget.state.title}",
+                            tooltip: AppLocalizations.of(context)!.lastPlayedCardLocate(widget.state.title),
 
                             padding: EdgeInsets.all(
                               0,
@@ -190,19 +192,19 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
                             onPressed: () => showDialog<String>(
                               context: context,
                               builder: (BuildContext context) => AlertDialog(
-                                title: Text("Locate ${widget.state.title}"),
+                                title: Text(AppLocalizations.of(context)!.lastPlayedCardLocate(widget.state.title)),
                                 actions: [
                                   TextButton(
                                     onPressed: () =>
                                         Navigator.pop(context, 'Cancel'),
-                                    child: Text("Cancel"),
+                                    child: Text(AppLocalizations.of(context)!.dialogCancel),
                                   ),
                                   TextButton(
                                     onPressed: () {
                                       pickFile(); 
                                       Navigator.pop(context, 'OK');
                                     },
-                                    child: Text("OK"),
+                                    child: Text(AppLocalizations.of(context)!.dialogOk),
                                   ),
                                 ],
                               ),
@@ -304,18 +306,18 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
     return showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text("Forget ${widget.state.title}"),
+        title: Text(AppLocalizations.of(context)!.lastPlayedCardForget(widget.state.title)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, 'Cancel'),
-            child: Text("Cancel"),
+            child: Text(AppLocalizations.of(context)!.dialogCancel),
           ),
           TextButton(
             onPressed: () {
               ConfigProvider().removePlaybackState(widget.bookFile.name);
               Navigator.pop(context, 'OK');
             },
-            child: Text("OK"),
+            child: Text(AppLocalizations.of(context)!.dialogOk),
           ),
         ],
       ),
@@ -363,7 +365,7 @@ class BookMenu extends StatelessWidget {
                         : YaruColors.textGrey,
                   ),
                   Text(
-                    "Show in file explorer",
+                    AppLocalizations.of(context)!.lastPlayedCardReveal,
                     style: .new(
                       color: Theme.of(context).brightness == .dark
                           ? Colors.white
@@ -387,7 +389,7 @@ class BookMenu extends StatelessWidget {
 
                 children: [
                   Icon(YaruIcons.trash, color: Colors.red),
-                  Text("remove from history", style: .new(color: Colors.red)),
+                  Text(AppLocalizations.of(context)!.lastPlayedCardForgetButton, style: .new(color: Colors.red)),
                 ],
               ),
             ),

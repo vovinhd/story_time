@@ -1,3 +1,4 @@
+import 'package:fl_audiobook/l10n/app_localizations.dart';
 import 'package:fl_audiobook/routes/player_page.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/widgets/player/play_pause_button.dart';
@@ -17,7 +18,7 @@ class TrackControls extends StatelessWidget {
           width: 60, // Custom width
           height: 60, // Custom height
           child: IconButton(
-            tooltip: "skip to last chapter",
+            tooltip: AppLocalizations.of(context)!.tooltipTransportskipChapterBack,
 
             padding: EdgeInsets.all(12), // Adjust padding to center the icon
             icon: Icon(
@@ -31,7 +32,7 @@ class TrackControls extends StatelessWidget {
           width: 60, // Custom width
           height: 60, // Custom height
           child: IconButton(
-            tooltip: "skip back",
+            tooltip: AppLocalizations.of(context)!.tooltipTransportskipBack,
             padding: EdgeInsets.all(12), // Adjust padding to center the icon
             icon: Icon(
               YaruIcons.fast_backward,
@@ -46,7 +47,7 @@ class TrackControls extends StatelessWidget {
           width: 60, // Custom width
           height: 60, // Custom height
           child: IconButton(
-            tooltip: "skip forwards",
+            tooltip: AppLocalizations.of(context)!.tooltipTransportskipFwd,
 
             padding: EdgeInsets.all(12), // Adjust padding to center the icon
             icon: Icon(
@@ -60,7 +61,7 @@ class TrackControls extends StatelessWidget {
           width: 60, // Custom width
           height: 60, // Custom height
           child: IconButton(
-            tooltip: "skip to next chapter",
+            tooltip: AppLocalizations.of(context)!.tooltipTransportskipChapterFwd,
 
             padding: EdgeInsets.all(12), // Adjust padding to center the icon
             icon: Icon(

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:fl_audiobook/l10n/app_localizations.dart';
 import 'package:fl_audiobook/my_route_transition.dart';
 import 'package:fl_audiobook/routes/player_page.dart';
 import 'package:fl_audiobook/services/files.dart';
@@ -49,7 +50,7 @@ class _PopoverMenuState extends State<PopoverMenu> {
                   } on Exception catch (e) {
                     
                     var errorMsg = e.toString();
-                    print("hiiii" + errorMsg);
+                    // print("hiiii" + errorMsg);
                     var snackBar = SnackBar(content: Text(errorMsg));
 
                     // Find the ScaffoldMessenger in the widget tree
@@ -62,9 +63,9 @@ class _PopoverMenuState extends State<PopoverMenu> {
                 child: Row(
                   mainAxisAlignment: .spaceBetween,
                   children: [
-                    Text("Open", style: menuButtonTextStyle(context)),
+                    Text(AppLocalizations.of(context)!.menuOpen, style: menuButtonTextStyle(context)),
                     Text(
-                      "Ctrl+O",
+                      AppLocalizations.of(context)!.menuOpenAccelerator,
                       style: menuButtonAcceleratorTextStyle(context),
                     ),
                   ],
@@ -88,9 +89,9 @@ class _PopoverMenuState extends State<PopoverMenu> {
                 child: Row(
                   mainAxisAlignment: .spaceBetween,
                   children: [
-                    Text("Settings", style: menuButtonTextStyle(context)),
+                    Text(AppLocalizations.of(context)!.menuSettings, style: menuButtonTextStyle(context)),
                     Text(
-                      "Ctrl+,",
+                      AppLocalizations.of(context)!.menuOpenAccelerator,
                       style: menuButtonAcceleratorTextStyle(context),
                     ),
                   ],
@@ -102,7 +103,7 @@ class _PopoverMenuState extends State<PopoverMenu> {
                   widget.close();
                   showAboutDialog(
                     context: context,
-                    applicationVersion: "0.1.0",
+                    applicationVersion: "0.1.0", //TODO localize this
                     applicationIcon: Image.asset("images/app_icon.png"),
                     applicationLegalese: "This software is very cool.",
                     useRootNavigator: true,
@@ -113,7 +114,7 @@ class _PopoverMenuState extends State<PopoverMenu> {
 
                   children: [
                     Text(
-                      "About fl_audiobook",
+                      AppLocalizations.of(context)!.menuAbout,
                       style: menuButtonTextStyle(context),
                     ),
                   ],

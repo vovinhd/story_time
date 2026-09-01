@@ -1,3 +1,4 @@
+import 'package:fl_audiobook/l10n/app_localizations.dart';
 import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/tray.dart' as tray;
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       appBar: YaruWindowTitleBar(
         onClose: (p0) => tray.hideOrClose(),
-        title: Text("Settings"),
+        title: Text(AppLocalizations.of(context)!.settingsTitle),
         leading: YaruBackButton(),
         actions: [SizedBox(height: 34, width: 34)],
       ),
@@ -34,27 +35,27 @@ class _SettingsPageState extends State<SettingsPage> {
                 return ListView(
                   children: [
                     SettingsSection(
-                      title: "Player Settings",
+                      title: AppLocalizations.of(context)!.settingsPlayerSetting,
                       children: [
                         LabeledSettinsRow(
-                          label: "Skip buttons duration",
-                          sublabel: "How much time the skip buttons should seek the play position by",
+                          label: AppLocalizations.of(context)!.settingsSkipButtons,
+                          sublabel: AppLocalizations.of(context)!.settingsSkipButtonsSubLabel,
                           multiline: false,
                           actionWidget: DropdownButton<Duration>(
                             items: [
                               DropdownMenuItem(
                                 value: Duration(seconds: 10),
-                                child: Text("10 sec"),
+                                child: Text(AppLocalizations.of(context)!.settingsSecLabel(10)),
                               ),
 
                               DropdownMenuItem(
                                 value: Duration(seconds: 30),
-                                child: Text("30 sec"),
+                                child: Text(AppLocalizations.of(context)!.settingsSecLabel(30)),
                               ),
 
                               DropdownMenuItem(
                                 value: Duration(seconds: 60),
-                                child: Text("1 min"),
+                                child: Text(AppLocalizations.of(context)!.settingsMinLabel(1)),
                               ),
                             ],
                             value: ConfigProvider().config.skipDuration,
@@ -69,23 +70,23 @@ class _SettingsPageState extends State<SettingsPage> {
                           ),
                         ),
                         LabeledSettinsRow(
-                          label: "Unskip timeout",
-                          sublabel: "how long the unskip button stays visible after seeking",
+                          label: AppLocalizations.of(context)!.settingsUnskip,
+                          sublabel: AppLocalizations.of(context)!.settingsUnskipSubLabel,
                           actionWidget: DropdownButton<Duration>(
                             items: [
                               DropdownMenuItem(
                                 value: Duration(seconds: 3),
-                                child: Text("3 sec"),
+                                child: Text(AppLocalizations.of(context)!.settingsSecLabel(3)),
                               ),
 
                               DropdownMenuItem(
                                 value: Duration(seconds: 5),
-                                child: Text("5 sec"),
+                                child: Text(AppLocalizations.of(context)!.settingsSecLabel(5)),
                               ),
 
                               DropdownMenuItem(
                                 value: Duration(seconds: 10),
-                                child: Text("10 sec"),
+                                child: Text(AppLocalizations.of(context)!.settingsSecLabel(10)),
                               ),
                             ],
                             value: ConfigProvider().config.unksipTimeout,
@@ -113,8 +114,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         // ),
 
                         LabeledSettinsRow(
-                          label: "Performance mode",
-                          sublabel: "Make the app less pretty for more fast",
+                          label: AppLocalizations.of(context)!.settingsPerformanceMode,
+                          sublabel: AppLocalizations.of(context)!.settingsPerformanceModeSubLabel,
                           actionWidget: Switch(
                             value: ConfigProvider().config.performanceMode,
                             onChanged: (value) {
@@ -129,27 +130,27 @@ class _SettingsPageState extends State<SettingsPage> {
                       ],
                     ),
                     SettingsSection(
-                      title: "System Integration",
-                      subttile: "Settings that are more born from my commitment issues than for being necessary",
+                      title: AppLocalizations.of(context)!.settingsSystem,
+                      subttile: AppLocalizations.of(context)!.settingsSystemSubLabel,
                       children: [
                         LabeledSettinsRow(
-                          label: "Minimize to systemtray",
-                          sublabel: "Keep player in system tray instead of quitting when main window is closed",
+                          label: AppLocalizations.of(context)!.settingsTray,
+                          sublabel: AppLocalizations.of(context)!.settingsTraySubLabel,
                           actionWidget: DropdownButton<SystemTrayUsage>(
                             items: [
                               DropdownMenuItem(
                                 value: SystemTrayUsage.always,
-                                child: Text("Always"),
+                                child: Text(AppLocalizations.of(context)!.settingsTrayAlways),
                               ),
 
                               DropdownMenuItem(
                                 value: SystemTrayUsage.whenPlaying,
-                                child: Text("When Playing"),
+                                child: Text(AppLocalizations.of(context)!.settingsTrayWhenPlaying),
                               ),
 
                               DropdownMenuItem(
                                 value: SystemTrayUsage.never,
-                                child: Text("Never"),
+                                child: Text(AppLocalizations.of(context)!.settingsTrayNever),
                               ),
                             ],
                             value: ConfigProvider().config.systemTrayUsage,
@@ -181,26 +182,26 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
 
                     SettingsSection(
-                      title: "Danger Zone",
-                      subttile: "Destructive actions",
+                      title: AppLocalizations.of(context)!.settingsDangerZone,
+                      subttile: AppLocalizations.of(context)!.settingsDangerZoneSubLabel,
                       children: [
                         LabeledSettinsRow(
-                          label: "Clear cache",
-                          sublabel: "Deletes cached cover images",
+                          label: AppLocalizations.of(context)!.settingsClearCache,
+                          sublabel: AppLocalizations.of(context)!.settingsClearCacheSubLabel,
                           actionWidget: FilledButton(
                             style: Theme.of(context).filledButtonTheme.style,
                             onPressed: () => showDialog<String>(
                               context: context,
                               builder: (BuildContext context) => AlertDialog(
-                                title: const Text("Delete cache"),
-                                content: const Text(
-                                  "Really delete cached coved images?",
+                                title: Text(AppLocalizations.of(context)!.settingsClearCacheAlertTitle),
+                                content: Text(
+                                  AppLocalizations.of(context)!.settingsClearCacheAlertBody,
                                 ),
                                 actions: [
                                   TextButton(
                                     onPressed: () =>
                                         Navigator.pop(context, 'Cancel'),
-                                    child: Text("Cancel"),
+                                    child: Text(AppLocalizations.of(context)!.dialogCancel),
                                   ),
                                   TextButton(
                                     onPressed: () {
@@ -208,44 +209,44 @@ class _SettingsPageState extends State<SettingsPage> {
 
                                       Navigator.pop(context, 'OK');
                                     },
-                                    child: Text("Do it"),
+                                    child: Text(AppLocalizations.of(context)!.dialogOk),
                                   ),
                                 ],
                               ),
                             ),
-                            child: Text("Clear Cache"),
+                            child: Text(AppLocalizations.of(context)!.settingsClearCache),
                           ),
                         ),
 
                         LabeledSettinsRow(
-                          label: "Delete history",
-                          sublabel: "deletes all playback positions in your audiobooks",
+                          label: AppLocalizations.of(context)!.settingsDeleteHistory,
+                          sublabel: AppLocalizations.of(context)!.settingsDeleteHistorySubLabel,
                           actionWidget: FilledButton(
                             style: Theme.of(context).filledButtonTheme.style,
                             onPressed: () => showDialog<String>(
                               context: context,
                               builder: (BuildContext context) => AlertDialog(
-                                title: const Text("Delete history"),
-                                content: const Text(
-                                  "deletes all playback positions in your audiobooks. Leaves the .m4h files where they are.",
+                                title: Text(AppLocalizations.of(context)!.settingsDeleteHistoryAlertTitle),
+                                content: Text(
+                                  AppLocalizations.of(context)!.settingsDeleteHistoryAlertBody,
                                 ),
                                 actions: [
                                   TextButton(
                                     onPressed: () =>
                                         Navigator.pop(context, 'Cancel'),
-                                    child: Text("Cancel"),
+                                    child: Text(AppLocalizations.of(context)!.dialogCancel),
                                   ),
                                   TextButton(
                                     onPressed: () {
                                       ConfigProvider().deleteHistory();
                                       Navigator.pop(context, 'OK');
                                     },
-                                    child: Text("Do it"),
+                                    child: Text(AppLocalizations.of(context)!.dialogOk),
                                   ),
                                 ],
                               ),
                             ),
-                            child: Text("Delete History"),
+                            child: Text(AppLocalizations.of(context)!.settingsDeleteHistory),
                           ),
                         ),
                       ],

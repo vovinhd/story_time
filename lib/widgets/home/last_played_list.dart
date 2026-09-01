@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:fl_audiobook/l10n/app_localizations.dart';
 import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/time_display.dart';
@@ -65,7 +66,7 @@ class _LastPlayedListState extends State<LastPlayedList> {
                 if (index == 0) {
                   return Padding(
                     padding: const EdgeInsets.only(top: 8.0, left: 8.0),
-                    child: Text("Last Played", style: .new(fontWeight: .bold)),
+                    child: Text(AppLocalizations.of(context)!.lastPlayedListHint, style: .new(fontWeight: .bold)),
                   );
                 }
                 final state = widget.config.playbackStates[index - 1];
@@ -79,7 +80,8 @@ class _LastPlayedListState extends State<LastPlayedList> {
                 final agoDateTime = now.subtract(
                   now.difference(state.lastPlayed),
                 );
-                final dateTimeLabel = timeago.format(agoDateTime);
+                timeago.setLocaleMessages('de', timeago.DeMessages()); 
+                final dateTimeLabel = timeago.format(agoDateTime, locale: AppLocalizations.of(context)!.localeName);
 
                 final timeRemaining =
                     Duration(microseconds: state.duration) -

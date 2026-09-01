@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fl_audiobook/auto_pause_timer.dart';
+import 'package:fl_audiobook/l10n/app_localizations.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/time_display.dart';
 import 'package:fl_audiobook/widgets/animated_popover.dart';
@@ -133,7 +134,7 @@ class _RightOptions extends StatelessWidget {
               offset: Offset(0, -8),
               follower: Alignment.bottomRight,
               target: Alignment.topRight,
-              tooltip: "timer",
+              tooltip: AppLocalizations.of(context)!.tooltipTimer,
               icon: Icon(YaruIcons.stopwatch),
               buttonStyleOverride: running ? ButtonStyle(
                     backgroundColor: WidgetStatePropertyAll<Color>(
@@ -159,7 +160,7 @@ class _LeftOptions extends StatelessWidget {
           offset: Offset(0, -8),
           follower: Alignment.bottomCenter,
           target: Alignment.topCenter,
-          tooltip: "Volume",
+          tooltip: AppLocalizations.of(context)!.tooltipVolume,
           icon: VolumeIcon(),
           child: VolumeSlider(),
         ),
@@ -168,7 +169,7 @@ class _LeftOptions extends StatelessWidget {
           offset: Offset(0, -8),
           follower: Alignment.bottomLeft,
           target: Alignment.topLeft,
-          tooltip: "playback speed",
+          tooltip: AppLocalizations.of(context)!.tooltipSpeed,
           icon: SizedBox(
             child: StreamBuilder(
               stream: PlayerService().rateStream,

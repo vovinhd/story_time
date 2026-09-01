@@ -1,4 +1,150 @@
 {
     "@@locale": "de",
-    "helloWorld": "Hallo, Welt!"
+    "helloWorld": "Hallo, Welt!",
+    "loading":"Lade",
+    "menuOpen": "Öffnen",
+    "menuOpenAccelerator": "Strg+O",
+    "menuSettings": "Einstellungen",
+    "menuSettingsAccelerator": "Strg+,",
+    "menuAbout": "Über fl_audiobook",
+    "heroHintTitle": "Höre Hörbücher",
+    "heroHintSubtitle": "Unterstützte Dateiformate: .m4b, .m4a, .mp3",
+    "heroHintButtonLabel": "Hörbuch öffnen",
+    "heroPlayerNowPLaying": "Läuft gerade",
+    "lastPlayedListHint": "Zuletzt gespielt",
+    "artistLabel": "von {author}",
+    "@artistLabel": {
+        "placeholders": {
+            "author": {
+                "type": "String"
+            }
+        }
+    },
+    "lastPlayedCardLastPlayed": "zuletzt gespielt {dateTimeLabel}",
+    "@lastPlayedCardLastPlayed": {
+        "placeholders": {
+            "dateTimeLabel": {
+                "type": "String"
+            }
+        }
+    },
+    "lastPlayedCardRemaining": "{timeRemainingLabel} verbleibend",
+    "@lastPlayedCardRemaining": {
+        "placeholders": {
+            "timeRemainingLabel": {
+                "type": "String"
+            }
+        }
+    },
+    "lastPlayedCardLocate": "Finde {title}",
+    "@lastPlayedCardLocate": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "lastPlayedCardForget": "Vergiss {title}",
+    "@lastPlayedCardForget": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "lastPlayedCardReveal": "In Dateisystem anzeigen",
+    "lastPlayedCardForgetButton": "Aus Verlauf entfernen",
+    "dialogOk": "Ok",
+    "dialogCancel": "Abbrechen",
+    "tooltipPlay": "{title} abspielen",
+    "@tooltipPlay": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "tooltipOptions": "Optionen für {title}",
+    "@tooltipOptions": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "fileNotAvailable": "Datei nicht verfügbar. Ist das Laufwerk eingehängt?",
+    "tooltipTags": "Zeige Medieninformationen",
+    "tooltipVolume": "Lautstärke",
+    "tooltipSpeed": "Abspielgeschwindigkeit",
+    "tooltipTimer": "Wecker",
+    "tooltipTransportPlay": "Abspielen",
+    "tooltipTransportPause": "Pause",
+    "tooltipTransportskipChapterBack": "zum letzten Kapitel",
+    "tooltipTransportskipChapterFwd": "zum nächsten Kapitel",
+    "tooltipTransportskipBack": "springe zurück",
+    "tooltipTransportskipFwd": "springe nach vorn",
+    "unskipLabel": "zurück",
+    "autoPauseOff": "Aus",
+    "autoPauseOffAt": "Aus {at}",
+    "@autoPauseOffAt": {
+        "placeholders": {
+            "at": {
+                "type": "String"
+            }
+        }
+    },
+    "autoPauseEndOfChapter": "Ende des Kapitels",
+    "trayShow": "Anzeigen",
+    "trayHide": "Verstecken",
+    "trayExit": "Programm beenden",
+    "settingsTitle": "Einstellungen",
+    "settingsPlayerSetting": "Abspieleinstellungen",
+    "settingsSkipButtons": "Überspringen-Tasten Dauer",
+    "settingsSkipButtonsSubLabel": "Wieviel Zeit mit den Überspringen-Tasten übersprungen wird",
+    "settingsSecLabel": "{num} Sekunden", 
+    "@settingsSecLabel":  {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "settingsMinLabel": "{num} Minuten", 
+    "@settingsMinLabel":  {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "settingsUnskip": "Zurück Anzeigedauer",
+    "settingsUnskipSubLabel": "Wie lange der Zurückknopf angezeigt wird nachdem die Abspielposition geändert wurde",
+
+    "settingsPerformanceMode": "Langsamer Computer Modus", 
+    "settingsPerformanceModeSubLabel": "Keine Weichzeichnereffekte. Für langsame Hardware", 
+
+    "settingsSystem": "System Integration",
+    "settingsSystemSubLabel": "Integriere in die Desktopumgebung",
+
+    "settingsTray": "In das Systemtray minimieren",
+    "settingsTraySubLabel": "Den Player in das Systemtray minimieren statt das Programm zu beenden",
+
+    "settingsTrayAlways": "Immer",
+    "settingsTrayWhenPlaying": "Während Wiedergabe",
+    "settingsTrayNever": "Nie",
+
+    "settingsDangerZone": "Danger Zone",
+    "settingsDangerZoneSubLabel": "Destruktive Akitionen, mit vorsicht benutzen",
+
+    "settingsClearCache": "Bildcache leeren",
+    "settingsClearCacheSubLabel": "Löscht gespeicherte Cover-Bilder",
+    "settingsClearCacheAlertTitle": "Bildcache leeren", 
+    "settingsClearCacheAlertBody": "Bildcache wirklich leeren?", 
+
+    "settingsDeleteHistory": "Verlauf löschen",
+    "settingsDeleteHistorySubLabel": "Löscht alle Abspielpositionen",
+    "settingsDeleteHistoryAlertTitle": "Verlauf löschen", 
+    "settingsDeleteHistoryAlertBody": "Löscht alle Abspielpositionen. Löscht keine Dateien."
+
+
 }

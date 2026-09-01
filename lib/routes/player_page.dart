@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:fl_audiobook/auto_pause_timer.dart';
+import 'package:fl_audiobook/l10n/app_localizations.dart';
 import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/time_display.dart';
@@ -80,7 +81,7 @@ class _PlayerPageState extends State<PlayerPage> {
                         style: .new(fontWeight: .bold),
                       ),
                       PlayerService().author != null && PlayerService().author != "" ?  Text(
-                        "by ${PlayerService().author ?? ""}",
+                        AppLocalizations.of(context)!.artistLabel(PlayerService().author ?? ""),
                         style: .new(fontSize: 10),
                       ) : SizedBox(),
                     ],
@@ -90,7 +91,7 @@ class _PlayerPageState extends State<PlayerPage> {
                 offset: Offset(0, 8),
                 follower: Alignment.topRight,
                 target: Alignment.bottomRight,
-                tooltip: "show media information",
+                tooltip: AppLocalizations.of(context)!.tooltipTags,
                 icon: Icon(YaruIcons.information),
                 buttonStyleOverride: ButtonStyle(
                   shape: WidgetStatePropertyAll(

@@ -1,4 +1,150 @@
 {
-  "@@locale": "en",
-  "helloWorld": "Hello World!"
+    "@@locale": "en",
+    "helloWorld": "Hello World!",
+    "loading":"loading",
+    "menuOpen": "Open",
+    "menuOpenAccelerator": "Ctrl+O",
+    "menuSettings": "Preferences",
+    "menuSettingsAccelerator": "Ctrl+,",
+    "menuAbout": "About fl_audiobook",
+    "heroHintTitle": "Listen to audiobooks",
+    "heroHintSubtitle": "supported file types: .m4b, .m4a, .mp3",
+    "heroHintButtonLabel": "Open Audiobook",
+    "heroPlayerNowPLaying": "Now Playing",
+    "lastPlayedListHint": "Last Played",
+    "artistLabel": "by {author}",
+    "@artistLabel": {
+        "placeholders": {
+            "author": {
+                "type": "String"
+            }
+        }
+    },
+    "lastPlayedCardLastPlayed": "last played {dateTimeLabel}",
+    "@lastPlayedCardLastPlayed": {
+        "placeholders": {
+            "dateTimeLabel": {
+                "type": "String"
+            }
+        }
+    },
+    "lastPlayedCardRemaining": "{timeRemainingLabel} remaining",
+    "@lastPlayedCardRemaining": {
+        "placeholders": {
+            "timeRemainingLabel": {
+                "type": "String"
+            }
+        }
+    },
+    "lastPlayedCardLocate": "Locate {title}",
+    "@lastPlayedCardLocate": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "lastPlayedCardForget": "Forget {title}",
+    "@lastPlayedCardForget": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "lastPlayedCardReveal": "Show in file explorer",
+    "lastPlayedCardForgetButton": "remove from history",
+    "dialogOk": "Ok",
+    "dialogCancel": "Cancel",
+    "tooltipPlay": "play {title}",
+    "@tooltipPlay": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "tooltipOptions": "options for {title}",
+    "@tooltipOptions": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "fileNotAvailable": "File not available, make sure to mount the device it's on!",
+    "tooltipTags": "show media information",
+    "tooltipVolume": "volume",
+    "tooltipSpeed": "playback speed",
+    "tooltipTimer": "timer",
+    "tooltipTransportPlay": "Play",
+    "tooltipTransportPause": "Pause",
+    "tooltipTransportskipChapterBack": "skip to last chapter",
+    "tooltipTransportskipChapterFwd": "skip to next chapter",
+    "tooltipTransportskipBack": "skip back",
+    "tooltipTransportskipFwd": "skip forwards",
+    "unskipLabel": "go back",
+    "autoPauseOff": "Off",
+    "autoPauseOffAt": "Off {at}",
+    "@autoPauseOffAt": {
+        "placeholders": {
+            "at": {
+                "type": "String"
+            }
+        }
+    },
+    "autoPauseEndOfChapter": "End Of Chapter",
+    "trayShow": "Show",
+    "trayHide": "Hide",
+    "trayExit": "Exit",
+    "settingsTitle": "Preferences",
+    "settingsPlayerSetting": "Player Preferences",
+    "settingsSkipButtons": "Skip buttons duration",
+    "settingsSkipButtonsSubLabel": "How much time the skip buttons should seek the play position by",
+    "settingsSecLabel": "{num} Seconds", 
+    "@settingsSecLabel":  {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "settingsMinLabel": "{num} Minutes", 
+    "@settingsMinLabel":  {
+        "placeholders": {
+            "num": {
+                "type": "int"
+            }
+        }
+    },
+    "settingsUnskip": "Unskip timeout",
+    "settingsUnskipSubLabel": "how long the unskip button stays visible after seeking",
+
+    "settingsPerformanceMode": "Low performance mode", 
+    "settingsPerformanceModeSubLabel": "Make the app less pretty for more fast", 
+
+    "settingsSystem": "System Integration",
+    "settingsSystemSubLabel": "Integrate with the desktop environment",
+
+    "settingsTray": "Minimize to systemtray",
+    "settingsTraySubLabel": "Keep player in system tray instead of quitting when main window is closed",
+
+    "settingsTrayAlways": "Always",
+    "settingsTrayWhenPlaying": "When Playing",
+    "settingsTrayNever": "Never",
+
+    "settingsDangerZone": "Danger Zone",
+    "settingsDangerZoneSubLabel": "Destructive actions",
+
+    "settingsClearCache": "Clear cache",
+    "settingsClearCacheSubLabel": "Deletes cached cover images",
+    "settingsClearCacheAlertTitle": "Clear cache", 
+    "settingsClearCacheAlertBody": "Really delete cached coved images?", 
+
+    "settingsDeleteHistory": "Delete history",
+    "settingsDeleteHistorySubLabel": "deletes all playback positions in your audiobooks",
+    "settingsDeleteHistoryAlertTitle": "Delete history", 
+    "settingsDeleteHistoryAlertBody": "deletes all playback positions in your audiobooks. Leaves the files where they are."
+
+
 }

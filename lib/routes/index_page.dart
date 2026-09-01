@@ -95,325 +95,252 @@ class _IndexPageState extends State<IndexPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Localizations.override(
-        context: context,
-        locale: const Locale("de"),
-      child: CallbackShortcuts(
-        bindings: <ShortcutActivator, VoidCallback>{
-          const SingleActivator(LogicalKeyboardKey.comma, control: true): () {
-            print("nav setting from shortcut");
-            Navigator.of(context).push(SettingsTransition(child: SettingsPage()));
-          },
-          const SingleActivator(
-            LogicalKeyboardKey.keyO,
-            control: true,
-          ): () async {
-            if (await files.pickFile()) {
-              print("check mounted");
-      
-              if (mounted) {
-                print("navigating to player");
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (context) => PlayerPage()),
-                );
-              }
-            }
-          },
-          const SingleActivator(LogicalKeyboardKey.space): () {
-            PlayerService().playOrPause();
-          },
-          const SingleActivator(LogicalKeyboardKey.enter): () {
-            if (PlayerService().playingFile != null) {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute<void>(builder: (context) => PlayerPage()));
-            }
-          },
+    return CallbackShortcuts(
+      bindings: <ShortcutActivator, VoidCallback>{
+        const SingleActivator(LogicalKeyboardKey.comma, control: true): () {
+          print("nav setting from shortcut");
+          Navigator.of(context).push(SettingsTransition(child: SettingsPage()));
         },
-        child: Focus(
-          autofocus: true,
-          child: Scaffold(
-            key: _scaffoldKey,
-            appBar: YaruWindowTitleBar(
-              backgroundColor: Colors.transparent,
-              onClose: (p0) {
-                tray.hideOrClose();
-              },
-              onShowMenu: (p0) => {},
-              border: BorderSide.none,
-              leading: Center(
-                child: Image.asset("images/app_icon.png", height: 24, width: 24),
-              ),
-              // leading: IconButton(
-              //   onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+        const SingleActivator(
+          LogicalKeyboardKey.keyO,
+          control: true,
+        ): () async {
+          if (await files.pickFile()) {
+            print("check mounted");
+    
+            if (mounted) {
+              print("navigating to player");
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (context) => PlayerPage()),
+              );
+            }
+          }
+        },
+        const SingleActivator(LogicalKeyboardKey.space): () {
+          PlayerService().playOrPause();
+        },
+        const SingleActivator(LogicalKeyboardKey.enter): () {
+          if (PlayerService().playingFile != null) {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute<void>(builder: (context) => PlayerPage()));
+          }
+        },
+      },
+      child: Focus(
+        autofocus: true,
+        child: Scaffold(
+          key: _scaffoldKey,
+          appBar: YaruWindowTitleBar(
+            backgroundColor: Colors.transparent,
+            onClose: (p0) {
+              tray.hideOrClose();
+            },
+            onShowMenu: (p0) => {},
+            border: BorderSide.none,
+            leading: Center(
+              child: Image.asset("images/app_icon.png", height: 24, width: 24),
+            ),
+            // leading: IconButton(
+            //   onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+            //   icon: Icon(YaruIcons.menu),
+            // ),
+            title: Text("fl_audiobook"),
+            actions: [
+              // AnimatedPopover(
+              //   offset: Offset(0, 8),
+              //   follower: Alignment.topRight,
+              //   target: Alignment.bottomRight,
+              //   tooltip: "app menu",
               //   icon: Icon(YaruIcons.menu),
+              //   buttonStyleOverride: ButtonStyle(
+              //     shape: WidgetStatePropertyAll(
+              //       RoundedRectangleBorder(
+              //         borderRadius: .circular(50),
+              //         side: .none,
+              //       ),
+              //     ),
+              //   ),
+              //   noBorder: true,
+              //   width: 34,
+              //   child: PopoverMenu(
+              //     close: () {
+              //       setState(() {
+              //       });
+              //     },
+              //   ),
               // ),
-              title: Text("fl_audiobook"),
-              actions: [
-                // AnimatedPopover(
-                //   offset: Offset(0, 8),
-                //   follower: Alignment.topRight,
-                //   target: Alignment.bottomRight,
-                //   tooltip: "app menu",
-                //   icon: Icon(YaruIcons.menu),
-                //   buttonStyleOverride: ButtonStyle(
-                //     shape: WidgetStatePropertyAll(
-                //       RoundedRectangleBorder(
-                //         borderRadius: .circular(50),
-                //         side: .none,
-                //       ),
-                //     ),
-                //   ),
-                //   noBorder: true,
-                //   width: 34,
-                //   child: PopoverMenu(
-                //     close: () {
-                //       setState(() {
-                //       });
-                //     },
-                //   ),
-                // ),
-        
-                PortalTarget(
-                  visible: showHamburgerMenu,
-                  anchor: const Aligned(
-                    follower: Alignment.topCenter,
-                    target: Alignment.bottomCenter,
-                    offset: Offset(0, 0),
-                  ),
-                  portalFollower: TweenAnimationBuilder<double>(
-                    tween: Tween(begin: 0, end: showHamburgerMenu ? 1 : 0),
-                    duration: Duration(milliseconds: 150),
-        
-                    builder: (context, progress, child) {
-                      return Container(
-                        transform: Matrix4.translationValues(
-                          0 * progress,
-                          8 * progress,
-                          0,
+      
+              PortalTarget(
+                visible: showHamburgerMenu,
+                anchor: const Aligned(
+                  follower: Alignment.topCenter,
+                  target: Alignment.bottomCenter,
+                  offset: Offset(0, 0),
+                ),
+                portalFollower: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: showHamburgerMenu ? 1 : 0),
+                  duration: Duration(milliseconds: 150),
+      
+                  builder: (context, progress, child) {
+                    return Container(
+                      transform: Matrix4.translationValues(
+                        0 * progress,
+                        8 * progress,
+                        0,
+                      ),
+      
+                      child: Opacity(
+                        opacity: progress,
+                        child: PopoverMenu(
+                          close: () {
+                            setState(() {
+                              showHamburgerMenu = false;
+                            });
+                          },
                         ),
-        
-                        child: Opacity(
-                          opacity: progress,
-                          child: PopoverMenu(
-                            close: () {
-                              setState(() {
-                                showHamburgerMenu = false;
-                              });
-                            },
-                          ),
-                        ),
-                      );
+                      ),
+                    );
+                  },
+                ),
+      
+                child: Tooltip(
+                  message: "App Menu",
+                  child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        showHamburgerMenu = true;
+                      });
                     },
-                  ),
-        
-                  child: Tooltip(
-                    message: "App Menu",
-                    child: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          showHamburgerMenu = true;
-                        });
-                      },
-                      icon: Icon(YaruIcons.menu),
-                    ),
+                    icon: Icon(YaruIcons.menu),
                   ),
                 ),
-              ],
-            ),
-            drawer: Drawer(
-              width: 200,
-              shape: RoundedRectangleBorder(
-                borderRadius: .only(
-                  topLeft: Radius.circular(8),
-                  bottomLeft: Radius.circular(8),
-                ),
               ),
-              child: DrawerContents(),
+            ],
+          ),
+          body: PortalTarget(
+            visible: showHamburgerMenu,
+            portalFollower: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                setState(() {
+                  showHamburgerMenu = false;
+                });
+              },
             ),
-            body: PortalTarget(
-              visible: showHamburgerMenu,
-              portalFollower: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  setState(() {
-                    showHamburgerMenu = false;
-                  });
-                },
-              ),
-              child: Stack(
-                children: [
-                  StreamBuilder(
-                    stream: ConfigProvider().configStreamController.stream,
-                    builder: (context, asyncSnapshot) {
-                      // return Text(AppLocalizations.of(context)!.helloWorld); 
-                      var books = ConfigProvider().playbackStates;
-                      var config = ConfigProvider().config;
-                      if (asyncSnapshot.hasData) {
-                        books = asyncSnapshot.data!.playbackStates;
-                        config = asyncSnapshot.data!;
-                      }
-        
-                      if (books.isEmpty) {
-                        return HeroUsageHint(onClick: pickFile);
-                      }
-        
-                      return Column(
-                        mainAxisAlignment: .spaceAround,
-                        crossAxisAlignment: .start,
-                        children: [
-                          StreamBuilder(
-                            stream: PlayerService().selectedBookStream.stream,
-                            builder: (context, asyncSnapshot) {
-                              var file = PlayerService().playingFile;
-        
-                              if (file == null && !asyncSnapshot.hasData) {
-                                return HeroUsageHint(onClick: pickFile);
-                              }
-        
-                              if (asyncSnapshot.hasData &&
-                                  asyncSnapshot.data != null) {
-                                file = asyncSnapshot.data!;
-                              }
-        
-                              if (file == null) {
-                                return HeroUsageHint(onClick: pickFile);
-                              }
-                              return HeroPlayer(file: file);
-                            },
+            child: Stack(
+              children: [
+                StreamBuilder(
+                  stream: ConfigProvider().configStreamController.stream,
+                  builder: (context, asyncSnapshot) {
+                    // return Text(AppLocalizations.of(context)!.helloWorld); 
+                    var books = ConfigProvider().playbackStates;
+                    var config = ConfigProvider().config;
+                    if (asyncSnapshot.hasData) {
+                      books = asyncSnapshot.data!.playbackStates;
+                      config = asyncSnapshot.data!;
+                    }
+      
+                    if (books.isEmpty) {
+                      return HeroUsageHint(onClick: pickFile);
+                    }
+      
+                    return Column(
+                      mainAxisAlignment: .spaceAround,
+                      crossAxisAlignment: .start,
+                      children: [
+                        StreamBuilder(
+                          stream: PlayerService().selectedBookStream.stream,
+                          builder: (context, asyncSnapshot) {
+                            var file = PlayerService().playingFile;
+      
+                            if (file == null && !asyncSnapshot.hasData) {
+                              return HeroUsageHint(onClick: pickFile);
+                            }
+      
+                            if (asyncSnapshot.hasData &&
+                                asyncSnapshot.data != null) {
+                              file = asyncSnapshot.data!;
+                            }
+      
+                            if (file == null) {
+                              return HeroUsageHint(onClick: pickFile);
+                            }
+                            return HeroPlayer(file: file);
+                          },
+                        ),
+                        // Padding(
+                        //   padding: const EdgeInsets.symmetric(
+                        //     vertical: 8.0,
+                        //     horizontal: 20,
+                        //   ),
+                        //   child: Text("Last played"),
+                        // ),
+      
+                        if (config.playbackStates.length < 2 &&
+                            PlayerService().playingFile != null)
+                          Expanded(child: SizedBox())
+                        else
+                          LastPlayedList(
+                            onPickFile: pickFile,
+                            onTransition: _transition,
+                            config: config,
                           ),
-                          // Padding(
-                          //   padding: const EdgeInsets.symmetric(
-                          //     vertical: 8.0,
-                          //     horizontal: 20,
-                          //   ),
-                          //   child: Text("Last played"),
-                          // ),
-        
-                          if (config.playbackStates.length < 2 &&
-                              PlayerService().playingFile != null)
-                            Expanded(child: SizedBox())
-                          else
-                            LastPlayedList(
-                              onPickFile: pickFile,
-                              onTransition: _transition,
-                              config: config,
+                      ],
+                    );
+                  },
+                ),
+                Align(
+                  alignment: .topCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.all(32.0),
+                    child: AnimatedOpacity(
+                      opacity: PlayerService().loading ? 1 : 0,
+                      // opacity: 1,
+                      duration: Duration(milliseconds: 1000),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).brightness == .dark
+                              ? YaruColors.coolGrey
+                              : YaruColors.porcelain,
+                          borderRadius: BorderRadius.circular(1000),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              spreadRadius: 1,
+                              blurRadius: 7,
+                              offset: Offset(
+                                0,
+                                3,
+                              ), // changes position of shadow
                             ),
-                        ],
-                      );
-                    },
-                  ),
-                  Align(
-                    alignment: .topCenter,
-                    child: Padding(
-                      padding: const EdgeInsets.all(32.0),
-                      child: AnimatedOpacity(
-                        opacity: PlayerService().loading ? 1 : 0,
-                        // opacity: 1,
-                        duration: Duration(milliseconds: 1000),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).brightness == .dark
-                                ? YaruColors.coolGrey
-                                : YaruColors.porcelain,
-                            borderRadius: BorderRadius.circular(1000),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
-                                spreadRadius: 1,
-                                blurRadius: 7,
-                                offset: Offset(
-                                  0,
-                                  3,
-                                ), // changes position of shadow
+                          ],
+                        ),
+      
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16,horizontal: 32.0),
+                          child: Row(
+                              mainAxisAlignment: .center,
+                              mainAxisSize: .min,
+                              spacing: 16,
+                            children: [
+                              CircularProgressIndicator(),
+                          
+                              Text(
+                                AppLocalizations.of(context)!.loading,
+                                style: TextStyle(fontWeight: .bold, fontSize: 20),
                               ),
                             ],
-                          ),
-        
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16,horizontal: 32.0),
-                            child: Row(
-                                mainAxisAlignment: .center,
-                                mainAxisSize: .min,
-                                spacing: 16,
-                              children: [
-                                CircularProgressIndicator(),
-                            
-                                Text(
-                                  "loading",
-                                  style: TextStyle(fontWeight: .bold, fontSize: 20),
-                                ),
-                              ],
-                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class DrawerContents extends StatelessWidget {
-  const new({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: .center,
-        spacing: 32,
-        children: [
-          Container(
-            padding: EdgeInsets.all(32),
-            child: SizedBox(
-              height: 50,
-              width: 50,
-              child: Image.asset("images/app_icon.png"),
-            ),
-          ),
-          Flexible(
-            child: Column(
-              crossAxisAlignment: .stretch,
-              children: [
-                YaruNavigationRailItem(
-                  icon: Icon(YaruIcons.settings),
-                  style: YaruNavigationRailStyle.labelledExtended,
-                  label: Text("Preferences"),
-                  extendedSelectedIndicator: true,
-                  onTap: () => {print("navigate to preferences")},
-                ),
-                YaruNavigationRailItem(
-                  icon: Icon(YaruIcons.information),
-                  style: YaruNavigationRailStyle.labelledExtended,
-                  label: Text("About"),
-                  extendedSelectedIndicator: true,
-                  onTap: () => {
-                    showAboutDialog(
-                      context: context,
-                      applicationVersion: "0.1.0",
-                      applicationIcon: Image.asset("images/app_icon.png"),
-                      applicationLegalese: "This software is very cool.",
-                    ),
-                  },
                 ),
               ],
             ),
           ),
-          Container(
-            padding: EdgeInsets.only(bottom: 16),
-            child: Text(
-              "version 0.1.0",
-              style: TextStyle(color: const Color.fromARGB(255, 97, 97, 97)),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

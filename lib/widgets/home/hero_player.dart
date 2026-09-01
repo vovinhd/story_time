@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:fl_audiobook/l10n/app_localizations.dart';
 import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/widgets/player/playback_position_slider.dart';
 import 'package:fl_audiobook/routes/player_page.dart';
@@ -149,7 +150,7 @@ class HeroPlayerMain extends StatelessWidget {
                       crossAxisAlignment: .start,
 
                       children: [
-                        Text("Now Playing", style: TextStyle(fontSize: 10)),
+                        Text(AppLocalizations.of(context)!.heroPlayerNowPLaying, style: TextStyle(fontSize: 10)),
                         if (PlayerService().title.length > 20) 
                         ConstrainedBox(constraints: BoxConstraints( maxHeight: 60), child: _TitleMarquee()) else _TitleLabel(),
                         Text(

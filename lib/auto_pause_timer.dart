@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fl_audiobook/l10n/app_localizations.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/routes/player_page.dart';
 import 'package:fl_audiobook/time_display.dart';
@@ -56,8 +57,8 @@ class TimerOptions extends StatelessWidget {
                     alignment: .centerStart,
                     child: Text(
                       asyncSnapshot.hasData && currentRemaining!.inSeconds > 0
-                          ? "Off ${printDuration(currentRemaining)}"
-                          : "Off",
+                          ? AppLocalizations.of(context)!.autoPauseOffAt(printDuration(currentRemaining))
+                          : AppLocalizations.of(context)!.autoPauseOff,
                       textAlign: .start,
                     ),
                   ),
@@ -77,7 +78,7 @@ class TimerOptions extends StatelessWidget {
                       child: Align(
                         alignment: .centerStart,
                         child: Text(
-                          timerOffsetLabels[index],
+                          AppLocalizations.of(context)!.settingsMinLabel(timerOffsets[index].inMinutes),
                           textAlign: .start,
                         ),
                       ),
@@ -95,7 +96,7 @@ class TimerOptions extends StatelessWidget {
                   },
                   child: Align(
                     alignment: .centerStart,
-                    child: Text("End Of Chapter", textAlign: .start),
+                    child: Text(AppLocalizations.of(context)!.autoPauseEndOfChapter, textAlign: .start),
                   ),
                 ),
               ],
