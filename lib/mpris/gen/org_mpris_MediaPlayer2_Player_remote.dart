@@ -1,6 +1,8 @@
 // This file was generated using the following command and may be overwritten.
 // dart-dbus generate-remote-object org.mpris.MediaPlayer2.Player.xml
 
+// ignore_for_file: non_constant_identifier_names, camel_case_types
+
 import 'package:dbus/dbus.dart';
 
 /// Signal data for org.mpris.MediaPlayer2.Player.Seeked.

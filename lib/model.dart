@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:safe_change_notifier/safe_change_notifier.dart';
 import 'package:yaru/yaru.dart';
 
@@ -85,10 +84,4 @@ class Model extends SafeChangeNotifier {
     return refreshConnectivity();
   }
 
-  Future<String> getCodeSnippet(String url) async {
-    final uri = Uri.parse(url);
-    final response = await http.get(uri);
-
-    return response.body;
-  }
 }

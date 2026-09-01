@@ -21,7 +21,7 @@ Future<bool> pickFile() async {
         );
         return true;
       } catch (e) {
-        _log.severe("something went wrong: ${e}");
+        _log.severe("something went wrong: $e");
         return false;
       }
     } else {

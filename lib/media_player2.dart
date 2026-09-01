@@ -2,7 +2,6 @@
 
 import "package:dbus/dbus.dart";
 import 'package:fl_audiobook/services/player_service.dart';
-import 'package:fl_audiobook/time_display.dart';
 
 class MediaPlayer2 extends DBusObject {
   MediaPlayer2({

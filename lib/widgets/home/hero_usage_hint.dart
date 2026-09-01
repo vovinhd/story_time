@@ -31,7 +31,6 @@ class HeroUsageHint extends StatelessWidget {
 
 class _HintContent extends StatelessWidget {
   const new({
-    super.key,
     required this.onClick,
   });
 

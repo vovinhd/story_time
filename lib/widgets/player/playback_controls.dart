@@ -110,7 +110,6 @@ class _PlaybackControlsState extends State<PlaybackControls> {
 
 class _RightOptions extends StatelessWidget {
   const new({
-    super.key,
     required this.showTimerOptions,
     required this.setshowTimerOptions,
   });
@@ -152,6 +151,7 @@ class _RightOptions extends StatelessWidget {
 }
 
 class _LeftOptions extends StatelessWidget {
+  @override
   Widget build(BuildContext context) {
     return Row(
       spacing: 8.0,

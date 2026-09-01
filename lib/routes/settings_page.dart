@@ -24,7 +24,7 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
 
       body: Center(
-        child: Container(
+        child: SizedBox(
           width: 800,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),

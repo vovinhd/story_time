@@ -181,9 +181,7 @@ class HeroPlayerMain extends StatelessWidget {
 }
 
 class _PlayStatus extends StatelessWidget {
-  const new({
-    super.key,
-  });
+  const new();
 
   @override
   Widget build(BuildContext context) {
@@ -218,7 +216,7 @@ class _PlayStatus extends StatelessWidget {
 }
 
 class _TitleLabel extends StatelessWidget {
-  const new({super.key});
+  const new();
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +229,7 @@ class _TitleLabel extends StatelessWidget {
 }
 
 class _TitleMarquee extends StatelessWidget {
-  const new({super.key});
+  const new();
 
   @override
   Widget build(BuildContext context) {

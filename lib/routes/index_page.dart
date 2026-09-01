@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:fl_audiobook/l10n/app_localizations.dart';
@@ -8,7 +7,6 @@ import 'package:fl_audiobook/routes/settings_page.dart';
 import 'package:fl_audiobook/services/config.dart';
 import 'package:fl_audiobook/services/files.dart' as files;
 import 'package:fl_audiobook/services/player_service.dart';
-import 'package:fl_audiobook/widgets/animated_popover.dart';
 import 'package:fl_audiobook/widgets/home/hero_player.dart';
 import 'package:fl_audiobook/widgets/home/hero_usage_hint.dart';
 import 'package:fl_audiobook/widgets/home/last_played_list.dart';

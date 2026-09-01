@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/l10n/app_localizations.dart';
