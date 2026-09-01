@@ -14,7 +14,9 @@ vovin@the-red-scare:~/git/fl-audiobook/fl_audiobook$ LD_LIBRARY_PATH="$LD_LIBRAR
 
 ### bugs
 - [ ] make DBus/MPRIS work 
-  - [ ] and hook up state change signals to ``PlayerService`` 
+  - [ ] get player info into dbus, maybe that fixes KDE 
+  - [x] works in DMS!
+  - [x] and hook up state change signals to ``PlayerService`` 
 - [ ] if menu is closed before a book is selected the widget is unmounted and navigation is blocked 
 
 ### ui 
@@ -22,7 +24,7 @@ vovin@the-red-scare:~/git/fl-audiobook/fl_audiobook$ LD_LIBRARY_PATH="$LD_LIBRAR
   - [x] fade out the unskip button
   - [x] animate the time left to unskip 
   - [x] animate popover menus/dialogs, at least fade them in a little 
-- [ ] give popover dialogs the little speech bubble tail they hace in adwaita? 
+- [ ] give popover dialogs the little speech bubble tail they have in adwaita? 
 - [x] better chapters list drawer in player
   - [x] highlight the currently playing chapter
   - [x] maybe display the progress
@@ -34,7 +36,8 @@ vovin@the-red-scare:~/git/fl-audiobook/fl_audiobook$ LD_LIBRARY_PATH="$LD_LIBRAR
 - [ ] pull primary accent from currently playing cover  
 - [x] rework last played cards
 - [ ] add a theme switcher
- 
+- [ ] drag and drop in hero dialog 
+  - [ ] requires ripping out ``system_tray`` in favor of [tray_manager](https://pub.dev/packages/tray_manager)? hopefully [super_drag_and_drop](https://pub.dev/packages/super_drag_and_drop) wokfks then
 ### enhancements 
 - [x] error handling 
   - [x] check if files are available and warn if they arent 
@@ -50,6 +53,7 @@ vovin@the-red-scare:~/git/fl-audiobook/fl_audiobook$ LD_LIBRARY_PATH="$LD_LIBRAR
 - [ ] new default cover icon
 - [ ] figure out how to set up starUpWMClass for appimage/deb 
 - [ ] automate packaging/ci at least for x86 
+  - [ ] apparently in two versions for debian 13, which comes with an old-ass glibc 
 - [ ] set repository to public
 - [ ] make a github page 
 

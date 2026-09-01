@@ -1,7 +1,14 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:async';
+
 import "package:dbus/dbus.dart";
 import 'package:fl_audiobook/services/player_service.dart';
+import 'package:logging/logging.dart';
+import 'package:system_tray/system_tray.dart';
+
+final _log = Logger('MPRIS');
+final AppWindow appWindow = AppWindow();
 
 class MediaPlayer2 extends DBusObject {
   MediaPlayer2({
@@ -10,61 +17,116 @@ class MediaPlayer2 extends DBusObject {
     ),
   }) : super(path);
 
+  void ensureInitialized() {
+    PlayerService().selectedBookStream.stream.listen((book) async {
+      final metadata = await buildMetadata();
+
+      if (metadata != null) {
+        final metadataDBusMessage = DBusVariant(
+          DBusDict(DBusSignature.string, DBusSignature.variant, metadata),
+        );
+
+        emitPropertiesChanged(
+          "org.mpris.MediaPlayer2.Player",
+          changedProperties: {
+            "PlaybackStatus": DBusString(
+              PlayerService().isPlaying ? "Playing" : "Paused",
+            ),
+            "Metadata": metadataDBusMessage,
+          },
+          invalidatedProperties: ["PlaybackStatus", "Metadata"],
+        );
+      }
+    });
+
+    PlayerService().isPlayingStream.listen((playing) {
+      print("emit playing $playing");
+      emitPropertiesChanged(
+        "org.mpris.MediaPlayer2.Player",
+        changedProperties: {
+          "PlaybackStatus": DBusString(playing ? "Playing" : "Paused"),
+        },
+        invalidatedProperties: ["PlaybackStatus"],
+      );
+    });
+
+    // Timer.periodic(const Duration(seconds: 1), (timer) {
+    //   if (PlayerService().isPlaying) {
+    //     final time = PlayerService().timeInChapter.inMicroseconds;
+    //     print("emit position ${time}");
+    //     emitPropertiesChanged(
+    //       "org.mpris.MediaPlayer2.Player",
+    //       changedProperties: {"Position": DBusInt64(time)},
+    //       invalidatedProperties: ["Position"],
+    //     );
+    //     // }
+    //   }
+    // });
+
+    PlayerService().seekStream.stream.listen((seeked) {
+      final time = PlayerService().timeInChapter.inMicroseconds;
+
+      emitSeeked(time);
+    });
+  }
+
   Future<DBusMethodResponse> getCanQuit() async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
+    return DBusMethodSuccessResponse([DBusBoolean(true)]);
   }
 
   /// Gets value of property org.mpris.MediaPlayer2.CanRaise
   Future<DBusMethodResponse> getCanRaise() async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
+    return DBusMethodSuccessResponse([(DBusBoolean(true))]);
   }
 
   Future<DBusMethodResponse> getIdentity() async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusString("fl_audiobook"))]);
+    return DBusMethodSuccessResponse([
+      (DBusString("org.mpris.MediaPlayer2.fl_audiobook")),
+    ]);
   }
 
   Future<DBusMethodResponse> doRaise() async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
+    appWindow.show();
+    return DBusMethodSuccessResponse([(DBusBoolean(true))]);
   }
 
   Future<DBusMethodResponse> doQuit() async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
+    appWindow.close();
+    return DBusMethodSuccessResponse([(DBusBoolean(true))]);
   }
 
   /// Implementation of org.mpris.MediaPlayer2.Player.Pause()
   Future<DBusMethodResponse> doPlay() async {
-    await PlayerService().play();
+    await PlayerService().playOrPause();
 
-    return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
+    return DBusMethodSuccessResponse([(DBusBoolean(true))]);
   }
 
   /// Implementation of org.mpris.MediaPlayer2.Player.Pause()
   Future<DBusMethodResponse> doPause() async {
-    await PlayerService().pause();
+    await PlayerService().playOrPause();
 
-    return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
+    return DBusMethodSuccessResponse([(DBusBoolean(true))]);
   }
 
   /// Implementation of org.mpris.MediaPlayer2.Player.PlayPause()
   Future<DBusMethodResponse> doPlayPause() async {
     await PlayerService().playOrPause();
-    return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
+    return DBusMethodSuccessResponse([(DBusBoolean(true))]);
   }
 
   /// Implementation of org.mpris.MediaPlayer2.Player.Stop()
   Future<DBusMethodResponse> doStop() async {
     // await globals.player.stop();
 
-    return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
+    return DBusMethodSuccessResponse([(DBusBoolean(true))]);
   }
 
   Future<DBusMethodResponse> doSeek(int Offset) async {
     PlayerService().seek(
-      Duration(
-        microseconds: Offset + PlayerService().position.inMicroseconds,
-      ),
+      Duration(microseconds: Offset + PlayerService().position.inMicroseconds),
     );
-    return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
+    return DBusMethodSuccessResponse([(DBusBoolean(true))]);
   }
 
   /// Implementation of org.mpris.MediaPlayer2.Player.SetPosition()
@@ -72,13 +134,16 @@ class MediaPlayer2 extends DBusObject {
     DBusObjectPath TrackId,
     int Position,
   ) async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
+    PlayerService().seekInChapter(Duration(microseconds: Position));
+    return DBusMethodSuccessResponse([(DBusBoolean(true))]);
   }
 
   /// Emits signal org.mpris.MediaPlayer2.Player.Seeked
   Future<void> emitSeeked(int Position) async {
+    final time = PlayerService().timeInChapter.inMicroseconds;
+
     await emitSignal('org.mpris.MediaPlayer2.Player', 'Seeked', [
-      DBusInt64(Position),
+      DBusInt64(time),
     ]);
   }
 
@@ -88,72 +153,75 @@ class MediaPlayer2 extends DBusObject {
         : PlayerService().isPlaying
         ? "Playing"
         : "Paused";
-    return DBusMethodSuccessResponse([DBusVariant(DBusString(status))]);
+    return DBusMethodSuccessResponse([(DBusString(status))]);
   }
 
   Future<DBusMethodResponse> getPosition() async {
     if (!PlayerService().ready) {
-      return DBusMethodSuccessResponse([DBusVariant(DBusInt64(0))]); 
+      return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(false))]);
     }
     final time = PlayerService().timeInChapter.inMicroseconds;
+
+    _log.info("get position ${Duration(microseconds: time).inSeconds}");
 
     return DBusMethodSuccessResponse([DBusVariant(DBusInt64(time))]);
   }
 
   Future<DBusMethodResponse> getLoopStatus() async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusString("Track"))]);
+    return DBusMethodSuccessResponse([(DBusString("None"))]);
   }
 
   Future<DBusMethodResponse> setLoopStatus(String status) async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusString("Track"))]);
+    return DBusMethodSuccessResponse([(DBusString("None"))]);
   }
 
   Future<DBusMethodResponse> getCanControl() async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
+    return DBusMethodSuccessResponse([(DBusBoolean(true))]);
   }
 
   Future<DBusMethodResponse> getCanPause() async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
+    return DBusMethodSuccessResponse([(DBusBoolean(PlayerService().ready))]);
   }
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.CanSeek
   Future<DBusMethodResponse> getCanSeek() async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
+    return DBusMethodSuccessResponse([(DBusBoolean(true))]);
   }
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.CanPlay
   Future<DBusMethodResponse> getCanPlay() async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(true))]);
+    return DBusMethodSuccessResponse([(DBusBoolean(PlayerService().ready))]);
   }
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.MinimumRate
   Future<DBusMethodResponse> getMinimumRate() async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusDouble(0.5))]);
+    return DBusMethodSuccessResponse([(DBusDouble(0.5))]);
   }
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.MaximumRate
   Future<DBusMethodResponse> getMaximumRate() async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusDouble(2.0))]);
+    return DBusMethodSuccessResponse([(DBusDouble(2.0))]);
   }
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.Rate
   Future<DBusMethodResponse> getRate() async {
     final rate = PlayerService().rate;
-    return DBusMethodSuccessResponse([DBusVariant(DBusDouble(rate))]);
+    return DBusMethodSuccessResponse([(DBusDouble(rate))]);
   }
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.Rate
   Future<DBusMethodResponse> setRate(double rate) async {
     PlayerService().rate = rate;
-    return DBusMethodSuccessResponse([DBusVariant(DBusDouble(rate))]);
+    return DBusMethodSuccessResponse([(DBusDouble(rate))]);
   }
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.Volume
   Future<DBusMethodResponse> getVolume() async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusDouble(1.0))]);
+    double volume = PlayerService().volume;
+    return DBusMethodSuccessResponse([(DBusDouble(volume))]);
   }
 
-  Future<Map<DBusString, DBusVariant>?> buildMetadata() async{
+  Future<Map<DBusString, DBusVariant>?> buildMetadata() async {
     if (PlayerService().playingFile == null) {
       return null;
     }
@@ -162,12 +230,13 @@ class MediaPlayer2 extends DBusObject {
     final currentChapterInfo = PlayerService().currentChapter!;
 
     final title = currentChapterInfo.title;
-    final List<String> artist = [tags["artist"]] ;
+    final List<String> artist = [tags["artist"]];
     final album = tags["album"] ?? "";
 
-    final length = currentChapterInfo.duration.inMicroseconds; 
+    final length = currentChapterInfo.duration.inMicroseconds;
     final fileUrl = "file://${PlayerService().playingFile!.path}";
-    final artUrl = "file://${(await PlayerService().playingFile!.coverImage)?.path}";
+    final artUrl =
+        "file://${(await PlayerService().playingFile!.coverImage)?.path}";
 
     Map<DBusString, DBusVariant> metadata = {
       // idk
@@ -199,7 +268,8 @@ class MediaPlayer2 extends DBusObject {
 
   /// Sets property org.mpris.MediaPlayer2.Player.Volume
   Future<DBusMethodResponse> setVolume(double value) async {
-    return DBusMethodSuccessResponse([DBusVariant(DBusDouble(1.0))]);
+    PlayerService().volume = value;
+    return DBusMethodSuccessResponse([(DBusDouble(value))]);
   }
 
   Future<DBusMethodResponse> getMetadata() async {
@@ -207,13 +277,11 @@ class MediaPlayer2 extends DBusObject {
 
     if (metadata == null) {
       return DBusMethodSuccessResponse([
-        DBusVariant(DBusDict(DBusSignature.string, DBusSignature.variant, {})),
+        (DBusDict(DBusSignature.string, DBusSignature.variant, {})),
       ]);
     } else {
       return DBusMethodSuccessResponse([
-        DBusVariant(
-          DBusDict(DBusSignature.string, DBusSignature.variant, metadata),
-        ),
+        DBusDict(DBusSignature.string, DBusSignature.variant, metadata),
       ]);
     }
     //
@@ -221,6 +289,8 @@ class MediaPlayer2 extends DBusObject {
 
   @override
   List<DBusIntrospectInterface> introspect() {
+    _log.info("introspected!");
+
     return [
       DBusIntrospectInterface(
         'org.mpris.MediaPlayer2',
@@ -398,6 +468,7 @@ class MediaPlayer2 extends DBusObject {
 
   @override
   Future<DBusMethodResponse> getProperty(String interface, String name) async {
+    _log.info("getProperty: $interface : $name");
     if (interface == 'org.mpris.MediaPlayer2') {
       if (name == 'CanQuit') {
         return getCanQuit();
@@ -419,7 +490,13 @@ class MediaPlayer2 extends DBusObject {
         );
       } else if (name == 'SupportedMimeTypes') {
         return DBusGetPropertyResponse(
-          DBusArray(DBusSignature.string, [DBusString("audio/m4b")]),
+          //['audio/mpeg', 'audio/x-mpeg', 'video/mpeg', 'video/x-mpeg', 'video/mpeg-system', 'video/x-mpeg-system', 'video/mp4', 'audio/mp4', 'video/x-msvideo', 'video/quicktime', 'application/ogg', 'application/x-ogg', 'video/x-ms-asf', 'video/x-ms-asf-plugin', 'application/x-mplayer2', 'video/x-ms-wmv', 'video/x-google-vlc-plugin', 'audio/wav', 'audio/x-wav', 'audio/3gpp', 'video/3gpp', 'audio/3gpp2', 'video/3gpp2', 'video/divx', 'video/flv', 'video/x-flv', 'video/x-matroska', 'audio/x-matroska', 'application/xspf+xml']
+
+          DBusArray(DBusSignature.string, [
+            DBusString("audio/mpeg"),
+            DBusString("audio/m4a"),
+            DBusString("audio/mp3"),
+          ]),
         );
       } else {
         return DBusMethodErrorResponse.unknownProperty();
@@ -432,7 +509,7 @@ class MediaPlayer2 extends DBusObject {
       } else if (name == 'Rate') {
         return getRate();
       } else if (name == 'Shuffle') {
-        return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(false))]);
+        return DBusMethodSuccessResponse([(DBusBoolean(false))]);
       } else if (name == 'Metadata') {
         return getMetadata();
       } else if (name == 'Volume') {
@@ -444,9 +521,9 @@ class MediaPlayer2 extends DBusObject {
       } else if (name == 'MaximumRate') {
         return getMaximumRate();
       } else if (name == 'CanGoNext') {
-        return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(false))]);
+        return DBusMethodSuccessResponse([(DBusBoolean(false))]);
       } else if (name == 'CanGoPrevious') {
-        return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(false))]);
+        return DBusMethodSuccessResponse([(DBusBoolean(false))]);
       } else if (name == 'CanPlay') {
         return getCanPlay();
       } else if (name == 'CanPause') {
@@ -465,6 +542,8 @@ class MediaPlayer2 extends DBusObject {
 
   @override
   Future<DBusMethodResponse> getAllProperties(String interface) async {
+    _log.info("getAllProperties: $interface");
+
     var properties = <String, DBusValue>{};
     if (interface == 'org.mpris.MediaPlayer2') {
       properties['CanQuit'] = (await getCanQuit()).returnValues[0];
@@ -485,8 +564,10 @@ class MediaPlayer2 extends DBusObject {
       properties['CanSeek'] = (await getCanSeek()).returnValues[0];
       properties['CanControl'] = (await getCanControl()).returnValues[0];
     } else {
+      _log.severe("interface ${interface} not found!");
       return DBusMethodErrorResponse.unknownInterface();
     }
+    // _log.info("all properties response $properties");
 
     return DBusMethodSuccessResponse([DBusDict.stringVariant(properties)]);
   }
@@ -497,6 +578,8 @@ class MediaPlayer2 extends DBusObject {
     String name,
     DBusValue value,
   ) async {
+    _log.info("setProperty: $interface : $name -> $value");
+
     if (interface == 'org.mpris.MediaPlayer2') {
       if (name == 'CanQuit') {
         return DBusMethodErrorResponse.propertyReadOnly();
@@ -570,6 +653,8 @@ class MediaPlayer2 extends DBusObject {
 
   @override
   Future<DBusMethodResponse> handleMethodCall(DBusMethodCall methodCall) async {
+    _log.info("handleMethodCall: ${methodCall.interface}::${methodCall.name}");
+
     if (methodCall.interface == 'org.mpris.MediaPlayer2') {
       if (methodCall.name == 'Raise') {
         if (methodCall.values.isNotEmpty) {

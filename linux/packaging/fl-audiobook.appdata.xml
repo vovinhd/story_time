@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2013 First Lastname <your@email.com> -->
+<component type="desktop-application">
+  <id>com.example.fl_audiobook</id>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-2.0+</project_license>
+  <name>Power Statistics</name>
+  <summary>Play audiobooks</summary>
+
+  <description>
+    <p>
+        A player for audiobooks. 
+    </p>
+  </description>
+
+  <launchable type="desktop-id">com.example.fl_audiobook</launchable>
+
+  <!-- <screenshots>
+    <screenshot type="default">
+      <caption>The options dialog</caption>
+      <image>http://www.hughsie.com/en_US/main.png</image>
+    </screenshot>
+    <screenshot>
+      <image>http://www.hughsie.com/en_US/preferences.png</image>
+    </screenshot>
+  </screenshots> -->
+
+  <url type="homepage">https://github.com/vovinhd/fl_audiobook</url>
+  <project_group>GNOME</project_group>
+
+  <provides>
+    <binary>gnome-power-statistics</binary>
+  </provides>
+
+  <releases>
+    <release version="1.0.0+2" date="2026-09-01">
+      <description>
+        <p>Fixes issues X, Y and Z</p>
+      </description>
+    </release>
+  </releases>
+</component>

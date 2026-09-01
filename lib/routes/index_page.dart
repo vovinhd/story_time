@@ -74,26 +74,6 @@ class _IndexPageState extends State<IndexPage> {
   void _transition() async {
     ConfigProvider().updatePlaybackState();
     _pushPlayerRoute();
-
-    // emit the dbus state change
-
-    // TODO factor into media_player2
-    // globals.mediaPlayer2.emitPropertiesChanged(
-    //   "org.mpris.MediaPlayer2.Player",
-    //   changedProperties: {
-    //     "Metadata": DBusDict(
-    //       DBusSignature.string,
-    //       DBusSignature.variant,
-    //       (await globals.mediaPlayer2.buildMetadata())!,
-    //     ),
-    //     "PlaybackStatus": DBusString("Playing"),
-    //     "Position": DBusInt64(PlayerService().position.inMicroseconds),
-    //   },
-    //   invalidatedProperties: ["PlaybackStatus", "MetaData", "Position"],
-    // );
-    // globals.mediaPlayer2.emitSeeked(
-    //   PlayerService().position.inMicroseconds,
-    // );
   }
 
   @override

@@ -20,13 +20,15 @@ keywords:
   - Test
   - Application
 
-generic_name: Music Application
+generic_name: Audiobook Player
 
 categories:
-  - Music
   - Media
 
 startup_notify: true
+
+startup_wm_class: fl-audiobook
+
 # You can also specify [metainfo](https://freedesktop.org/software/appstream/docs/chap-Quickstart.html) file
 # which contains metadata of the app.
-# metainfo: linux/packaging/myappid.appdata.xml
+metainfo: linux/packaging/fl-audiobook.appdata.xml

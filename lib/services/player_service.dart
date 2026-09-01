@@ -456,19 +456,23 @@ class PlayerService {
       // todo factor out into its own thing and make it smarter
       ConfigProvider().updatePlaybackState();
 
-      if (_player.state.playing) {
-        mediaPlayer2.emitPropertiesChanged(
-          "org.mpris.MediaPlayer2.Player",
-          changedProperties: {
-            "Position": DBusInt64(_player.state.position.inMicroseconds),
-          },
-          invalidatedProperties: ["Position"],
-        );
-      }
+      // if (_player.state.playing) {
+      //   mediaPlayer2.emitPropertiesChanged(
+      //     "org.mpris.MediaPlayer2.Player",
+      //     changedProperties: {
+      //       "Position": DBusInt64(_player.state.position.inMicroseconds),
+      //     },
+      //     invalidatedProperties: ["Position"],
+      //   );
+      // }
     });
   }
 
   void dispose() {
     _player.dispose();
+  }
+
+  void seekInChapter(Duration duration) {
+    seek(currentChapter!.start + duration);
   }
 }
