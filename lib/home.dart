@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:fl_audiobook/l10n/app_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:watch_it/watch_it.dart';
 import 'package:yaru/yaru.dart';
@@ -10,6 +12,7 @@ import 'package:yaru/yaru.dart';
 //import 'example.dart';
 import 'routes/index_page.dart';
 import 'model.dart';
+
 
 class ExampleHome extends StatelessWidget with WatchItMixin {
   const ExampleHome({super.key});
@@ -99,7 +102,16 @@ class _ExampleHome extends StatelessWidget {
         darkTheme: darkTheme,
         highContrastTheme: highContrastDarkTheme,
         highContrastDarkTheme: highContrastDarkTheme,
-        home: IndexPage(),
+  localizationsDelegates: [
+    AppLocalizations.delegate,
+    ...GlobalMaterialLocalizations.delegates,
+  ],        supportedLocales: [
+          Locale('en'), // English
+          Locale('de'), // german
+        ],
+        home: 
+        
+        IndexPage(),
         scrollBehavior: const MaterialScrollBehavior().copyWith(
           dragDevices: {
             PointerDeviceKind.mouse,
