@@ -41,11 +41,11 @@ vovin@the-red-scare:~/git/fl-audiobook/fl_audiobook$ LD_LIBRARY_PATH="$LD_LIBRAR
     - [x] give a hint to mount drives and 
     - [x] give an option to relocate the file without losing listening progress 
       - [ ] polish this a little more, it works tho
-- [ ] use a real logging framework instead of ``print()`` 
+- [x] use a real logging framework instead of ``print()`` 
 
 ### shipping 
-- [ ] translations
-  - [ ] before that, update the copy 
+- [x] translations
+  - [x] before that, update the copy 
 - [ ] new app icon 
 - [ ] new default cover icon
 - [ ] figure out how to set up starUpWMClass for appimage/deb 

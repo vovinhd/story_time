@@ -11,7 +11,11 @@ import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/widgets/home/last_played_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:logging/logging.dart';
 import 'package:yaru/yaru.dart';
+
+final _log = Logger('recently_played');
+
 
 class LastPlayedCard extends StatefulWidget {
   const new({
@@ -401,7 +405,7 @@ class BookMenu extends StatelessWidget {
 }
 
 void openBookDirectory(String path) async {
-  print("Show $path in file explorer");
+  _log.info("Show $path in file explorer");
   try {
     final isDirectory = await Directory(path).exists();
     final isFile = await File(path).exists();
@@ -416,9 +420,9 @@ void openBookDirectory(String path) async {
       var dir = dirs.join("/");
       Process.run("xdg-open", [dir]);
     } else {
-      print("?????");
+      _log.shout("?????");
     }
   } catch (e) {
-    print(e);
+    _log.severe(e);
   }
 }

@@ -16,18 +16,23 @@ import 'package:fl_audiobook/widgets/home/popover_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:logging/logging.dart';
 import 'package:yaru/yaru.dart';
 
 import '../tray.dart' as tray;
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey(); // Create a key
 
+final _log = Logger('index');
+
 class IndexPage extends StatefulWidget {
   const IndexPage({super.key});
+
 
   @override
   State<IndexPage> createState() => _IndexPageState();
 }
+
 
 class _IndexPageState extends State<IndexPage> {
   @override
@@ -53,11 +58,11 @@ class _IndexPageState extends State<IndexPage> {
         );
         _transition();
       } catch (e) {
-        print(e);
+        _log.severe(e);
       }
     } else {
       // User canceled the picker
-      print("User canceled the picker");
+      _log.info("User canceled the picker");
     }
   }
 
@@ -98,7 +103,7 @@ class _IndexPageState extends State<IndexPage> {
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
         const SingleActivator(LogicalKeyboardKey.comma, control: true): () {
-          print("nav setting from shortcut");
+          _log.info("nav setting from shortcut");
           Navigator.of(context).push(SettingsTransition(child: SettingsPage()));
         },
         const SingleActivator(
@@ -106,10 +111,10 @@ class _IndexPageState extends State<IndexPage> {
           control: true,
         ): () async {
           if (await files.pickFile()) {
-            print("check mounted");
+            // print("check mounted");
     
             if (mounted) {
-              print("navigating to player");
+              _log.info("navigating to player");
               Navigator.of(context).push(
                 MaterialPageRoute<void>(builder: (context) => PlayerPage()),
               );

@@ -8,7 +8,11 @@ import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/widgets/player/unskip_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:logging/logging.dart';
 import 'package:yaru/yaru.dart';
+
+final _log = Logger('unskip');
+
 
 class UnskipButton extends StatefulWidget {
   const new({super.key});
@@ -40,9 +44,9 @@ class _UnskipButtonState extends State<UnskipButton> {
               return SizedBox();
             }
 
-            print(
-              "${asyncSnapshot.data!.inSeconds}, ${lastUnskip.inSeconds}, ${lastConsumed.inSeconds}, $timedOut",
-            );
+            // print(
+            //   "${asyncSnapshot.data!.inSeconds}, ${lastUnskip.inSeconds}, ${lastConsumed.inSeconds}, $timedOut",
+            // );
 
             if (lastUnskip.inSeconds == lastConsumed.inSeconds || timedOut) {
               lastUnskip = asyncSnapshot.data!;
@@ -76,7 +80,7 @@ class _UnskipButtonState extends State<UnskipButton> {
                       ),
                       onPressed: () {
                         if (asyncSnapshot.hasData) {
-                          print("unskip ${asyncSnapshot.data!.inSeconds}");
+                          _log.info("unskip ${asyncSnapshot.data!.inSeconds}");
                           PlayerService().seek(asyncSnapshot.data!); // don't use globals.seek to not reemit the position and make a looping go back go back go back button
                           lastConsumed = asyncSnapshot.data!;
                           lastUnskip = asyncSnapshot.data!;

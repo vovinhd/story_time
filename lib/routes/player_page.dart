@@ -15,6 +15,7 @@ import 'package:fl_audiobook/widgets/player/unskip_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:logging/logging.dart';
 import 'package:yaru/yaru.dart';
 
 // Source - https://stackoverflow.com/a/54775297
@@ -23,11 +24,14 @@ import 'package:yaru/yaru.dart';
 
 // Create a key
 
+final _log = Logger('player');
+
+
 int chapterInfoTimeToMicros(String timestamp) {
   try {
     return (double.parse(timestamp) * 1_000_000).round();
   } catch (error) {
-    print(error);
+    _log.severe(error);
     return 0;
   }
 }

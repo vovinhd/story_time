@@ -35,11 +35,9 @@ class _PopoverMenuState extends State<PopoverMenu> {
                 onPressed: () async {
                   try {
                     if (await pickFile()) {
-                      print("check mounted");
 
                       // TODO known problem: if the menu is closed before a book is selected the widget is unmounted and navigation is blocked
                       if (mounted) {
-                        print("navigating to player");
                         Navigator.of(context).push(
                           MaterialPageRoute<void>(
                             builder: (context) => PlayerPage(),

@@ -4,10 +4,13 @@ import 'dart:io';
 
 import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/services/player_service.dart';
+import 'package:logging/logging.dart';
 import 'package:xdg_directories/xdg_directories.dart';
 
 // ignore: non_constant_identifier_names
 String CONFIG_PATH = "${dataHome.path}/${globals.APP_DIR}/config.json";
+final _log = Logger('config');
+
 
 class ConfigProvider {
   static final ConfigProvider _singleton = ConfigProvider._internal();
@@ -151,11 +154,11 @@ class ConfigProvider {
   }
 
   void deleteCache() {
-    print("deleteCache not implemented");
+    _log.info("deleteCache not implemented");
   }
 
   void deleteHistory() {
-    print("deleteHistory not implemented");
+    _log.info("deleteHistory not implemented");
   }
 }
 
@@ -170,7 +173,7 @@ SystemTrayUsage string2SystemTrayUsage(String str) {
     case "never":
       return SystemTrayUsage.never;
     default:
-      print("malformed config, ${str} not an option for SystemTrayUsage");
+      _log.severe("malformed config, $str not an option for SystemTrayUsage");
       return SystemTrayUsage.whenPlaying;
   }
 }

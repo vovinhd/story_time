@@ -7,6 +7,7 @@ import 'package:fl_audiobook/home.dart';
 import 'package:fl_audiobook/model.dart';
 import 'package:fl_audiobook/services/player_service.dart';
 import 'package:fl_audiobook/tray.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:media_kit/media_kit.dart';
 
@@ -17,12 +18,13 @@ import 'package:xdg_directories/xdg_directories.dart';
 
 import 'package:yaru/yaru.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:logging/logging.dart';
 
+final log = Logger('main');
 // Provides [Player], [Media], [Playlist] etc.
-
 Future<void> main() async {
   MediaKit.ensureInitialized();
-  PlayerService().ensureInitialized(); 
+  PlayerService().ensureInitialized();
   await YaruWindowTitleBar.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   SemanticsBinding.instance.ensureSemantics();
@@ -33,16 +35,25 @@ Future<void> main() async {
     ..registerLazySingleton<Model>(
       () => Model(di<Connectivity>()),
       dispose: (m) => m.dispose(),
-    ); 
+    );
 
   await di<Model>().init();
+
+  if (kDebugMode) {
+    Logger.root.level = Level.INFO;
+  } else {
+    Logger.root.level = Level.SEVERE;
+  }
+  Logger.root.onRecord.listen((record) {
+    // ignore: avoid_print
+    print('${record.level.name}: ${record.time}: ${record.message}');
+  });
 
   var client = DBusClient.session(introspectable: true);
 
   client.nameAcquired.listen((event) {
-    print("DBus Name aquired: $event");
+    log.info("DBus Name aquired: $event");
   });
-
 
   // client.nameOwnerChanged.listen((event) {
   //   print("chng ${event.name} ${event.oldOwner} -> ${event.newOwner}");
@@ -63,17 +74,13 @@ Future<void> main() async {
   // });
 
   globals.mediaPlayer2.emitPropertiesChanged(
-    "org.mpris.MediaPlayer2", 
-    changedProperties: {
-
-    }, 
-    invalidatedProperties: []
+    "org.mpris.MediaPlayer2",
+    changedProperties: {},
+    invalidatedProperties: [],
   );
-
 
   // client.callMethod(path: DBusObjectPath("/org/freedesktop/DBus"), name: )
 
-  
   PlayerService().isPlayingStream.listen((playing) {
     //print("hi");
     globals.mediaPlayer2.emitPropertiesChanged(
@@ -85,9 +92,8 @@ Future<void> main() async {
     );
 
     setSytemTrayCanPlayPause(playing);
-
   });
 
   runApp(const ExampleHome());
-  await initSystemTray(); 
+  await initSystemTray();
 }

@@ -11,8 +11,11 @@ import 'package:fl_audiobook/globals.dart' as globals;
 import 'package:fl_audiobook/globals.dart';
 import 'package:fl_audiobook/services/config.dart';
 import 'package:flutter/widgets.dart';
+import 'package:logging/logging.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:xdg_directories/xdg_directories.dart';
+
+final _log = Logger('player');
 
 final class BookFile {
   final String name;
@@ -226,7 +229,7 @@ class PlayerService {
       position = storedPlaybackState.position;
     }
 
-    print(
+    _log.info(
       "opening ${file.name} at $position, stored ${storedPlaybackState?.lastPlayed.toLocal()}",
     );
 
@@ -312,7 +315,7 @@ class PlayerService {
       // cover image
       var coverfile = await file.coverImage;
       if (coverfile == null) {
-        print("didn't find a cover for ${file.path}");
+        _log.info("didn't find a cover for ${file.path}");
         coverImage = Image.asset("images/cover_default.png", key: UniqueKey());
       } else {
         coverImage = Image.file(coverfile, key: UniqueKey());

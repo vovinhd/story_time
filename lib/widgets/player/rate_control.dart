@@ -83,7 +83,6 @@ class RateOptions extends StatelessWidget {
                   return TextButton(
                     style: overlayTextButtonStyle(context),
                     onPressed: () {
-                      print("select rate: ${speeds[index]}");
                       PlayerService().rate = speeds[index];
                     },
                     child: Align(
