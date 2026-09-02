@@ -18,57 +18,101 @@ class MediaPlayer2 extends DBusObject {
     ),
   }) : super(path);
 
+  var lastChapterStartPosition = Duration(microseconds: 0); 
+
+
   void ensureInitialized() {
-    PlayerService().selectedBookStream.stream.listen((book) async {
-      final metadata = await buildMetadata();
+    // PlayerService().selectedBookStream.stream.listen((book) async {
+    //   final metadata = await buildMetadata();
 
-      print(
-        "on book changed: metadata ${metadata}, ${PlayerService().isPlaying}, ${PlayerService().position} ",
-      );
+    //   print(
+    //     "on book changed: metadata ${metadata}, ${PlayerService().isPlaying}, ${PlayerService().position} ",
+    //   );
 
-      if (metadata != null) {
-        final metadataDBusMessage = DBusVariant(
-          DBusDict(DBusSignature.string, DBusSignature.variant, metadata),
-        );
+    //   if (metadata != null) {
+    //     final metadataDBusMessage = DBusVariant(
+    //       DBusDict(DBusSignature.string, DBusSignature.variant, metadata),
+    //     );
 
-        // final metadataDBusMessage = metadata; 
+    //     // final metadataDBusMessage = metadata; 
 
-        emitPropertiesChanged(
-          "org.mpris.MediaPlayer2.Player",
-          changedProperties: {
-            "PlaybackStatus": DBusString(
-              PlayerService().isPlaying ? "Playing" : "Paused",
-            ),
-            "Metadata": metadataDBusMessage,
-          },
-          invalidatedProperties: ["PlaybackStatus", "Metadata"],
-        );
-      }
-    });
+    //     emitPropertiesChanged(
+    //       "org.mpris.MediaPlayer2.Player",
+    //       changedProperties: {
+    //         "PlaybackStatus": DBusString(
+    //           PlayerService().isPlaying ? "Playing" : "Paused",
+    //         ),
+    //         "Metadata": metadataDBusMessage,
+    //         "Position": (await getPosition()).returnValues[0] 
 
-    PlayerService().isPlayingStream.listen((playing) {
+    //       },
+    //       invalidatedProperties: ["PlaybackStatus", "Metadata", "Position"],
+    //     );
+    //   }
+    // });
+
+    PlayerService().isPlayingStream.listen((playing) async {
+
+      if(PlayerService().position == Duration(microseconds: 0)) return; 
+
       print("emit playing $playing");
       emitPropertiesChanged(
         "org.mpris.MediaPlayer2.Player",
         changedProperties: {
           "PlaybackStatus": (DBusString(playing ? "Playing" : "Paused")),
+          "Position": (await getPosition()).returnValues[0] 
+
         },
-        invalidatedProperties: ["PlaybackStatus"],
+        invalidatedProperties: ["PlaybackStatus", "Position"],
       );
     });
 
-    // Timer.periodic(const Duration(seconds: 1), (timer) {
-    //   if (PlayerService().isPlaying) {
-    //     final time = PlayerService().timeInChapter.inMicroseconds;
-    //     print("emit position ${time}");
-    //     emitPropertiesChanged(
-    //       "org.mpris.MediaPlayer2.Player",
-    //       changedProperties: {"Position": DBusInt64(time)},
-    //       invalidatedProperties: ["Position"],
-    //     );
-    //     // }
-    //   }
-    // });
+    Timer.periodic(const Duration(seconds: 1), (timer) async {
+
+      if (!PlayerService().isPlaying) return; 
+
+      if (PlayerService().currentChapter == null) return; 
+
+      var currentChapterStart = PlayerService().currentChapter!.start; 
+
+      if (currentChapterStart == lastChapterStartPosition) return; 
+
+      lastChapterStartPosition = currentChapterStart; 
+
+      final metadata = await buildMetadata();
+      if (metadata == null) return; 
+      final metadataDBusMessage = DBusVariant(
+        DBusDict(DBusSignature.string, DBusSignature.variant, metadata),
+      );
+
+      print("hiii"); 
+
+      emitPropertiesChanged(
+          "org.mpris.MediaPlayer2.Player",
+          changedProperties: {
+            "Metadata": metadataDBusMessage,
+            "Position": (await getPosition()).returnValues[0], 
+            "PlaybackStatus": (DBusString(PlayerService().isPlaying ? "Playing" : "Paused")),
+
+          }, 
+          invalidatedProperties: ["Metadata", "Position", "PlaybackStatus"]
+      ); 
+    });
+  
+
+    Timer.periodic(const Duration(seconds: 1), (timer) async {
+
+      if (PlayerService().isPlaying) {
+        final time = PlayerService().timeInChapter.inMicroseconds;
+        print("emit position ${time}");
+        emitPropertiesChanged(
+          "org.mpris.MediaPlayer2.Player",
+          changedProperties: {"Position": DBusInt64(time)},
+          invalidatedProperties: ["Position"],
+        );
+        // }
+      }
+    });
 
     PlayerService().seekStream.stream.listen((seeked) {
       final time = PlayerService().timeInChapter.inMicroseconds;
@@ -158,7 +202,8 @@ class MediaPlayer2 extends DBusObject {
         : PlayerService().isPlaying
         ? "Playing"
         : "Paused";
-    return DBusMethodSuccessResponse([(DBusString(status))]);
+    // print(status); 
+    return DBusMethodSuccessResponse([DBusVariant(DBusString(status))]);
   }
 
   Future<DBusMethodResponse> getPosition() async {
@@ -287,17 +332,15 @@ class MediaPlayer2 extends DBusObject {
     final metadata = await buildMetadata();
 
     if (metadata == null) {
-      print(DBusVariant(DBusDict(DBusSignature.string, DBusSignature.variant)));
+      // print("null metadata ${DBusVariant(DBusDict(DBusSignature.string, DBusSignature.variant))}");
 
       return DBusMethodSuccessResponse([
         (DBusDict(DBusSignature.string, DBusSignature.variant)),
       ]);
     } else {
-      print(
-        DBusVariant(
-          DBusDict(DBusSignature.string, DBusSignature.variant, metadata),
-        ),
-      );
+      // print(
+      //   "pos ${PlayerService().position} , metadata $metadata)",
+      // );
 
       return DBusMethodSuccessResponse([
         (
@@ -591,7 +634,7 @@ class MediaPlayer2 extends DBusObject {
       return DBusMethodErrorResponse.unknownInterface();
     }
     // _log.info("all properties response $properties");
-
+    print(properties); 
     return DBusMethodSuccessResponse([DBusDict.stringVariant(properties)]);
   }
 

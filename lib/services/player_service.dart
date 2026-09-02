@@ -327,10 +327,12 @@ class PlayerService {
 
       // tell everyone about it
       playingFile = file;
-      Timer(Duration(seconds: 1), () => selectedBookStream.add(file));
-      
+      Timer(Duration(milliseconds: 100), () {
+        ready = true;
+        selectedBookStream.add(file);
+      });
+
       loading = false;
-      ready = true;
 
       // start updating config with play state
       _initTimer();

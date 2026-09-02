@@ -13,10 +13,11 @@ vovin@the-red-scare:~/git/fl-audiobook/fl_audiobook$ LD_LIBRARY_PATH="$LD_LIBRAR
 # todo list
 
 ### bugs
-- [ ] make DBus/MPRIS work 
-  - [ ] get player info into dbus, maybe that fixes KDE 
-  - [x] works in DMS!
+- [x] make DBus/MPRIS work 
+  - [x] get player info into dbus, maybe that fixes KDE 
   - [x] and hook up state change signals to ``PlayerService`` 
+  - [x] works in DMS!
+  - [ ] fix thhe bugsss 
 - [ ] if menu is closed before a book is selected the widget is unmounted and navigation is blocked 
 
 ### ui 
@@ -37,7 +38,10 @@ vovin@the-red-scare:~/git/fl-audiobook/fl_audiobook$ LD_LIBRARY_PATH="$LD_LIBRAR
 - [x] rework last played cards
 - [ ] add a theme switcher
 - [ ] drag and drop in hero dialog 
-  - [ ] requires ripping out ``system_tray`` in favor of [tray_manager](https://pub.dev/packages/tray_manager)? hopefully [super_drag_and_drop](https://pub.dev/packages/super_drag_and_drop) wokfks then
+  - [ ] requires ripping out ``system_tray`` in favor of [tray_manager](https://pub.dev/packages/tray_manager)? hopefully [super_drag_and_drop](https://pub.dev/packages/super_drag_and_drop) works then
+- [ ] do something fun when an audiobook ends
+  - [ ] and mark finished books in the card view
+
 ### enhancements 
 - [x] error handling 
   - [x] check if files are available and warn if they arent 
@@ -53,7 +57,7 @@ vovin@the-red-scare:~/git/fl-audiobook/fl_audiobook$ LD_LIBRARY_PATH="$LD_LIBRAR
 - [ ] new default cover icon
 - [ ] figure out how to set up starUpWMClass for appimage/deb 
 - [ ] automate packaging/ci at least for x86 
-  - [ ] apparently in two versions for debian 13, which comes with an old-ass glibc 
+  - [ ] apparently in two versions (for debian 13, which comes with an old-ass glibc, and for everyone who doesn't use a distro with a prehistoric kernel) 
 - [ ] set repository to public
 - [ ] make a github page 
 
