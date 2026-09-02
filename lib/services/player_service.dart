@@ -388,20 +388,34 @@ class PlayerService {
   }
 
   void seekLastChapter() async {
+    if (currentChapter == null) return; 
     var pos = _player.state.position;
 
-    if (timeInChapter.inSeconds < skipbackTime) {
-      //await player.seek(player.state.position - Duration(seconds: skipbackTime));
 
-      var timeIn = timeInChapter - Duration(seconds: skipbackTime);
-      seek(pos - timeIn - Duration(seconds: skipbackTime));
+    if (timeInChapter.inSeconds < skipbackTime) {
+      //seek(position - Duration(seconds: skipbackTime));
+      print(
+        "hiii"
+      );
+      if(currentChapter!.start > Duration(seconds: 1)){
+
+        var prevChapter = getChapterFor(currentChapter!.start - Duration(milliseconds: 100));
+        if (prevChapter == null) {
+          seek(currentChapter!.start); 
+        }
+        seek(prevChapter!.start);
+      }
     } else {
-      seek(pos - timeInChapter + Duration(milliseconds: 1));
+      seek(pos - timeInChapter - Duration(milliseconds: 1));
     }
+    
   }
 
   void seekNextChapter() {
-    seek(_player.state.position - timeLeftInChapter);
+    
+    if (currentChapter == null) return; 
+    
+    seek(currentChapter!.end);
 
     //seekOffset(timeLeftInChapter(player.state.position).inMicroseconds);
   }

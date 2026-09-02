@@ -127,13 +127,15 @@ class _ChapterListButtonState extends State<ChapterListButton> {
                                     ),
                                 ],
                               ),
-                              trailing: DurationLabel(
-                                duration: isCurrent
-                                    ? position - chapter.end
-                                    : chapter.end -chapter.start,
-                                style: .new(fontSize: 14),
-                              ),
-                            
+                              // trailing:  DurationLabel(
+                              //   duration: isCurrent
+                              //       ? position - chapter.end
+                              //       : chapter.end -chapter.start,
+                              //   style: .new(fontSize: 14),
+                              // ),
+                              trailing: 
+                              DurationLabel(duration: chapter.end),
+
                               onTap: () {
                                 if (!isCurrent) {
                                   PlayerService().seekChapter(
