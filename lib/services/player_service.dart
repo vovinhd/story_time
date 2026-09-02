@@ -327,7 +327,8 @@ class PlayerService {
 
       // tell everyone about it
       playingFile = file;
-      selectedBookStream.add(file);
+      Timer(Duration(seconds: 1), () => selectedBookStream.add(file));
+      
       loading = false;
       ready = true;
 

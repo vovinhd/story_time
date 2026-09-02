@@ -78,7 +78,6 @@ Future<void> main() async {
 
 
 
-  var count = 0;
   // Timer.periodic(Duration(seconds: 1), (timer) {
   //   print('Ping $count!');
   //   dbusObject.emitSignal('com.canonical.DBusDart', 'Ping', [DBusUint64(count)]);

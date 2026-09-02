@@ -4,6 +4,7 @@ import 'dart:async';
 
 import "package:dbus/dbus.dart";
 import 'package:fl_audiobook/services/player_service.dart';
+import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:system_tray/system_tray.dart';
 
@@ -21,10 +22,16 @@ class MediaPlayer2 extends DBusObject {
     PlayerService().selectedBookStream.stream.listen((book) async {
       final metadata = await buildMetadata();
 
+      print(
+        "on book changed: metadata ${metadata}, ${PlayerService().isPlaying}, ${PlayerService().position} ",
+      );
+
       if (metadata != null) {
         final metadataDBusMessage = DBusVariant(
           DBusDict(DBusSignature.string, DBusSignature.variant, metadata),
         );
+
+        // final metadataDBusMessage = metadata; 
 
         emitPropertiesChanged(
           "org.mpris.MediaPlayer2.Player",
@@ -44,7 +51,7 @@ class MediaPlayer2 extends DBusObject {
       emitPropertiesChanged(
         "org.mpris.MediaPlayer2.Player",
         changedProperties: {
-          "PlaybackStatus": DBusString(playing ? "Playing" : "Paused"),
+          "PlaybackStatus": (DBusString(playing ? "Playing" : "Paused")),
         },
         invalidatedProperties: ["PlaybackStatus"],
       );
@@ -80,9 +87,7 @@ class MediaPlayer2 extends DBusObject {
   }
 
   Future<DBusMethodResponse> getIdentity() async {
-    return DBusMethodSuccessResponse([
-      (DBusString("org.mpris.MediaPlayer2.fl_audiobook")),
-    ]);
+    return DBusMethodSuccessResponse([(DBusString("FL Audiobook!"))]);
   }
 
   Future<DBusMethodResponse> doRaise() async {
@@ -158,13 +163,13 @@ class MediaPlayer2 extends DBusObject {
 
   Future<DBusMethodResponse> getPosition() async {
     if (!PlayerService().ready) {
-      return DBusMethodSuccessResponse([DBusVariant(DBusBoolean(false))]);
+      return DBusMethodSuccessResponse([(DBusInt64(0))]);
     }
     final time = PlayerService().timeInChapter.inMicroseconds;
 
     _log.info("get position ${Duration(microseconds: time).inSeconds}");
 
-    return DBusMethodSuccessResponse([DBusVariant(DBusInt64(time))]);
+    return DBusMethodSuccessResponse([(DBusInt64(time))]);
   }
 
   Future<DBusMethodResponse> getLoopStatus() async {
@@ -223,7 +228,13 @@ class MediaPlayer2 extends DBusObject {
 
   Future<Map<DBusString, DBusVariant>?> buildMetadata() async {
     if (PlayerService().playingFile == null) {
-      return null;
+      return null; 
+      // return {
+      //   // idk
+      //   DBusString("mpris:trackid"): DBusVariant(
+      //     DBusObjectPath("/io/github/fl_audiobook/book/${0}"),
+      //   ),
+      // };
     }
 
     final tags = PlayerService().tags;
@@ -276,12 +287,22 @@ class MediaPlayer2 extends DBusObject {
     final metadata = await buildMetadata();
 
     if (metadata == null) {
+      print(DBusVariant(DBusDict(DBusSignature.string, DBusSignature.variant)));
+
       return DBusMethodSuccessResponse([
-        (DBusDict(DBusSignature.string, DBusSignature.variant, {})),
+        (DBusDict(DBusSignature.string, DBusSignature.variant)),
       ]);
     } else {
+      print(
+        DBusVariant(
+          DBusDict(DBusSignature.string, DBusSignature.variant, metadata),
+        ),
+      );
+
       return DBusMethodSuccessResponse([
-        DBusDict(DBusSignature.string, DBusSignature.variant, metadata),
+        (
+          DBusDict(DBusSignature.string, DBusSignature.variant, metadata)
+        ),
       ]);
     }
     //
@@ -431,16 +452,16 @@ class MediaPlayer2 extends DBusObject {
             DBusSignature('d'),
             access: DBusPropertyAccess.read,
           ),
-          // DBusIntrospectProperty(
-          //   'CanGoNext',
-          //   DBusSignature('b'),
-          //   access: DBusPropertyAccess.read,
-          // ),
-          // DBusIntrospectProperty(
-          //   'CanGoPrevious',
-          //   DBusSignature('b'),
-          //   access: DBusPropertyAccess.read,
-          // ),
+          DBusIntrospectProperty(
+            'CanGoNext',
+            DBusSignature('b'),
+            access: DBusPropertyAccess.read,
+          ),
+          DBusIntrospectProperty(
+            'CanGoPrevious',
+            DBusSignature('b'),
+            access: DBusPropertyAccess.read,
+          ),
           DBusIntrospectProperty(
             'CanPlay',
             DBusSignature('b'),
@@ -551,7 +572,7 @@ class MediaPlayer2 extends DBusObject {
       properties['Identity'] = (await getIdentity()).returnValues[0];
     } else if (interface == 'org.mpris.MediaPlayer2.Player') {
       properties['PlaybackStatus'] =
-          (await getPlaybackStatus()).returnValues[0];
+           (await getPlaybackStatus()).returnValues[0];
       properties['LoopStatus'] = (await getLoopStatus()).returnValues[0];
       properties['Rate'] = (await getRate()).returnValues[0];
       properties['Metadata'] = (await getMetadata()).returnValues[0];
@@ -563,6 +584,8 @@ class MediaPlayer2 extends DBusObject {
       properties['CanPause'] = (await getCanPause()).returnValues[0];
       properties['CanSeek'] = (await getCanSeek()).returnValues[0];
       properties['CanControl'] = (await getCanControl()).returnValues[0];
+      properties['CanGoNext'] = DBusBoolean(false);
+      properties['CanGoPrevious'] = DBusBoolean(false);
     } else {
       _log.severe("interface ${interface} not found!");
       return DBusMethodErrorResponse.unknownInterface();
