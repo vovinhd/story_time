@@ -30,6 +30,12 @@ class _UnskipButtonState extends State<UnskipButton> {
   }
 
   @override
+  void dispose() {
+    timer?.cancel(); 
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: .center,
