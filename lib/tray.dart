@@ -43,6 +43,9 @@ Future<void> setSytemTrayCanPlayPause(bool playing) async {
   await menu.buildFrom(options);
 
   await systemTray.setContextMenu(menu);
+  await systemTray.setToolTip(
+    playing ? "FL audiobook playing${PlayerService().title}" : "FL audiobook" 
+  );
 }
 
 Future<void> initSystemTray() async {
@@ -51,7 +54,7 @@ Future<void> initSystemTray() async {
       : 'images/app_icon.png';
 
   // We first init the systray menu
-  await systemTray.initSystemTray(title: "system tray", iconPath: path);
+  await systemTray.initSystemTray(title: "system tray", toolTip: "FL audiobook", iconPath: path);
 
   // create context menu
   final Menu menu = Menu();

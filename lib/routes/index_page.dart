@@ -225,7 +225,7 @@ class _IndexPageState extends State<IndexPage> {
                     }
       
                     if (books.isEmpty) {
-                      return HeroUsageHint(onClick: pickFile);
+                      return HeroUsageHint(onClick: pickFile, expand: true);
                     }
       
                     return Column(
@@ -238,7 +238,7 @@ class _IndexPageState extends State<IndexPage> {
                             var file = PlayerService().playingFile;
       
                             if (file == null && !asyncSnapshot.hasData) {
-                              return HeroUsageHint(onClick: pickFile);
+                              return HeroUsageHint(onClick: pickFile, expand: false,);
                             }
       
                             if (asyncSnapshot.hasData &&
@@ -247,7 +247,7 @@ class _IndexPageState extends State<IndexPage> {
                             }
       
                             if (file == null) {
-                              return HeroUsageHint(onClick: pickFile);
+                              return HeroUsageHint(onClick: pickFile, expand: false,);
                             }
                             return HeroPlayer(file: file);
                           },

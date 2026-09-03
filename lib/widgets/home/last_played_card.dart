@@ -87,13 +87,15 @@ class _LastPlayedCardState extends State<LastPlayedCard> {
                   child: FutureBuilder(
                     future: widget.coverfile,
                     builder: (context, asyncSnapshot) {
+                      var defaultCoverImage =  Image.asset(Theme.of(context).brightness == .dark ? 
+            "images/cover_symbolic_dark.png" :  "images/cover_symbolic_light.png"); 
                       if (asyncSnapshot.hasData) {
                         if (asyncSnapshot.data == null) {
-                          return globals.defaultCoverImage;
+                          return defaultCoverImage;
                         }
                         return Image.file(asyncSnapshot.data!);
                       }
-                      return globals.defaultCoverImage;
+                      return defaultCoverImage;
                     },
                   ),
                 ),
