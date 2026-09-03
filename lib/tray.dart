@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:fl_audiobook/services/config.dart';
-import 'package:fl_audiobook/services/player_service.dart';
+import 'package:story_time/services/config.dart';
+import 'package:story_time/services/player_service.dart';
 import 'package:system_tray/system_tray.dart';
 
 final AppWindow appWindow = AppWindow();
@@ -44,7 +44,7 @@ Future<void> setSytemTrayCanPlayPause(bool playing) async {
 
   await systemTray.setContextMenu(menu);
   await systemTray.setToolTip(
-    playing ? "FL audiobook playing${PlayerService().title}" : "FL audiobook" 
+    playing ? "Story Time playing${PlayerService().title}" : "Story Time" 
   );
 }
 
@@ -54,7 +54,7 @@ Future<void> initSystemTray() async {
       : 'images/app_icon.png';
 
   // We first init the systray menu
-  await systemTray.initSystemTray(title: "system tray", toolTip: "FL audiobook", iconPath: path);
+  await systemTray.initSystemTray(title: "system tray", toolTip: "Story Time", iconPath: path);
 
   // create context menu
   final Menu menu = Menu();

@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:fl_audiobook/globals.dart' as globals;
-import 'package:fl_audiobook/services/player_service.dart';
+import 'package:story_time/globals.dart' as globals;
+import 'package:story_time/services/player_service.dart';
 import 'package:logging/logging.dart';
 import 'package:xdg_directories/xdg_directories.dart';
 

@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:fl_audiobook/globals.dart' as globals;
-import 'package:fl_audiobook/l10n/app_localizations.dart';
-import 'package:fl_audiobook/routes/player_page.dart';
-import 'package:fl_audiobook/services/config.dart';
-import 'package:fl_audiobook/services/files.dart';
-import 'package:fl_audiobook/services/player_service.dart';
-import 'package:fl_audiobook/widgets/home/last_played_list.dart';
+import 'package:story_time/globals.dart' as globals;
+import 'package:story_time/l10n/app_localizations.dart';
+import 'package:story_time/routes/player_page.dart';
+import 'package:story_time/services/config.dart';
+import 'package:story_time/services/files.dart';
+import 'package:story_time/services/player_service.dart';
+import 'package:story_time/widgets/home/last_played_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:logging/logging.dart';

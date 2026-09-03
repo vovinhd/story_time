@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dbus/dbus.dart';
-import 'package:fl_audiobook/globals.dart' as globals;
-import 'package:fl_audiobook/home.dart';
-import 'package:fl_audiobook/media_player2.dart';
-import 'package:fl_audiobook/model.dart';
-import 'package:fl_audiobook/services/player_service.dart';
-import 'package:fl_audiobook/tray.dart';
+import 'package:story_time/globals.dart' as globals;
+import 'package:story_time/home.dart';
+import 'package:story_time/media_player2.dart';
+import 'package:story_time/model.dart';
+import 'package:story_time/services/player_service.dart';
+import 'package:story_time/tray.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:media_kit/media_kit.dart';

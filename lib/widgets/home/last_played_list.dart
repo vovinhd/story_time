@@ -1,9 +1,9 @@
 
-import 'package:fl_audiobook/l10n/app_localizations.dart';
-import 'package:fl_audiobook/services/config.dart';
-import 'package:fl_audiobook/services/player_service.dart';
-import 'package:fl_audiobook/time_display.dart';
-import 'package:fl_audiobook/widgets/home/last_played_card.dart';
+import 'package:story_time/l10n/app_localizations.dart';
+import 'package:story_time/services/config.dart';
+import 'package:story_time/services/player_service.dart';
+import 'package:story_time/time_display.dart';
+import 'package:story_time/widgets/home/last_played_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:timeago/timeago.dart' as timeago;

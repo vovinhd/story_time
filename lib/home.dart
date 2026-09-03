@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:fl_audiobook/l10n/app_localizations.dart';
+import 'package:story_time/l10n/app_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

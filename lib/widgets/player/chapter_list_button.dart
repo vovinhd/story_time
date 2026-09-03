@@ -1,5 +1,5 @@
-import 'package:fl_audiobook/services/player_service.dart';
-import 'package:fl_audiobook/time_display.dart';
+import 'package:story_time/services/player_service.dart';
+import 'package:story_time/time_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:yaru/yaru.dart';

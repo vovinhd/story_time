@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import "package:dbus/dbus.dart";
-import 'package:fl_audiobook/services/player_service.dart';
+import 'package:story_time/services/player_service.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:system_tray/system_tray.dart';

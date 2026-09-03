@@ -1,6 +1,6 @@
-import 'package:fl_audiobook/routes/player_page.dart';
-import 'package:fl_audiobook/services/player_service.dart';
-import 'package:fl_audiobook/widgets/player/playback_controls.dart';
+import 'package:story_time/routes/player_page.dart';
+import 'package:story_time/services/player_service.dart';
+import 'package:story_time/widgets/player/playback_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:yaru/theme.dart';
 

@@ -2,7 +2,7 @@
 
 
   import 'package:file_picker/file_picker.dart';
-import 'package:fl_audiobook/services/player_service.dart';
+import 'package:story_time/services/player_service.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('files');

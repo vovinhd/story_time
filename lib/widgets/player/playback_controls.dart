@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:fl_audiobook/auto_pause_timer.dart';
-import 'package:fl_audiobook/l10n/app_localizations.dart';
-import 'package:fl_audiobook/services/player_service.dart';
-import 'package:fl_audiobook/time_display.dart';
-import 'package:fl_audiobook/widgets/animated_popover.dart';
-import 'package:fl_audiobook/widgets/player/playback_position_slider.dart';
-import 'package:fl_audiobook/widgets/player/rate_control.dart';
-import 'package:fl_audiobook/widgets/player/track_controls.dart';
-import 'package:fl_audiobook/widgets/player/volume_control.dart';
+import 'package:story_time/auto_pause_timer.dart';
+import 'package:story_time/l10n/app_localizations.dart';
+import 'package:story_time/services/player_service.dart';
+import 'package:story_time/time_display.dart';
+import 'package:story_time/widgets/animated_popover.dart';
+import 'package:story_time/widgets/player/playback_position_slider.dart';
+import 'package:story_time/widgets/player/rate_control.dart';
+import 'package:story_time/widgets/player/track_controls.dart';
+import 'package:story_time/widgets/player/volume_control.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:yaru/yaru.dart';

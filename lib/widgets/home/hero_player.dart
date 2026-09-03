@@ -1,11 +1,11 @@
 import 'dart:ui';
 
-import 'package:fl_audiobook/l10n/app_localizations.dart';
-import 'package:fl_audiobook/services/config.dart';
-import 'package:fl_audiobook/widgets/player/playback_position_slider.dart';
-import 'package:fl_audiobook/routes/player_page.dart';
-import 'package:fl_audiobook/services/player_service.dart';
-import 'package:fl_audiobook/time_display.dart';
+import 'package:story_time/l10n/app_localizations.dart';
+import 'package:story_time/services/config.dart';
+import 'package:story_time/widgets/player/playback_position_slider.dart';
+import 'package:story_time/routes/player_page.dart';
+import 'package:story_time/services/player_service.dart';
+import 'package:story_time/time_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:marquee/marquee.dart';

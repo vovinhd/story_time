@@ -1,8 +1,8 @@
 import 'dart:async';
 
 
-import 'package:fl_audiobook/services/config.dart';
-import 'package:fl_audiobook/services/player_service.dart';
+import 'package:story_time/services/config.dart';
+import 'package:story_time/services/player_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:logging/logging.dart';

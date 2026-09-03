@@ -1,5 +1,5 @@
-import 'package:fl_audiobook/l10n/app_localizations.dart';
-import 'package:fl_audiobook/services/player_service.dart';
+import 'package:story_time/l10n/app_localizations.dart';
+import 'package:story_time/services/player_service.dart';
 import 'package:flutter/material.dart';
 import 'package:yaru/yaru.dart';
 

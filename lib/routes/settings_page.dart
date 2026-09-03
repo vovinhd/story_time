@@ -1,6 +1,6 @@
-import 'package:fl_audiobook/l10n/app_localizations.dart';
-import 'package:fl_audiobook/services/config.dart';
-import 'package:fl_audiobook/tray.dart' as tray;
+import 'package:story_time/l10n/app_localizations.dart';
+import 'package:story_time/services/config.dart';
+import 'package:story_time/tray.dart' as tray;
 import 'package:flutter/material.dart';
 import 'package:yaru/yaru.dart';
 

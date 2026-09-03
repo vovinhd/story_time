@@ -1,16 +1,16 @@
 
 import 'package:file_picker/file_picker.dart';
-import 'package:fl_audiobook/l10n/app_localizations.dart';
-import 'package:fl_audiobook/my_route_transition.dart';
-import 'package:fl_audiobook/routes/player_page.dart';
-import 'package:fl_audiobook/routes/settings_page.dart';
-import 'package:fl_audiobook/services/config.dart';
-import 'package:fl_audiobook/services/files.dart' as files;
-import 'package:fl_audiobook/services/player_service.dart';
-import 'package:fl_audiobook/widgets/home/hero_player.dart';
-import 'package:fl_audiobook/widgets/home/hero_usage_hint.dart';
-import 'package:fl_audiobook/widgets/home/last_played_list.dart';
-import 'package:fl_audiobook/widgets/home/popover_menu.dart';
+import 'package:story_time/l10n/app_localizations.dart';
+import 'package:story_time/my_route_transition.dart';
+import 'package:story_time/routes/player_page.dart';
+import 'package:story_time/routes/settings_page.dart';
+import 'package:story_time/services/config.dart';
+import 'package:story_time/services/files.dart' as files;
+import 'package:story_time/services/player_service.dart';
+import 'package:story_time/widgets/home/hero_player.dart';
+import 'package:story_time/widgets/home/hero_usage_hint.dart';
+import 'package:story_time/widgets/home/last_played_list.dart';
+import 'package:story_time/widgets/home/popover_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_portal/flutter_portal.dart';
@@ -128,7 +128,7 @@ class _IndexPageState extends State<IndexPage> {
             //   onPressed: () => _scaffoldKey.currentState!.openDrawer(),
             //   icon: Icon(YaruIcons.menu),
             // ),
-            title: Text("fl_audiobook"),
+            title: Text("Story Time"),
             actions: [
               // AnimatedPopover(
               //   offset: Offset(0, 8),

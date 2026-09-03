@@ -1,4 +1,4 @@
-import 'package:fl_audiobook/services/player_service.dart';
+import 'package:story_time/services/player_service.dart';
 import 'package:flutter/material.dart';
 
 class PlaybackPositionSlider extends StatefulWidget {

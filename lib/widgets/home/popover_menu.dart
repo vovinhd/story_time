@@ -1,9 +1,9 @@
 
-import 'package:fl_audiobook/l10n/app_localizations.dart';
-import 'package:fl_audiobook/my_route_transition.dart';
-import 'package:fl_audiobook/routes/player_page.dart';
-import 'package:fl_audiobook/services/files.dart';
-import 'package:fl_audiobook/routes/settings_page.dart';
+import 'package:story_time/l10n/app_localizations.dart';
+import 'package:story_time/my_route_transition.dart';
+import 'package:story_time/routes/player_page.dart';
+import 'package:story_time/services/files.dart';
+import 'package:story_time/routes/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:yaru/yaru.dart';
 

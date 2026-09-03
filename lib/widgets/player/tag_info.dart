@@ -1,6 +1,6 @@
 import 'dart:math';
-import 'package:fl_audiobook/routes/player_page.dart';
-import 'package:fl_audiobook/services/player_service.dart';
+import 'package:story_time/routes/player_page.dart';
+import 'package:story_time/services/player_service.dart';
 import 'package:flutter/material.dart';
 
 class TagInfo extends StatelessWidget {
