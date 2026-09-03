@@ -9,6 +9,7 @@ import 'package:fl_audiobook/tray.dart' as tray;
 import 'package:fl_audiobook/widgets/animated_popover.dart';
 import 'package:fl_audiobook/widgets/cover_image.dart';
 import 'package:fl_audiobook/widgets/player/chapter_list_button.dart';
+import 'package:fl_audiobook/widgets/player/confetti.dart';
 import 'package:fl_audiobook/widgets/player/playback_controls.dart';
 import 'package:fl_audiobook/widgets/player/tag_info.dart';
 import 'package:fl_audiobook/widgets/player/unskip_button.dart';
@@ -48,8 +49,42 @@ class PlayerPage extends StatefulWidget {
 class _PlayerPageState extends State<PlayerPage> {
   bool showBookInfo = false;
 
+  static const _celebrationDuration = Duration(milliseconds: 10000);
+
+  static const _preCelebrationDuration = Duration(milliseconds: 500);
+
+  bool _duringCelebration = false;
+
+
+  Future<void> _onBookFinished() async {
+
+    _log.info("finished playing ${PlayerService().title}!");
+    await Future<void>.delayed(_preCelebrationDuration);
+    if (!mounted) return;
+    setState(() {
+      _duringCelebration = true;
+    });
+
+
+    await Future<void>.delayed(_celebrationDuration);
+    if (!mounted) return;
+
+    // TODO go to finished playing book!
+    setState(() {
+      _duringCelebration = false;
+    });  
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+    PlayerService().bookFinishedStream.listen((isFinished) {
+    print("huh!!=======================================${isFinished}"); 
+    if (isFinished){
+    _onBookFinished();
+    }
+  });
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
         const SingleActivator(LogicalKeyboardKey.space): () {
@@ -124,8 +159,11 @@ class _PlayerPageState extends State<PlayerPage> {
             ),
 
             child: Stack(
+              
               fit: StackFit.expand,
               children: [
+
+
                 if (ConfigProvider().config.performanceMode)
                   SizedBox()
                 else
@@ -160,6 +198,16 @@ class _PlayerPageState extends State<PlayerPage> {
                     filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
                     child: PlayerUi(),
                   ),
+              
+              SizedBox.expand(
+                child: Visibility(
+                  visible: _duringCelebration,
+                  child: IgnorePointer(
+                    child: Confetti(isStopped: !_duringCelebration, ttl: _celebrationDuration),
+                  ),
+                ),
+              ),
+
               ],
             ),
           ),

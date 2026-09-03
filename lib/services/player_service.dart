@@ -109,6 +109,12 @@ class PlayerService {
   bool ready = false;
   bool loading = false;
 
+  StreamController<void> bookPlaybackFinished = StreamController.broadcast(); 
+
+   Stream<bool> get bookFinishedStream  {
+    return _player.stream.completed; 
+  }
+
   StreamController<BookFile> selectedBookStream =
       StreamController<BookFile>.broadcast();
   StreamController<Duration> seekStream =
@@ -410,6 +416,8 @@ class PlayerService {
     }
     
   }
+
+
 
   void seekNextChapter() {
     

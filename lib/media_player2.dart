@@ -55,7 +55,7 @@ class MediaPlayer2 extends DBusObject {
 
       if(PlayerService().position == Duration(microseconds: 0)) return; 
 
-      print("emit playing $playing");
+      // print("emit playing $playing");
       emitPropertiesChanged(
         "org.mpris.MediaPlayer2.Player",
         changedProperties: {
@@ -104,7 +104,7 @@ class MediaPlayer2 extends DBusObject {
 
       if (PlayerService().isPlaying) {
         final time = PlayerService().timeInChapter.inMicroseconds;
-        print("emit position ${time}");
+        // print("emit position ${time}");
         emitPropertiesChanged(
           "org.mpris.MediaPlayer2.Player",
           changedProperties: {"Position": DBusInt64(time)},
@@ -634,7 +634,7 @@ class MediaPlayer2 extends DBusObject {
       return DBusMethodErrorResponse.unknownInterface();
     }
     // _log.info("all properties response $properties");
-    print(properties); 
+    // print(properties); 
     return DBusMethodSuccessResponse([DBusDict.stringVariant(properties)]);
   }
 
