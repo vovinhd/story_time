@@ -67,7 +67,7 @@ Future<void> main() async {
   // var a =  MediaPlayer2(DBusObjectPath.unchecked("/org/mpris/MediaPlayer2"));
 
   await client.registerObject(globals.mediaPlayer2);
-  await client.requestName('org.mpris.MediaPlayer2.fl-audiobook');
+  await client.requestName('org.mpris.MediaPlayer2.story_time');
   // client.emitSignal('org.freedesktop.DBus.ObjectManager', 'InterfacesAdded',
   //       [path, encodeInterfacesAndProperties(interfacesAndProperties)])
 
