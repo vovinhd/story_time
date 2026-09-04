@@ -9,12 +9,11 @@ Story Time is a player for audio books.
   - but still remembers your playback position in your books
 - supports embedded chapter metadata 
 
-
-# setup 
+# build
 
 Requires ffmpeg_kit_next_flutter, which has to be build locally for license/patent reasons. See https://github.com/arthenica/ffmpeg-kit-next
 
-# build
+Build appimage and deb files with fastforge. The ``LD_LIBARARY_PATH`` variable needs to be updated so fastforge finds the libraries provided by ``ffmpeg_kit_next``
 
 ``LD_LIBRARY_PATH="$LD_LIBRARY_PATH:./build/linux/x64/release/bundle/lib/" fastforge package --platform=linux --targets=appimage,deb``
 

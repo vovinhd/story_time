@@ -1,13 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="landing.css" />
     <title>Story Time</title>
 </head>
+
 <body>
-    <h1>
-        Website tbd
-    </h1>
+    <section id="header">
+
+
+        <nav class="small-nav">
+            <a href="#header" class="main-nav-item nav-logo">
+                <img class="logo" src="img/logo.svg" />
+                <span class="sr-only">Story Time</span>
+            </a>
+        </nav>
+
+        <nav class="wide-nav">
+            <a href="#header" class="main-nav-item nav-logo">
+                <img class="logo" src="img/logo.svg" />
+                <span class="sr-only">Story Time</span>
+            </a>
+            <a href="#features" class="main-nav-item">Features</a>
+            <a href="#gallery" class="main-nav-item">Gallery</a>
+
+            <a href="#downloads" class="main-nav-item">Download</a>
+        </nav>
+
+        <div class="actions">
+            <!-- <a href="#" class="main-nav-item light-dark">☀️</a> -->
+            <a href="https://github.com/vovinhd/story_time" target="_blank" class="main-nav-item github">
+                <img id="gh-logo" class="logo" src="GitHub_Invertocat_White_Clearspace.svg" />
+
+                <span class="sr-only">GitHub</span>
+            </a>
+        </div>
+    </section>
+
+    
+    <main>
+    <section id="hero">
+        <img src="img/home.avif" />
+        <div class="hero-actions">
+            A pretty audio book player for the linux desktop
+            <a href="#downloads" class="hero-cta">Get it</a>
+        </div>
+    </section>
+    
+        <section id="features">
+            <h2>
+                Features
+            </h2>
+            <ul>
+                <li class="card">
+                    <span>built for audio books</span>
+                    <div>
+                        remembers your playback position
+                    </div>
+                </li>
+                <li class="card">
+                    <span>a clean ui</span>
+                    <div>
+                        build on flutter for pretty animations and low-ish resource usage
+                    </div>
+                </li>
+                <li class="card">
+                    <span>just plays files</span>
+
+                    <div>
+                        no library management that imposes an order on your existing library
+                    </div>
+                </li>
+                <li class="card">
+                    better taste in audio books than comparable software
+                </li>
+                <li class="card">
+                    <span>and the other things you'd expect</span>
+                    <div>
+                        sleep timer, playback speed control, ability to unskip accidentally nudging the play position
+                    </div>
+
+                </li>
+            </ul>
+
+            <section class="gallery">
+                <h2>
+                    Gallery
+                </h2>
+                <div class="hr-scroller">
+                    <img src="img/home.avif" />
+                    <img src="img/home_light.avif" />
+
+                    <img src="img/player.avif" />
+                    <img src="img/player_light.avif" />
+
+                    <img src="img/chapters.avif" />
+                    <img src="img/chapters_light.avif" />
+                </div>
+            </section>
+        </section>
+
+        <section id="downloads">
+            <span class="sr-only"> Downloads </span>
+            <a href="https://github.com/vovinhd/story_time/releases" class="temp-download-button">Download the Preview
+                Release</a>
+        </section>
+
+    </main>
+
+    <footer>
+        idk something shound go here? License? my socials? footer stuff no one looks at
+    </footer>
 </body>
+
 </html>
