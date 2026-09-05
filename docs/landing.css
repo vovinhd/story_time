@@ -525,6 +525,7 @@ main {
 
 
 .temp-download-button {
+    color: white !important;
     font-weight: bold;
     font-size: xx-large;
     background: var(--accent-color);
@@ -548,7 +549,7 @@ main {
     }
 
     &:visited {
-        color: var(--text-color);
+        color: var(--text-color) !important; 
     }
 }
 
