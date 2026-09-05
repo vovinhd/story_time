@@ -247,21 +247,24 @@ main {
 }
 
 
-#main::before {
-    content: "";
+#hero::before {
+    /* content: ""; */
     position: absolute;
     filter: blur(5rem);
     background-color: var(--accent-color);
     width: 80vw;
-    height: 160vh;
-    top: 500px;
-    left: 0;
+    height: 80vh;
+    top: 20vh;
+    left: -20vh;
     z-index: -1;
-    opacity: .05;
+    opacity: .07;
     /* rotate: 45deg; */
     border-radius: 20rem;
 }
 
+.hero-image {
+    object-fit: cover;
+}
 
 .hero-actions {
     display: flex;
@@ -442,6 +445,7 @@ main {
         /* box-shadow: 0 0 12px 3px rgba(12, 12, 12, 0.19); */
         grid-area: img;
         object-fit: contain;
+        position: relative;
 
     }
 
@@ -453,8 +457,8 @@ main {
         background-color: var(--accent-color);
         width: 200px;
         height: 200px;
-        top: 350px;
-        left: 400px;
+        top: 150px;
+        left: 180px;
         z-index: -1;
         opacity: .2;
         rotate: 45deg;
