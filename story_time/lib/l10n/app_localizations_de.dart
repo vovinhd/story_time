@@ -27,7 +27,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get menuSettingsAccelerator => 'Strg+,';
 
   @override
-  String get menuAbout => 'Über fl_audiobook';
+  String get menuAbout => 'Über Story Time';
 
   @override
   String get heroHintTitle => 'Höre Hörbücher';

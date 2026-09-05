@@ -134,7 +134,7 @@ abstract class AppLocalizations {
   /// No description provided for @menuAbout.
   ///
   /// In en, this message translates to:
-  /// **'About fl_audiobook'**
+  /// **'About Story Time'**
   String get menuAbout;
 
   /// No description provided for @heroHintTitle.
