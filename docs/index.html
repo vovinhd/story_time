@@ -10,17 +10,15 @@
 
 <body>
     <section id="header">
-
-
         <nav class="small-nav">
-            <a href="#header" class="main-nav-item nav-logo">
+            <a href="#hero" class="main-nav-item nav-logo">
                 <img class="logo" src="img/logo.svg" />
                 <span class="sr-only">Story Time</span>
             </a>
         </nav>
 
         <nav class="wide-nav">
-            <a href="#header" class="main-nav-item nav-logo">
+            <a href="#header" class="nav-logo">
                 <img class="logo" src="img/logo.svg" />
                 <span class="sr-only">Story Time</span>
             </a>
@@ -31,8 +29,8 @@
         </nav>
 
         <div class="actions">
-            <!-- <a href="#" class="main-nav-item light-dark">☀️</a> -->
-            <a href="https://github.com/vovinhd/story_time" target="_blank" class="main-nav-item github">
+            <!-- <button onClick="toggleTheme()" id="theme" aria-label="toggle light/dark theme" class="main-nav-item light-dark">☀</button> -->
+            <a href="https://github.com/vovinhd/story_time" target="_blank" class="nav-logo github">
                 <img id="gh-logo" class="logo" src="GitHub_Invertocat_White_Clearspace.svg" />
 
                 <span class="sr-only">GitHub</span>
@@ -40,80 +38,127 @@
         </div>
     </section>
 
-    
     <main>
-    <section id="hero">
-        <img src="img/home.avif" />
-        <div class="hero-actions">
-            A pretty audio book player for the linux desktop
-            <a href="#downloads" class="hero-cta">Get it</a>
-        </div>
-    </section>
-    
+        <section id="hero">
+            <div class="hero-images">
+                <img src="img/hero.avif" class="hero-image" width="990.875" height="990.875" />
+            </div>
+
+            <div class="hero-actions">
+                <h1>Story Time</h1>
+                A pretty audio book player for the linux desktop
+                <a href="#downloads" class="hero-cta">Get it</a>
+            </div>
+        </section>
+
         <section id="features">
             <h2>
                 Features
             </h2>
-            <ul>
+            <ul class="standout-features">
                 <li class="card">
-                    <span>built for audio books</span>
-                    <div>
-                        remembers your playback position
-                    </div>
-                </li>
-                <li class="card">
-                    <span>a clean ui</span>
-                    <div>
-                        build on flutter for pretty animations and low-ish resource usage
-                    </div>
-                </li>
-                <li class="card">
-                    <span>just plays files</span>
+                    <img src="img/position.avif" class="card-img" />
 
-                    <div>
-                        no library management that imposes an order on your existing library
+                    <span class="card-header">Built for Audio Books</span>
+                    <div class="card-content">
+                        <p>
+                            Story Time remembers your playback position for each audiobook you play
                     </div>
                 </li>
+
                 <li class="card">
+                    <img src="img/open.avif" class="card-img" />
+
+                    <span class="card-header">Just Plays Files</span>
+
+                    <div class="card-content">
+                        <p>
+                            No library management that imposes an order on your existing library or copies files around
+                            without being asked.
+                        <p>
+                            Supports .m4b, m4a, and .mp3
+                    </div>
+                </li>
+
+                <li class="card">
+                    <img src="img/player_details.avif" class="card-img" />
+
+                    <span class="card-header">a clean ui</span>
+                    <div class="card-content">
+                        <p>
+                            Built on <a href="https://flutter.dev" target="_blank">Flutter</a> for pretty animations and
+                            low resource usage.
+                        <p>
+                            Feels right at home on a desktop and doesn't drag around a whole web browser.
+                    </div>
+                </li>
+
+                <!-- <li class="card">
                     better taste in audio books than comparable software
-                </li>
-                <li class="card">
-                    <span>and the other things you'd expect</span>
-                    <div>
-                        sleep timer, playback speed control, ability to unskip accidentally nudging the play position
-                    </div>
+                </li> -->
 
-                </li>
             </ul>
 
-            <section class="gallery">
-                <h2>
-                    Gallery
-                </h2>
-                <div class="hr-scroller">
-                    <img src="img/home.avif" />
-                    <img src="img/home_light.avif" />
 
-                    <img src="img/player.avif" />
-                    <img src="img/player_light.avif" />
+            <section id="additional-features" class="additional-features">
 
-                    <img src="img/chapters.avif" />
-                    <img src="img/chapters_light.avif" />
+                <div class="features-img">
+                    <img src="img/details.avif" />
+                </div>
+                <div>
+                    <h2>And all the ther things you'd expect</h2>
+                    <ul>
+                        <li>sleep timer</li>
+                        <li>playback speed control</li>
+                        <li>chapter seeking</li>
+                        <li>ability to unskip accidentally nudging the play position</li>
+                    </ul>
                 </div>
             </section>
         </section>
-
-        <section id="downloads">
-            <span class="sr-only"> Downloads </span>
-            <a href="https://github.com/vovinhd/story_time/releases" class="temp-download-button">Download the Preview
-                Release</a>
         </section>
 
+        <section id="gallery" class="gallery">
+            <h2>
+                Gallery
+            </h2>
+            <div class="h-scroller">
+                <img src="img/home.avif" />
+                <img src="img/home_light.avif" />
+
+                <img src="img/player.avif" />
+                <img src="img/player_light.avif" />
+
+                <img src="img/chapters.avif" />
+                <img src="img/chapters_light.avif" />
+            </div>
+        </section>
+
+        <section id="downloads">
+            <h2 class=""> Downloads </h2>
+            <div class="dl-container">
+                <a href="https://github.com/vovinhd/story_time/releases" class="temp-download-button ">
+                    Download Preview Release #1
+                </a>
+            </div>
+        </section>
     </main>
 
     <footer>
-        idk something shound go here? License? my socials? footer stuff no one looks at
+        footer stuff here i guess
     </footer>
+
+    <script>
+
+    const prefersLightTheme = window.matchMedia('(prefers-color-scheme: light)');
+    if (prefersLightTheme.matches) {
+        console.log("lightmode t_t"); 
+
+        var gh = document.getElementById("gh-logo");
+        gh.src = "GitHub_Invertocat_Black_Clearspace.svg"
+    } 
+
+    </script>
 </body>
 
 </html>

@@ -6,7 +6,7 @@
     "menuOpenAccelerator": "Ctrl+O",
     "menuSettings": "Preferences",
     "menuSettingsAccelerator": "Ctrl+,",
-    "menuAbout": "About fl_audiobook",
+    "menuAbout": "About Story Time",
     "heroHintTitle": "Listen to audiobooks",
     "heroHintSubtitle": "supported file types: .m4b, .m4a, .mp3",
     "heroHintButtonLabel": "Open Audiobook",

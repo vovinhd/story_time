@@ -88,7 +88,7 @@ class _PopoverMenuState extends State<PopoverMenu> {
                   children: [
                     Text(AppLocalizations.of(context)!.menuSettings, style: menuButtonTextStyle(context)),
                     Text(
-                      AppLocalizations.of(context)!.menuOpenAccelerator,
+                      AppLocalizations.of(context)!.menuSettingsAccelerator,
                       style: menuButtonAcceleratorTextStyle(context),
                     ),
                   ],
