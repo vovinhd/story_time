@@ -557,6 +557,7 @@ footer {
     border-top: 1px solid var(--footer-border);
     padding-block: 1rem;
     padding-inline: .5rem;
+    background-color: light-dark(#DC8ADD, #26A269);
 }
 
 .light-dark {
